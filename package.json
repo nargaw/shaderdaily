@@ -15,12 +15,10 @@
     "@react-three/fiber": "^8.9.1",
     "babel-plugin-glsl": "^1.0.0",
     "glslify": "^7.1.1",
-    "lygia": "^0.0.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
-    "three": "^0.146.0",
-    "webpack-glsl-loader": "^1.0.1"
+    "three": "^0.146.0"
   },
   "browserslist": {
     "production": [

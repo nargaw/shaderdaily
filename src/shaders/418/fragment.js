@@ -157,9 +157,9 @@ void main()
     twovUv = twovUv * 2. - 1.;
     twovUv.x -= 0.5;
     
-    onevUv = Rot(onevUv, PI * -0.22);
-    float one = sdRoundedBox(vec2(vUv.x + 0.275, vUv.y), vec2(0.18, 0.85), vec4(0.1, 0.1, 0.1, 0.1));
-    float oneP = sdRoundedBox(vec2(onevUv.x + 0.22, onevUv.y + 0.05), vec2(0.09, 0.28), vec4(0.1, 0.1, 0.1, 0.1));
+    onevUv = Rot(onevUv, PI * -0.25);
+    float one = sdRoundedBox(vec2(vUv.x + 0.275, vUv.y), vec2(0.17, 0.85), vec4(0.1, 0.1, 0.1, 0.1));
+    float oneP = sdRoundedBox(vec2(onevUv.x + 0.24, onevUv.y + 0.05), vec2(0.07, 0.2), vec4(0.1, 0.075, 0.1, 0.075));
     
     // color += one;
     float a = PI * (0.5 + 0.25);

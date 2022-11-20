@@ -14,7 +14,7 @@ const material = new THREE.ShaderMaterial({
     }
 })
 
-// console.log(material.fragmentShader)
+console.log(material.fragmentShader)
 
 export default function App()
 {
