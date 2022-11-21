@@ -212,10 +212,10 @@ const fragmentShader =
         // color += one;
         float two = sdTwo(vec2(vUv.x + 0.05, vUv.y));
         // color += two;
-        float three = sdThree(vec2(vUv.x - 0.3, vUv.y));
+        float three = sdThree(vec2(vUv.x, vUv.y));
         color += three;
-        color += one;
-        color += two;
+        // color += one;
+        // color += two;
 
 
         gl_FragColor = vec4(color, 1.);
