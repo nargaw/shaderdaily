@@ -23,7 +23,7 @@ const fragmentShader =
         r.x = (p.y > 0.0) ? r.x : r.y;
         vec2 q = abs(p)-b+r.x;
         float v =  min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r.x;
-        return 1. - smoothstep(0.01, 0.02, v);
+        return 1. - smoothstep(0.01, 0.015, v);
     }
 
     float sdRoundedBoxOutline(vec2 p, vec2 b, vec4 r, float x)
@@ -144,6 +144,23 @@ const fragmentShader =
         return -sqrt(d.x)*sign(d.y);
     }
 
+    float sdZero(vec2 p)
+    {
+        vec2 p2 = p;
+        p2 *= 4.;
+        vec2 p3 = p2;
+        p3 = Rot(p3, PI);
+        float a = PI * (0.5 + 0.25);
+        float b = 0.2 *(0.5 + 0.5);
+        float z1 = sdArc(vec2(p2.x - 2., p2.y - 2.35), vec2(a * 0.7, a * 0.7), .36, b * 0.85 );
+        float z2 = sdArc(vec2(p3.x+1., p3.y+0.65), vec2(a * 0.7, a * 0.7), .36, b * 0.85 );
+        z1 = 1. - smoothstep(0.01, 0.015, z1);
+        z2 = 1. - smoothstep(0.01, 0.015, z2);
+        float z3=sdRoundedBox((vec2(p.x+0.088, p.y)), vec2(0.082, 0.275), vec4(0.075));
+        float z4=sdRoundedBox((vec2(p.x-0.088, p.y)), vec2(0.082, 0.275), vec4(0.075));
+        return z1 + z2 + z3 + z4;
+    }
+
     float sdOne(vec2 p)
     {
         p.x -= 0.15;
@@ -234,14 +251,14 @@ const fragmentShader =
     }
     
     vec3 matrix(vec2 vUv){
-        float rows = 8.0;
+        float rows = 15.0;
         vec2 a = floor(vUv * rows);
         a += vec2(1.0, floor(u_time * 5. * randFloat(a.x)));
         vec2 b = fract(vUv * rows);
         vec2 newUv = 0.5 - b;
         float str = randVec2(a);
         float one = sdOne(b);
-        float two = sdTwo(b);
+        float two = sdZero(b);
         float shape;
         if(str > .5 )
         {
@@ -253,14 +270,18 @@ const fragmentShader =
         return vec3(shape * str );
     }
 
+    
+
 
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec3 color = vec3(0.);
-        vUv = vUv * 2. - 0.5;
+        // vUv = vUv * 2. - 0.5;
         float one = sdOne(vec2(vUv.x , vUv.y ));
         // color += one;
+        float zero = sdZero(vUv);
+        // color += zero;
         // float two = sdTwo(vec2(vUv.x + 0.5 * sin(u_time), vUv.y + 0.5 * cos(u_time)));
         // color += two;
         // float three = sdThree(vec2(vUv.x - 0.5 * cos(u_time), vUv.y - 0.5 * sin(u_time)));
@@ -271,7 +292,6 @@ const fragmentShader =
         // color += five;
         vec3 m = matrix(vUv);
         color.g += m.x * 1.5;
-
         gl_FragColor = vec4(color, 1.);
     }
 `
