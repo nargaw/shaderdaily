@@ -1,16 +1,16 @@
-import * as THREE from 'three'
+import { Vector2, ShaderMaterial } from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import fragment from './shaders/422/fragment.js'
+import fragment from './shaders/423/fragment.js'
 import vertex from './shaders/defaultVertex/vertex.js'
 
-const material = new THREE.ShaderMaterial({
+const material = new ShaderMaterial({
     vertexShader: vertex,
     fragmentShader: fragment,
     uniforms: {
         u_time: { type: "f", value: 1.0 },
-        u_resolution: { type: "v2", value: new THREE.Vector2(600, 600) },
-        u_mouse: { type: "v2", value: new THREE.Vector2() }
+        u_resolution: { type: "v2", value: new Vector2(600, 600) },
+        u_mouse: { type: "v2", value: new Vector2() }
     }
 })
 
