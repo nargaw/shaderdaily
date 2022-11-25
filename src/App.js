@@ -1,7 +1,7 @@
 import { Vector2, ShaderMaterial } from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import fragment from './shaders/423/fragment.js'
+import fragment from './shaders/424/fragment.js'
 import vertex from './shaders/defaultVertex/vertex.js'
 
 const material = new ShaderMaterial({
