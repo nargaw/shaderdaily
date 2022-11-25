@@ -3,7 +3,7 @@ import glsl from 'babel-plugin-glsl/macro'
 const fragmentShader = 
 glsl`
 #ifdef GL_ES
-    precision highp float;
+    precision mediump float;
     #endif
 
     varying vec2 vUv;
