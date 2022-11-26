@@ -1,12 +1,22 @@
 import { Vector2, ShaderMaterial } from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import fragment from './shaders/424/fragment.js'
+import fragment from './shaders/425/fragment.js'
 import vertex from './shaders/defaultVertex/vertex.js'
+import numbers from './shaders/numLabels/numbers.js'
+import preload from './shaders/preload/preload.js'
+import usefulFunctions from './shaders/usefulFunctions/usefulFunctions.js'
 
 const material = new ShaderMaterial({
     vertexShader: vertex,
-    fragmentShader: fragment,
+
+    //use for shaders <425
+    //fragmentShader: fragment
+
+    //use for shader >= 425
+    //clean up the fragment shader
+    //imports from preload, numbers and useful functions
+    fragmentShader: preload + usefulFunctions + numbers + fragment,
     uniforms: {
         u_time: { type: "f", value: 1.0 },
         u_resolution: { type: "v2", value: new Vector2(600, 600) },
