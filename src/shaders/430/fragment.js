@@ -1,0 +1,59 @@
+import glsl from 'babel-plugin-glsl/macro'
+
+const fragmentShader = 
+glsl`
+    float label(vec2 p)
+    {
+        p *= 10.;
+        p.x -= 0.1;
+        float left = sdFour(vec2(p.x + 0.3, p.y));
+        float center = sdThree(vec2(p.x -0.05, p.y));
+        float right = sdZero(vec2(p.x - 0.35, p.y));
+        return left + center + right;
+    }
+    float sdCircleHighlight(vec2 p, float r)
+    {
+        p = p * 2.0 - 1.;
+        float x = length(p) - r;
+        return 1. - smoothstep(0.01, 1.5, x);
+    }
+
+    float newfunc(vec2 p, float a)
+    {
+        p = p * 8. - 4.;
+        //p.y -= 1.25;
+        p.x += 0.5;
+        p.y += 0.5;
+        float c;
+        float d;
+        float e;
+        float f;
+        float steps = 25.;
+        for(float i = 1.; i < steps; i++)
+        {
+            c += sdCircle(vec2(p.x  + i/ 5. * (sin(u_time * i * 0.5 * 0.2)), p.y + i / 5. * (cos(u_time * i * 0.5 * 0.2)) ), a);
+            d += sdCircle(vec2(p.x  - i/ 5. * (sin(u_time * i * 0.5 * 0.2)), p.y - i / 5. * (cos(u_time * i * 0.5 * 0.2)) ), a);
+            e += sdCircleHighlight(vec2(p.x  + i/ 5. * (sin(u_time * i * 0.5 * 0.2)), p.y + i / 5. * (cos(u_time * i * 0.5 * 0.2)) ), a);
+            f += sdCircleHighlight(vec2(p.x  - i/ 5. * (sin(u_time * i * 0.5 * 0.2)), p.y - i / 5. * (cos(u_time * i * 0.5 * 0.2)) ), a);
+        }
+        e *= 0.25;
+        f *= 0.25;
+        return c + d + e + f ;
+    }
+
+
+    void main()
+    {
+        vec2 vUv = vec2(vUv.x, vUv.y);
+        vec3 color = vec3(0.);
+        float y = newfunc(vUv, 0.25);
+        color += y;
+
+        float numLabel = label(vUv);
+        color += numLabel;
+
+        gl_FragColor = vec4(color, 1.);
+    } 
+`
+
+export default fragmentShader

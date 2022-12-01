@@ -24,7 +24,7 @@ float sdRoundedBoxOutline(vec2 p, vec2 b, vec4 r, float x)
     return (c - a);
 }
 
-float sdBox(vec2 p, vec2 b)
+float sdBoxOutline(vec2 p, vec2 b)
 {
     //p - point 
     //b -
@@ -33,6 +33,16 @@ float sdBox(vec2 p, vec2 b)
     float x = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
     float y = length(max(d, 0.0)) + min(max(d.x + 0.01, d.y + 0.01), 0.0);
     return smoothstep(0.01, 0.11, y / x);
+}
+
+float sdBox(vec2 p, vec2 b)
+{
+    //p - point 
+    //b -
+    p = p * 2.0 - 1.; 
+    vec2 d = abs(p) - b;
+    float x = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+    return smoothstep(0.01, 0.012, x);
 }
 
 float sdCircle(vec2 p, float r)
