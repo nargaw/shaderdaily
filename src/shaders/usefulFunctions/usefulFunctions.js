@@ -57,7 +57,8 @@ float sdSegment(vec2 p, vec2 a, vec2 b)
     vec2 pa = p-a;
     vec2 ba = b-a;
     float h = clamp(dot(pa, ba)/dot(ba,ba), 0., 1.);
-    return length(pa - ba * h);
+    float v = length(pa - ba * h);
+    return 1. - smoothstep(0.01, 0.015, v);
 }
 
 vec2 Rot(vec2 vUv, float a){
