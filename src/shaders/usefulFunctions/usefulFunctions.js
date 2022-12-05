@@ -52,6 +52,16 @@ float sdCircle(vec2 p, float r)
     return 1. - smoothstep(0.01, 0.03, x);
 }
 
+float sdCircleOutline(vec2 p, float r)
+{
+    p = p * 2.0 - 1.;
+    float x = length(p) - r;
+    float y = length(p) - r + 0.05;
+    float x1 = 1. - smoothstep(0.01, 0.03, x);
+    float y1 = 1. - smoothstep(0.01, 0.03, y);
+    return x1 - y1;
+}
+
 float sdSegment(vec2 p, vec2 a, vec2 b)
 {
     vec2 pa = p-a;
