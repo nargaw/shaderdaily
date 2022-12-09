@@ -31,8 +31,26 @@ float sdBoxOutline(vec2 p, vec2 b)
     p = p * 2.0 - 1.; 
     vec2 d = abs(p) - b;
     float x = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
-    float y = length(max(d, 0.0)) + min(max(d.x + 0.01, d.y + 0.01), 0.0);
-    return smoothstep(0.01, 0.11, y / x);
+    float y = length(max(d, 0.0)) + min(max(d.x + 0.05, d.y + 0.05), 0.0);
+    // x = 1. - smoothstep(0.01, 0.02, x);
+    // y = 1. - smoothstep(0.01, 0.02, y);
+    return 1.  - smoothstep(0.01, 0.2, y / x);
+}
+
+float rect( vec2 vUv, float height, float width)
+{
+    float left = smoothstep(((1.0 - width)/ 2.0), ((1.0 - width)/ 2.0) + 0.001, vUv.x);
+    float right = smoothstep(((1.0 - width)/2.0), ((1.0 - width)/ 2.0) + 0.001, 1. - vUv.x);
+    float top = smoothstep(((1.0 - height)/2.0), ((1.0 - height)/2.0) + 0.001, 1. - vUv.y);
+    float bottom = smoothstep(((1.0 - height)/2.0), ((1.0 - height)/2.0) + 0.001, vUv.y);
+    return left * right * top * bottom;
+}
+
+float rectOutline(vec2 vUv, float height, float width)
+{
+    float y = rect(vUv, height, width);
+    float x = rect(vUv, height + 0.01, width + 0.01);
+    return x - y;
 }
 
 float sdBox(vec2 p, vec2 b)
