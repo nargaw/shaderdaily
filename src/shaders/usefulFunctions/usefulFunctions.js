@@ -80,6 +80,21 @@ float sdCircleOutline(vec2 p, float r)
     return x1 - y1;
 }
 
+float circle(vec2 vUv, float radius)
+{
+    vec2 dist = vUv - vec2(0.5);
+    return 1. - smoothstep(radius - (radius * 0.05), radius + (radius * 0.05), dot(dist, dist) * 4.);
+}
+
+float cirOutline(vec2 vUv, float r)
+{
+    vec2 dist = vUv - vec2(0.5);
+    float a = 1. - smoothstep(r - (r * 0.05), r + (r * 0.05), dot(dist, dist) * 4.);
+    float b = 1. - smoothstep(r + 0.01 - ((r + 0.01)), r + 0.01 + ((r + 0.02)), dot(dist, dist) * 4.);
+    // float b = 1. - smoothstep(r + 0.01 - ((r + 0.01) * 0.1), r + 0.01 + ((r + 0.02) * 0.12), dot(dist, dist) * 4.);
+    return b - a;
+}
+
 float sdSegment(vec2 p, vec2 a, vec2 b)
 {
     vec2 pa = p-a;
