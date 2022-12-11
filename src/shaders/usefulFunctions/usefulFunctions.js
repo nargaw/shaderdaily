@@ -90,8 +90,8 @@ float cirOutline(vec2 vUv, float r)
 {
     vec2 dist = vUv - vec2(0.5);
     float a = 1. - smoothstep(r - (r * 0.05), r + (r * 0.05), dot(dist, dist) * 4.);
-    float b = 1. - smoothstep(r + 0.01 - ((r + 0.01)), r + 0.01 + ((r + 0.02)), dot(dist, dist) * 4.);
-    // float b = 1. - smoothstep(r + 0.01 - ((r + 0.01) * 0.1), r + 0.01 + ((r + 0.02) * 0.12), dot(dist, dist) * 4.);
+    // float b = 1. - smoothstep(r + 0.01 - ((r + 0.01)), r + 0.01 + ((r + 0.02)), dot(dist, dist) * 4.);
+    float b = 1. - smoothstep(r + 0.01 - ((r + 0.01) * 0.01), r + 0.01 + ((r + 0.011) * 0.12), dot(dist, dist) * 4.);
     return b - a;
 }
 
