@@ -16,6 +16,17 @@ float sdRoundedBox(vec2 p, vec2 b, vec4 r)
     return 1. - smoothstep(0.01, 0.015, v);
 }
 
+float sdSpiral(vec2 p, float w, float k)
+{
+    float r = length(p);
+    float a = atan(p.y, p.x);
+    float n = floor(0.5/w + (log2(r/w)*k-a)/TWO_PI);
+    float ra = w * exp2((a+TWO_PI * (min(n+0., 0.) - 0.5))/k);
+    float rb = w * exp2((a+TWO_PI * (min(n+1., 0.) - 0.5))/k);
+    float d = min(abs(r-ra), abs(r-rb));
+    return min(d, length(p + vec2(w, 0.0)));
+}
+
 float sdRoundedBoxOutline(vec2 p, vec2 b, vec4 r, float x)
 {
     //x - thickness
