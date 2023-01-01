@@ -48,12 +48,30 @@ const fragmentShader = glsl`
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec3 color = vec3(0.);
         
-        float n = noise(vUv * (u_time + 80. * 1.2)/35.);
-        
-        float one = sdOne(vUv * abs(sin(n + u_time)+ 25.)/25.);
-        float zero = sdZero(vUv * abs(cos(n + u_time) + 25.)/25.);
-        // color += one;
+        float n = noise(vUv * (u_time + 1580. * 1.2)/35.);
+        vec2 vUv2, vUv3, vUv4, vUv5;
+        vUv2 = vUv;
+        vUv2 = vUv2 * 2. - 0.5;
+        vUv2.x += 0.56;
+        vUv3 = vUv;
+        vUv3 = vUv3 * 2. - 0.5;
+        vUv3.x += 0.2;
+        vUv4 = vUv;
+        vUv4 = vUv4 * 2. - 0.5;
+        vUv4.x -= 0.05;
+        vUv5 = vUv;
+        vUv5 = vUv5 * 2. - 0.5;
+        vUv5.x -= 0.4;
+
+        float two = sdTwo(vUv2 * abs(sin(n + u_time)+ 25.)/25.);
+        float zero = sdZero(vUv3 * abs(cos(n + u_time) + 25.)/25.);
+        float two1 = sdTwo(vUv4 * abs(sin(n + u_time)+ 25.)/25.);
+        float three = sdThree(vUv5 * abs(cos(n + u_time)+ 25.)/25.);
+        color += two;
         color += zero;
+        color += two1;
+        color += three;
+
         
 
         float numLabel = label(vUv);
