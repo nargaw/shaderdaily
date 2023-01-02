@@ -6,8 +6,8 @@ const fragmentShader = glsl`
         p *= 10.;
         p.x -= 0.25;
         float left = sdFour(vec2(p.x + 0.3, p.y));
-        float center = sdFive(vec2(p.x -0.035, p.y));
-        float right = sdEight(vec2(p.x - 0.39, p.y));
+        float center = sdSix(vec2(p.x -0.035, p.y));
+        float right = sdZero(vec2(p.x - 0.39, p.y));
         return left + center + right;
     }
 
