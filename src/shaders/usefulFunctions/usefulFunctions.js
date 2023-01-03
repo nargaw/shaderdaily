@@ -100,6 +100,25 @@ float quadraticBezier (float x, vec2 a){
 //         43758.5453123);
 // }
 
+float IterateMandelbrot( in vec2 c )
+{
+    const float B = 256.0;
+
+    float n = 0.0;
+    vec2 z  = vec2(0.);
+    for( int i=0; i<120; i++ )
+    {
+        z = vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y ) + c; // z = z² + c
+        if( dot(z,z)>(B*B) ) break;
+        n += 1.0;
+    }
+
+    // float sn = n - log(log(length(z))/log(B))/log(2.0); // smooth iteration count
+    float sn = n - log2(log2(dot(z,z))) + 4.0;  // equivalent optimized smooth iteration count
+    
+    return sn;
+}
+
 float plot(vec2 p, float line, float thickness)
 {
     return smoothstep(line - thickness, line, p.y) -
