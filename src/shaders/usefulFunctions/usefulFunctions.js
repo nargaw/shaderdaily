@@ -270,6 +270,22 @@ float sdEgg(vec2 p, float ra, float rb)
             length(vec2(p.x + r, p.y)) -2.0 * r) - rb;
 }
 
+float sdPolygon(vec2 p, float sides, float scale)
+{
+    p = p * 2. - 1.;
+    float angle = atan(p.x, p.y) + PI;
+    float radius = TWO_PI/sides;
+    float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
+    return 1. - smoothstep(scale, scale + 0.01, d); 
+}
+
+float sdPolygonOutline(vec2 p, float sides, float scale)
+{
+    float x = sdPolygon(p, sides, scale);
+    float y = sdPolygon(p, sides, scale + 0.05);
+    return y - x;
+}
+
 `
 
 export default usefulFunctions
