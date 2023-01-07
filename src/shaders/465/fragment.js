@@ -15,13 +15,15 @@ const fragmentShader = glsl`
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec3 color = vec3(0.);
+        float shape1;
+        for (int i=4; i<=15; i++)
+        {
+            shape1 += sdPolygonOutline(vUv, i, float(i) * 0.1 + (sin(u_time)/2.) - 0.95);
+        }
         
-        float shape1 = sdPolygonOutline(vUv, 7.0 + sin(u_time), 0.1);
-        float shape2 = sdPolygonOutline(vUv, 6.0 + sin(u_time), 0.2);
-        float shape3 = sdPolygonOutline(vUv, 5.0 + sin(u_time), 0.3);
-        float shape4 = sdPolygonOutline(vUv, 4.0 + sin(u_time), 0.4);
+        
         // float shape5 = sdPolygonOutline(vec2(vUv.x, vUv.y - 0.01), 3.0 + sin(u_time), 0.5);
-        color += shape1 + shape2 + shape3 + shape4;
+        color += shape1;
 
         float numLabel = label(vUv);
         color += numLabel;
