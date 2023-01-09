@@ -1,7 +1,7 @@
 import { Vector2, ShaderMaterial } from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import fragment from './shaders/467/fragment.js'
+import fragment from './shaders/468/fragment.js'
 import vertex from './shaders/defaultVertex/vertex.js'
 import numbers from './shaders/numLabels/numbers.js'
 import preload from './shaders/preload/preload.js'
@@ -19,7 +19,7 @@ const material = new ShaderMaterial({
     fragmentShader: preload + usefulFunctions + numbers + fragment,
     uniforms: {
         u_time: { type: "f", value: 1.0 },
-        u_resolution: { type: "v2", value: new Vector2(600, 600) },
+        u_resolution: { type: "v2", value: new Vector2() },
         u_mouse: { type: "v2", value: new Vector2() }
     }
 })
