@@ -25,7 +25,7 @@ float sdSpiral(vec2 p, float w, float k)
     float rb = w * exp2((a+TWO_PI * (min(n+1., 0.) - 0.5))/k);
     float d = min(abs(r-ra), abs(r-rb));
     float spiral = min(d, length(p + vec2(w, 0.0)));
-    return 1. - smoothstep(0.01, 0.02, spiral);
+    return 1. - smoothstep(0.01, 0.011, spiral);
 }
 
 float sdRoundedBoxOutline(vec2 p, vec2 b, vec4 r, float x)
