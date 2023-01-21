@@ -10,8 +10,8 @@ glsl`
         p3 = Rot(p3, PI);
         float a = PI * (0.5 + 0.25);
         float b = 0.2 *(0.5 + 0.5);
-        float z1 = sdArc(vec2(p2.x - 2., p2.y - 2.35), vec2(a * 0.7, a * 0.7), .36, b * 0.85 );
-        float z2 = sdArc(vec2(p3.x+1., p3.y+0.65), vec2(a * 0.7, a * 0.7), .36, b * 0.85 );
+        float z1 = sdArc(vec2(p2.x - 2., p2.y - 2.4), vec2(a * 0.7, a * 0.7), .36, b * 0.85 );
+        float z2 = sdArc(vec2(p3.x+1., p3.y+0.61), vec2(a * 0.7, a * 0.7), .36, b * 0.85 );
         z1 = 1. - smoothstep(0.01, 0.02, z1);
         z2 = 1. - smoothstep(0.01, 0.02, z2);
         float z3=sdRoundedBox((vec2(p.x+0.088, p.y)), vec2(0.082, 0.275), vec4(0.075));
