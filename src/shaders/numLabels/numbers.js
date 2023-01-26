@@ -142,8 +142,8 @@ glsl`
         float b = 0.2 *(0.5 + 0.5);
         float e1 = sdArc(vec2(p.x - 2., p.y - 1.7), vec2(a * 0.72, a * 0.72), .36, b * 0.82 );
         float e2 = sdArc(vec2(p2.x+1., p2.y+0.65), vec2(a * 0.72, a * 0.72), .36, b * 0.82 );
-        float e3 = sdArc(vec2(p.x - 2., p.y - 2.5), vec2(a * 0.72, a * 0.72), .36, b * 0.82 );
-        float e4 = sdArc(vec2(p2.x+1., p2.y+1.5), vec2(a * 0.72, a * 0.72), .36, b * 0.82 );
+        float e3 = sdArc(vec2(p.x - 2., p.y - 2.45), vec2(a * 0.72, a * 0.72), .36, b * 0.82 );
+        float e4 = sdArc(vec2(p2.x+1., p2.y+1.5 * 0.95), vec2(a * 0.72, a * 0.72), .36, b * 0.82 );
         e1 = 1. - smoothstep(0.01, 0.02, e1);
         e2 = 1. - smoothstep(0.01, 0.02, e2);
         e3 = 1. - smoothstep(0.01, 0.02, e3);
