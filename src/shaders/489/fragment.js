@@ -7,7 +7,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = sdFour(vec2(p.x + 0.3, p.y));
         float center = sdEight(vec2(p.x -0.035, p.y));
-        float right = sdEight(vec2(p.x - 0.4, p.y));
+        float right = sdNine(vec2(p.x - 0.4, p.y));
         return left + center + right;
     }
 
@@ -28,14 +28,14 @@ const fragmentShader = glsl`
         uv2 = uv2 *4. - 1.5;
         // uv2.x -= 1.;
         uv2 = Rot(uv2, u_time * 0.5);
-        for (int i=1; i<=45; i++)
+        for (int i=1; i<=50; i++)
         {
             // uv2 = uv2 * 1.1 - 0.1;
             // uv2 = Rot(uv2, u_time * 0.0000005 * float(i));
-            shape1 += circle(vec2(uv2.x + sin(u_time*(float(i)/25.)) * sin(u_time), uv2.y + cos(u_time*(float(i)/25.)) + sin(u_time)), 0.005);
-            shape2 += circle(vec2(uv2.x + cos(u_time*(float(i)/25.)) * cos(u_time), uv2.y + sin(u_time*(float(i)/25.)) + sin(u_time)), 0.005);
-            shape3 += circle(vec2(uv2.x + sin(u_time*(float(i)/12.5)) * cos(u_time), uv2.y - cos(u_time*(float(i)/12.5)) - cos(u_time)), 0.005);
-            shape4 += circle(vec2(uv2.x + cos(u_time*(float(i)/12.5)) * sin(u_time), uv2.y + sin(u_time*(float(i)/12.5)) - sin(u_time)), 0.005);
+            shape1 += rectOutline(vec2(uv2.x + sin(u_time*(float(i)/25.)) * sin(u_time), uv2.y + cos(u_time*(float(i)/25.)) * sin(u_time)), 0.25, 0.25);
+            shape2 += rectOutline(vec2(uv2.x + cos(u_time*(float(i)/25.)) * cos(u_time), uv2.y + sin(u_time*(float(i)/25.)) * sin(u_time)), 0.25, 0.25);
+            shape3 += rectOutline(vec2(uv2.x + sin(u_time*(float(i)/25.)) * sin(u_time), uv2.y + cos(u_time*(float(i)/25.)) * cos(u_time)), 0.25, 0.25);
+            shape4 += rectOutline(vec2(uv2.x + cos(u_time*(float(i)/25.)) * cos(u_time), uv2.y + sin(u_time*(float(i)/25.)) * sin(u_time)), 0.05, 0.05);
             
         }
         
