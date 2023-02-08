@@ -27,19 +27,21 @@ const fragmentShader = glsl`
         // uv2 = Rot(uv2, PI * 0.5);
         uv2 = uv2 *8. - 3.5;
         // uv2.x -= 1.;
-        // uv2 = Rot(uv2, u_time * 0.15);
+        uv2 = Rot(uv2, u_time * 0.15);
         for (int i=0; i<=25; i++)
         {
             // uv2 = uv2 * 1.1 - 0.1;
-            uv2 = Rot(uv2, sin(u_time * 0.0125 * (float(i))));
-            shape1 += cirOutline(vec2(uv2.x + sin(float(i) * u_time/12.) - float(i)/10. , uv2.y + sin(float(i) * u_time/12.) + float(i)/10.), 0.0525);
-            shape2 += cirOutline(vec2(uv2.x + cos(float(i) * u_time/12.) + float(i)/10. , uv2.y + sin(float(i) * u_time/12.) + float(i)/10. ), 0.0525);
+            // uv2 = Rot(uv2, sin(u_time * 0.0125));
+            shape1 += cirOutline(vec2(uv2.x + sin(float(i) * u_time/12.) - float(i)/12. , uv2.y + sin(float(i) * u_time/12.) + float(i)/10.), 0.0525);
+            shape2 += cirOutline(vec2(uv2.x - sin(float(i) * u_time/12.) + float(i)/12. , uv2.y + sin(float(i) * u_time/12.) + float(i)/10. ), 0.0525);
+            shape3 += circle(vec2(uv2.x + sin(float(i) * u_time/12.) - float(i)/12. , uv2.y + sin(float(i) * u_time/12.) + float(i)/10.), 0.0525);
+            shape4 += circle(vec2(uv2.x - sin(float(i) * u_time/12.) + float(i)/12. , uv2.y + sin(float(i) * u_time/12.) + float(i)/10. ), 0.0525);
         }
         
         color += shape1; 
         color += shape2;
-        color += shape3; 
-        color += shape4;  
+        color -= shape3; 
+        color -= shape4;  
         
         float numLabel = label(vUv);
         color += numLabel;
