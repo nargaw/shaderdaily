@@ -32,10 +32,10 @@ const fragmentShader = glsl`
         for (int i=0; i<=20; i++)
         {
             // uv2 = uv2 * 1.1 - 0.1;
-            uv2 = Rot(uv2, sin(u_time * 0.25));
-            float y = sin(u_time + uv2.x + (float(i) * cos(u_time + 125.) * 0.00161));
-            float x = cos(u_time + uv2.x + (float(i) * sin(u_time + 125.) * 0.00161));
-            shape1 += plot(vec2(uv2.x + sin(u_time + float(i)), uv2.y), x * y, 0.0375 );
+            uv2 = Rot(uv2, sin(u_time * 0.125) + 2.5);
+            float y = abs(sin(u_time + uv2.x + (float(i) * cos(u_time + 025.) * 0.00161)) + 1.5);
+            float x = abs(cos(u_time + uv2.x + (float(i) * sin(u_time + 025.) * 0.00161)) + 1.5);
+            shape1 += plot(vec2(uv2.x + sin(u_time + float(i)), uv2.y), x / y, 0.0375 );
         }
         
         color += shape1; 
