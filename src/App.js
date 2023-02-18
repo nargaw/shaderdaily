@@ -1,7 +1,7 @@
 import { Vector2, ShaderMaterial } from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import fragment from './shaders/507/fragment.js'
+import fragment from './shaders/508/fragment.js'
 import vertex from './shaders/defaultVertex/vertex.js'
 import numbers from './shaders/numLabels/numbers.js'
 import preload from './shaders/preload/preload.js'
@@ -37,7 +37,7 @@ export default function App()
     return (
         <>
             <mesh ref={meshRef} material={material}>
-                <planeGeometry args={[6, 6, 1, 1]} />
+                <planeGeometry args={[5, 5, 1, 1]} />
             </mesh>
         </>
     )
