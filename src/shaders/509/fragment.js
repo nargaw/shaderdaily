@@ -21,33 +21,42 @@ const fragmentShader = glsl`
         float shape4;
         vec2 uv2 = vUv;
         
-        vec2 uv3 = vUv;
+        
         // uv2.x += 1.;
         // uv2.y -0.2;
         // uv2 = Rot(uv2, 0.15 * u_time);
-        uv2 = uv2 *15. - 15.;
+        uv2 = uv2 *2. - 0.5;
         // uv2.x -= 1.;
-        // uv2 = Rot(uv2, u_time * 0.15);
-        
-        for (int i=1; i<=15; i++)
+        vec2 uv3 = uv2;
+        uv2 = Rot(uv2, u_time * 0.75);
+        uv3 = Rot(uv3, u_time * 0.5 + PI * 0.25);
+
+        for (int i=1; i<=5; i++)
         {
             for(int j=1; j<=15; j++)
             {
                 
                 vec2 newUv = uv2;
-                newUv = Rot(vec2(newUv.x + float(i) * 1.5, newUv.y + float(j) * 1.5), cos(u_time + 0.08 * float(j * i)/5.) + 0.53*1.9);
+                newUv = Rot(vec2(newUv.x + float(i) * 0.085, newUv.y + float(i) * .085), (u_time + 0.08 * float(j * i)/5.) + 0.53*1.);
                 // float line = sdSegment(vec2(newUv.x , newUv.y ), vec2(0.0), vec2(0.5 + sin(u_time * 0.125)/5.));
                 // float line = sdPolygonOutline(vec2(newUv.x , newUv.y ), int(3), float(0.5 + sin(u_time * 0.125)/5.));
                 // float r = rect(vec2(newUv), 0.45, 3.);
                 float c = sdCircleOutline(vec2(newUv), float(i - j) * sin(u_time)/2. + 1.);
-                shape1 += c;
+                // shape1 += c;
+                shape1 += rectOutline(vec2(newUv), 0.5, 0.5);
+                // shape2 += rectOutline(vec2(uv3), 0.5, 0.5);
             }
         }
+       
+        
+        
+        // shape1 += box;
+        // shape2 += box2;
 
         float z = circle(uv3, 0.95);
         
         color += shape1; 
-        // color *= shape2;
+        color += shape2;
         // color *= z;
         // color += shape3; 
         // color += shape4;  

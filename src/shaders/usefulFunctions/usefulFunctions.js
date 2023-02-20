@@ -114,7 +114,7 @@ float IterateMandelbrot( in vec2 c )
     {
         z = vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y ) + c; // z = z² + c
         if( dot(z,z)>(B*B) ) break;
-        n += 1.0;
+        n += 1.0 * u_time;
     }
 
     // float sn = n - log(log(length(z))/log(B))/log(2.0); // smooth iteration count
