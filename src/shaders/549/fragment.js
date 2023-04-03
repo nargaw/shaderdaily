@@ -15,7 +15,7 @@ const fragmentShader = glsl`
 
     const vec4 BoxColor = vec4(1,0,0,1);
     const vec4 BoxColor1 = vec4(1,0,0,1);
-    const vec4 SphereColor = vec4(1,0,0,1);
+    const vec4 SphereColor = vec4(0,0,1,1);
     const vec4 CylinderColor = vec4(0,0,1,1);
     const vec4 GroundColor = vec4(1);
     
@@ -168,10 +168,10 @@ const fragmentShader = glsl`
     
    
     // Box0
-    vec3 b0s = vec3(.0175,1.75,.75); //box size
+    vec3 b0s = vec3(.0175,1.75,1.5); //box size
     vec3 b0p = vec3(0.,1.,1. ); // box position
     b0p = p-b0p;
-    b0p.xz *=Rotate(0.1);
+    b0p.xz *=Rotate(0.1 + sin(u_time));
     vec4 b0 = vec4(BoxColor.rgb,boxSDF(b0p,b0s)); // Box Color, box distance field
 
     //Box1
@@ -191,11 +191,11 @@ const fragmentShader = glsl`
     // p.xz *=Rotate(u_time * .2);
    
     // Sphere.
-    vec3 s0p=vec3(0.,2. - sin(u_time),1.);
+    vec3 s0p=vec3(2.,2. - sin(u_time),2.);
     s0p=p-s0p;
     vec4 s0 = vec4(SphereColor.rgb,sphereSDF(s0p,.5));
 
-    vec3 s1p=vec3(0. + sin(u_time),2. ,1.);
+    vec3 s1p=vec3(0. + sin(u_time) * 2.,2. ,.5);
     s1p=p-s1p;
     s1p.xz *=Rotate(0.1);
     vec4 s1 = vec4(SphereColor.rgb,sphereSDF(s1p,.5));
