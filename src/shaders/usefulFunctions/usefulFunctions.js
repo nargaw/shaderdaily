@@ -58,8 +58,8 @@ float rect( vec2 vUv, float height, float width)
     float bottom = smoothstep(((1.0 - height)/2.0), ((1.0 - height)/2.0) + 0.001, vUv.y);
     // return left * right * top * bottom;
     float x = left * right * top * bottom;
-    float y = x * 1.75;
-    return y - x;
+    // float y = x ;
+    return x;
 }
 
 float rectOutline(vec2 vUv, float height, float width)
