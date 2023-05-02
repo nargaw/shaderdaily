@@ -51,6 +51,9 @@ const fragmentShader = glsl`
         float shape4 = sdTriIsosceles(vec2(uv3.x+0.1, uv3.y), vec2(0.05, 0.1));
         color += 1. - smoothstep(0.1, 0.11, shape4);
 
+        float shape5 = trapezoid(uv2, 0.2, 0.3, 0.2);
+        color += 1. - smoothstep(0.01, 0.011, shape5);
+
         float numLabel = label(vUv);
         color += numLabel;
         gl_FragColor = vec4(color, 1.);
