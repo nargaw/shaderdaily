@@ -44,25 +44,7 @@ const fragmentShader = glsl`
 
         return vec3(circle);
     }
-
-    float vDrop(vec2 uv,float t)
-    {
-        uv.x = uv.x*128.0;						// H-Count
-        float dx = fract(uv.x);
-        uv.x = floor(uv.x);
-        uv.y *= 0.05;							// stretch
-        float o=sin(uv.x*215.4);				// offset
-        float s=cos(uv.x*33.1)*.3 +.7;			// speed
-        float trail = mix(95.0,35.0,s);			// trail length
-        float yv = fract(uv.y + t*s + o) * trail;
-        yv = 1.0/yv;
-        yv = smoothstep(0.0,1.0,yv*yv);
-        yv = sin(yv*PI)*(s*5.0);
-        float d2 = sin(dx*PI);
-        return yv*(d2*d2);
-    }
     
-
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
