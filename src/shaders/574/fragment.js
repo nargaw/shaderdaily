@@ -21,13 +21,23 @@ const fragmentShader = glsl`
         
         vec2 uv2 = vUv;
         uv2 -= 0.5;
+        uv2.y -= 0.065;
 
-        float one = 1. - sdBox(uv2, vec2(2.5, 1./7.));
-        float two = 1. - sdBox(vec2(uv2.x, uv2.y + 1./7.), vec2(2.5, 1./7.));
+        float one = 1. - sdBox(vec2(uv2.x, uv2.y + (1./7.)), vec2(2.5, 1./7.));
+        float two = 1. - sdBox(vec2(uv2.x, uv2.y + (2./7.)), vec2(2.5, 1./7.));
+        float three = 1. - sdBox(vec2(uv2.x, uv2.y + 3./7.), vec2(2.5, 1./7.));
+        float four = 1. - sdBox(vec2(uv2.x, uv2.y + 4./7.), vec2(2.5, 1./7.));
+        float five = 1. - sdBox(vec2(uv2.x, uv2.y + 5./7.), vec2(2.5, 1./7.));
+        float six = 1. - sdBox(vec2(uv2.x, uv2.y + 6./7.), vec2(2.5, 1./7.));
+        float seven = 1. - sdBox(vec2(uv2.x, uv2.y + 7./7.), vec2(2.5, 1./7.));
 
-        color += one * vec3(1., 0., 0.);
-        color += two * vec3(1., 1., 0.);
-        
+        color += one * vec3(0.9, 0., 0.);
+        color += two * vec3(0.9, 0.5, 0.0);
+        color += three * vec3(1., 1., 0.0);
+        color += four * vec3(0., 1., 0.0);
+        color += five * vec3(0., 0., 1.0);
+        color += six * vec3(0.29, 0., 0.51);
+        color += seven * vec3(0.93, 0.51, 0.93);
 
         float numLabel = label(vUv);
         color += numLabel;
