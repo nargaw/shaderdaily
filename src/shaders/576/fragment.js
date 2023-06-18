@@ -10,7 +10,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numFive(vec2(p.x + 0.35, p.y));
         float center = numSeven(vec2(p.x -0.03, p.y));
-        float right = numFive(vec2(p.x - 0.42, p.y));
+        float right = numSix(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -41,17 +41,7 @@ const fragmentShader = glsl`
 
     #define NUM_OCTAVES 5
 
-    vec2 getRadialUv(vec2 uv)
-    {
-    float angle = atan(uv.x, - uv.y);
-    angle = abs(angle);
     
-    vec2 radialUv = vec2(0.0);
-    radialUv.x = angle / (TWO_PI * 2.0) + 0.5;
-    radialUv.y = 1.0 - pow(1.0 - length(uv), 4.0);
-    
-    return radialUv;
-    }
 
     float fbm ( in vec2 _st) {
         float v = 0.0;
@@ -67,6 +57,19 @@ const fragmentShader = glsl`
         }
         return v;
     }
+
+    vec2 getRadialUv(vec2 uv)
+    {
+    float angle = atan(uv.x, uv.y);
+    angle = abs(angle);
+    
+    vec2 radialUv = vec2(0.0);
+    // radialUv.x = angle / (PI) + 0.5;
+    // radialUv.y = 1.0 - pow(1.0 - length(uv), .2);
+    radialUv = vec2(0.3/length(uv) + 0.0005 * u_time, angle );
+    
+    return radialUv;
+    }
     
     void main()
     {
@@ -74,35 +77,29 @@ const fragmentShader = glsl`
         vec3 color = vec3(0.);
         
         vec2 uv2 = vUv;
-        vec2 uv3 = uv2;
-        vec2 uv4 = vUv;
-        uv4 -= 0.5;
-        uv4 = getRadialUv(uv4);
         uv2 -= .5;
-        uv3 = Rot(uv3, PI * 2.);
-        uv3 -= 0.5;
+        // uv2 = getRadialUv(uv2 );
+        
         
 
         float an = -u_time * 0.15;
-        // uv2 = mat2(cos(an),-sin(an),sin(an),cos(an)) * uv2;
+        uv2 = mat2(cos(an),-sin(an),sin(an),cos(an)) * uv2;
         // uv3 = mat2(cos(an),-sin(an),sin(an),cos(an)) * uv3;
-        float r1 = length(uv2);
+        float r1 = length(uv2) ;
+        r1 = abs(r1);
         float a = atan(uv2.y, uv2.x);
-        uv2 = vec2(0.3/r1 + 0.5 * u_time , a);
-        float r2 = length(uv3);
-        float a2 = atan(uv3.y, uv3.x);
-        uv3 = vec2(0.3/r2 + 0.5 * u_time, a2);
+        a = abs(a);
+        uv2 = vec2(0.3/r1 + .95 * u_time , a);
 
         vec2 q = vec2(0.);
-        q.x = fbm( uv4 + 0.00*u_time);
-        q.y = fbm( uv4 + vec2(1.0));
+        q.x = fbm( uv2 + 0.00*u_time);
+        q.y = fbm( uv2 + vec2(1.0));
 
         vec2 r = vec2(0.);
-        r.x = fbm( uv4 + 1.0*q + vec2(1.7,9.2)+ 0.15*u_time );
-        r.y = fbm( uv4 + 1.0*q + vec2(8.3,2.8)+ 0.126*u_time);
+        r.x = fbm( uv2 + 1.0*q + vec2(1.7,9.2)+ 0.15*u_time );
+        r.y = fbm( uv2 + 1.0*q + vec2(8.3,2.8)+ 0.126*u_time);
 
-        float f = fbm(uv2+r);
-        float f2 = fbm(uv3+r);
+        float f = fbm(uv2+r * fbm(uv2 + r * 2.));
 
         vec3 c = vec3(0.);
         c = mix(vec3(0.101961,0.619608,0.666667),
@@ -117,8 +114,8 @@ const fragmentShader = glsl`
                     vec3(0.666667,1,1),
                 clamp(length(r.x),0.0,1.0));
 
-        c *= f*f*f+.6*f *f + .5 *f * c ;
-        // c *= f2*f2*f2+.6*f2 *f2 + .5 *f2 * c ;
+        c *= f*f*f+.6*f *f + .25 *f * c* f * c ;
+
 
         color += c;
         float numLabel = label(vUv);
