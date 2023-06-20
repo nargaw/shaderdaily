@@ -37,7 +37,7 @@ export default function App()
     return (
         <>
             <mesh ref={meshRef} material={material}>
-                <planeGeometry args={[5, 5, 1, 1]} />
+                <planeGeometry args={[4, 4, 1, 1]} />
             </mesh>
         </>
     )
