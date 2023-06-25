@@ -10,7 +10,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numFive(vec2(p.x + 0.35, p.y));
         float center = numEight(vec2(p.x -0.03, p.y));
-        float right = numZero(vec2(p.x - 0.42, p.y));
+        float right = numOne(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -163,11 +163,11 @@ const fragmentShader = glsl`
 
         float cir = sdCircle(vUv, 0.125 );
         
-        vec3 s = voronoi(uv2);
+        vec3 s = voronoi(uv2 * 0.25);
         vec3 s2 = voronoi(vec2(uv2.x  + sin(u_time)/8., uv2.y  + sin(u_time)/8.));
         vec3 s3 = voronoi(vec2(uv2.x  + sin(u_time)/16., uv2.y  + sin(u_time)/16.));
         
-        color.rgb+= smoothstep(0.02 * 2., 0.031 * 2., s.x);
+        color.rgb+= smoothstep(0.02 * 2., 0.031 * 2., s.x * f * f);
         //color.g+= 1. - smoothstep(0.0075 * 2., (0.021-0.0025) * 2., s2.x);
         //color.b+= 1. - smoothstep(0.005 * 2., (0.021 -0.005) * 2., s3.x);
         // color += c * 2. ;
