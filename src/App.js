@@ -1,44 +1,58 @@
 import { Vector2, ShaderMaterial } from 'three'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import fragment from './shaders/584/fragment.js'
-import vertex from './shaders/defaultVertex/vertex.js'
-import numbers from './shaders/numLabels/numbers.js'
-import preload from './shaders/preload/preload.js'
-import usefulFunctions from './shaders/usefulFunctions/usefulFunctions.js'
+// import fragment from './shaders/585/fragment.js'
+// import vertex from './shaders/defaultVertex/vertex.js'
+// import numbers from './shaders/numLabels/numbers.js'
+// import preload from './shaders/preload/preload.js'
+// import usefulFunctions from './shaders/usefulFunctions/usefulFunctions.js'
 
-const material = new ShaderMaterial({
-    vertexShader: vertex,
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Shader585 from './shaders/585/fragment.js'
+import Shader584 from './shaders/584/fragment.js'
 
-    //use for shaders <425
-    //fragmentShader: fragment
 
-    //use for shader >= 425
-    //clean up the fragment shader
-    //imports from preload, numbers and useful functions
-    fragmentShader: preload + usefulFunctions + numbers + fragment,
-    uniforms: {
-        u_time: { type: "f", value: 1.0 },
-        u_resolution: { type: "v2", value: new Vector2() },
-        u_mouse: { type: "v2", value: new Vector2() }
-    }
-})
+// const material = new ShaderMaterial({
+//     vertexShader: vertex,
 
-console.log(material.fragmentShader)
+//     //use for shaders <425
+//     //fragmentShader: fragment
+
+//     //use for shader >= 425
+//     //clean up the fragment shader
+//     //imports from preload, numbers and useful functions
+//     fragmentShader: preload + usefulFunctions + numbers + fragment,
+//     uniforms: {
+//         u_time: { type: "f", value: 1.0 },
+//         u_resolution: { type: "v2", value: new Vector2() },
+//         u_mouse: { type: "v2", value: new Vector2() }
+//     }
+// })
+
+// console.log(material.fragmentShader)
 
 export default function App()
 {
     const meshRef = useRef()
     
-    useFrame(({clock}) => {
-        meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
-    })
+    // useFrame(({clock}) => {
+    //     meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
+    // })
 
     return (
         <>
-            <mesh ref={meshRef} material={material}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/'>
+                        <Route index element={<Shader585 />} />
+                        <Route path='584' element={<Shader584 />}/>
+                    </Route> 
+                </Routes>
+            </BrowserRouter>
+            {/* <Shader585 /> */}
+            {/* <mesh ref={meshRef} material={material}>
                 <planeGeometry args={[4, 4, 1, 1]} />
-            </mesh>
+            </mesh> */}
         </>
     )
 }
