@@ -8,6 +8,7 @@ import { useFrame } from '@react-three/fiber'
 // import usefulFunctions from './shaders/usefulFunctions/usefulFunctions.js'
 import Display from './Display.js'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { OrbitControls } from '@react-three/drei'
 import Shader585 from './shaders/585/fragment.js'
 import Shader584 from './shaders/584/fragment.js'
 
@@ -41,9 +42,10 @@ export default function App()
 
     return (
         <>
+            <OrbitControls />
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<><Display/><Shader585/></>}>
+                    <Route path='/' element={<Display />}>
                         {/* <Route index element={<Shader585 />} /> */}
                         <Route path='584' element={<Shader584 />}/>
                     </Route> 

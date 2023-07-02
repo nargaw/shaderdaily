@@ -1,6 +1,6 @@
 import glsl from 'babel-plugin-glsl/macro'
 
-
+import { useGLTF } from '@react-three/drei'
 
 const fragmentShader = glsl`
 
@@ -48,6 +48,9 @@ import { useFrame } from '@react-three/fiber'
 import numbers from '../numLabels/numbers.js'
 import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
+
+// const { node, materials } = useGLTF('./Models/tv3.glb')
+// console.log(node)
 
 const material = new ShaderMaterial({
     vertexShader: vertexShader,
