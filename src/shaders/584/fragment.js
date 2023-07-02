@@ -252,7 +252,7 @@ export default function Shader584()
     return (
         <>
             <mesh ref={meshRef} material={material}>
-                <planeGeometry args={[4, 4, 1, 1]} />
+                <planeGeometry args={[1, 1, 1, 1]} />
             </mesh>
         </>
     )

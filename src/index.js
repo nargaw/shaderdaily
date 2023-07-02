@@ -8,7 +8,7 @@ const root = createRoot(document.querySelector('#root'))
 
 root.render(
     <StrictMode>
-        <Canvas camera={{fov: 70, near: 0.1, far: 1000, position: [0, 0, 1]}}>
+        <Canvas camera={{fov: 70, aspect: window.innerWidth/window.innerHeight, near: 0.1, far: 1000, position: [0, 0, 1.25]}}>
             <App />
         </Canvas>
     </StrictMode>
