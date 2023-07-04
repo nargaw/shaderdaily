@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import numbers from './shaders/numLabels/numbers.js'
 import preload from './shaders/preload/preload.js'
 import usefulFunctions from './shaders/usefulFunctions/usefulFunctions.js'
+import * as THREE from 'three'
 import glsl from 'babel-plugin-glsl/macro'
 
 
@@ -25,12 +26,15 @@ const fragmentShader = glsl`
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
+        vUv = vUv * 2. - 1.;
+        vUv.x += 0.85;
+        // vec2 vUv = gl_FragCoord.xy/u_resolution.xy;
         vec3 color = vec3(0.);
         
         vec2 newUv = vUv;
         newUv -= 0.5;
 
-        float x = sdSpiral(newUv, 0.525, 2.525 + sin(u_time));
+        float x = sdSpiral(newUv, 0.525, 2.525 + sin(u_time) * 5. + 5.5);
         color += x;
 
         float numLabel = label(vUv);
@@ -73,9 +77,16 @@ export default function Display()
 
     useEffect(() => {
         obj.current.traverse(o => {
+            obj.current.position.z -= 0.0725
             if(o.name === 'screen')
             {
-                console.log(o)
+
+                console.log(o.geometry)
+                let x
+                x = o.geometry.boundingBox
+                console.log(x)
+                // let measurement = new THREE.Vector3()
+                // console.log(o.getSize(measurement))
             }
         })
     }, [obj.current])
@@ -94,6 +105,7 @@ export default function Display()
                     o.scale.y = 25
                     o.scale.z = 25
                     o.position.z = 0
+                    o.position.y = -0.05
 
                     if(o.name === "screen")
                     {
@@ -113,7 +125,7 @@ export default function Display()
     })
 
     return <>
-        <Stage adjustCamera={2.5} intensity={0.5} shadows="contact" environment={null}>
+        <Stage adjustCamera={0.5} intensity={0.295} shadows="contact" environment={null}>
             <Environment 
                 background={false}
                 files={'1k.hdr'}

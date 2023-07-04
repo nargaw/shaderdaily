@@ -13,8 +13,10 @@
   "dependencies": {
     "@react-three/drei": "^9.40.0",
     "@react-three/fiber": "^8.9.1",
+    "@react-three/postprocessing": "^2.14.13",
     "babel-plugin-glsl": "^1.0.0",
     "glslify": "^7.1.1",
+    "postprocessing": "^6.32.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
