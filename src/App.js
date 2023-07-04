@@ -46,9 +46,11 @@ export default function App()
             <OrbitControls />
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<Shader586/>}>
+                    <Route path='/'>
                         {/* <Route index element={<Shader585 />} /> */}
                         <Route path='584' element={<Shader584 />}/>
+                        <Route path='585' element={<Shader585 />}/>
+                        <Route path='586' element={<Shader586 />}/>
                     </Route> 
                 </Routes>
             </BrowserRouter>
