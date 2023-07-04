@@ -37,8 +37,8 @@ const fragmentShader = glsl`
         newUv -= 0.5;
 
         float x;
-        for(float i=0.; i<TWO_PI; i++){
-            newUv*= 0.65;
+        for(float i=0.; i<2.; i++){
+            newUv*= 0.165;
 
             x = sdSpiral(newUv, 0.82, 3.525 + sin(u_time + i/2. ));
             color += x;

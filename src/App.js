@@ -41,13 +41,16 @@ export default function App()
     //     meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
     // })
 
+    const today = '584';
+    const current = today;
+
     return (
         <>
             <OrbitControls />
             <BrowserRouter>
                 <Routes>
                     <Route path='/'>
-                        {/* <Route index element={<Shader585 />} /> */}
+                        <Route index element={<Shader584 />} />
                         <Route path='584' element={<Shader584 />}/>
                         <Route path='585' element={<Shader585 />}/>
                         <Route path='586' element={<Shader586 />}/>
