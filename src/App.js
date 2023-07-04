@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { OrbitControls } from '@react-three/drei'
 import Shader585 from './shaders/585/fragment.js'
 import Shader584 from './shaders/584/fragment.js'
+import Shader586 from './shaders/586/fragment.js'
 
 
 // const material = new ShaderMaterial({
@@ -45,7 +46,7 @@ export default function App()
             <OrbitControls />
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<Display />}>
+                    <Route path='/' element={<Shader586/>}>
                         {/* <Route index element={<Shader585 />} /> */}
                         <Route path='584' element={<Shader584 />}/>
                     </Route> 

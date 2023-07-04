@@ -7,6 +7,7 @@ import preload from './shaders/preload/preload.js'
 import usefulFunctions from './shaders/usefulFunctions/usefulFunctions.js'
 import * as THREE from 'three'
 import glsl from 'babel-plugin-glsl/macro'
+import { GodRays } from "@react-three/postprocessing";
 
 
 const fragmentShader = glsl`

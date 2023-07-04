@@ -12,8 +12,18 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numFive(vec2(p.x + 0.35, p.y));
         float center = numEight(vec2(p.x -0.03, p.y));
-        float right = numFive(vec2(p.x - 0.42, p.y));
+        float right = numSix(vec2(p.x - 0.42, p.y));
         return left + center + right ;
+    }
+
+    //https://iquilezles.org/articles/palettes/
+    vec3 palette( float t ) {
+        vec3 a = vec3(0.5, 0.5, 0.5);
+        vec3 b = vec3(0.5, 0.5, 0.5);
+        vec3 c = vec3(.9, .5, .0);
+        vec3 d = vec3(0.03,0.06,0.);
+
+        return a + b*cos( 6.28318*(c*t+d) );
     }
     
     void main()
@@ -22,10 +32,22 @@ const fragmentShader = glsl`
         vec3 color = vec3(0.);
         
         vec2 newUv = vUv;
+        newUv *= 0.25 + 0.75;
+        newUv = Rot(newUv, u_time * 4.5 + sin(u_time));
         newUv -= 0.5;
 
-        float x = sdSpiral(newUv, 0.525, 2.525 + sin(u_time));
-        color += x;
+        float x;
+        for(float i=0.; i<TWO_PI; i++){
+            newUv*= 0.65;
+
+            x = sdSpiral(newUv, 0.82, 3.525 + sin(u_time + i/2. ));
+            color += x;
+
+            vec3 c = palette(x * i);
+            color -= c.xyz;
+        }
+
+        
 
         float numLabel = label(vUv);
         color += numLabel;
@@ -71,7 +93,7 @@ const material = new ShaderMaterial({
 
 console.log(material.fragmentShader)
 
-export default function Shader585()
+export default function Shader586()
 {
     const meshRef = useRef()
     
