@@ -172,7 +172,7 @@ const material = new ShaderMaterial({
     }
 })
 
-console.log(material.fragmentShader)
+// console.log(material.fragmentShader)
 
 export default function Shader579()
 {

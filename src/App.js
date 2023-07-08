@@ -49,7 +49,20 @@ export default function App()
     // })
 
     const today = 584;
+    // console.log(today.toString())
     const current = today;
+
+    const list = [
+        <Shader578 />,
+        <Shader579 />,
+        <Shader580 />,
+        <Shader581 />,
+        <Shader582 />,
+        <Shader583 />,
+        <Shader584 />,
+        <Shader585 />,
+        <Shader586 />
+    ]
 
     return (
         <>
@@ -57,16 +70,16 @@ export default function App()
             <BrowserRouter>
                 <Routes>
                     <Route path='/'>
-                        <Route index element={<Shader586 />} />
-                        <Route path='578' element={<Shader578 />}/>
-                        <Route path='579' element={<Shader579 />}/>
-                        <Route path='580' element={<Shader580 />}/>
-                        <Route path='581' element={<Shader581 />}/>
-                        <Route path='582' element={<Shader582 />}/>
-                        <Route path='583' element={<Shader583 />}/>
-                        <Route path='584' element={<Shader584 />}/>
-                        <Route path='585' element={<Shader585 />}/>
-                        <Route path='586' element={<Shader586 />}/>
+                        <Route index element={list[list.length - 1]} />
+                        <Route path={'578'} element={list[0]}/>
+                        <Route path='579' element={list[1]}/>
+                        <Route path='580' element={list[2]}/>
+                        <Route path='581' element={list[3]}/>
+                        <Route path='582' element={list[4]}/>
+                        <Route path='583' element={list[5]}/>
+                        <Route path='584' element={list[6]}/>
+                        <Route path='585' element={list[7]}/>
+                        <Route path='586' element={list[8]}/>
                     </Route> 
                 </Routes>
             </BrowserRouter>
