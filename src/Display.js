@@ -126,7 +126,7 @@ export default function Display()
     })
 
     return <>
-        <Stage adjustCamera={0.5} intensity={0.295} shadows="contact" environment={null}>
+        {/* <Stage adjustCamera={0.5} intensity={0.295} shadows="contact" environment={null}> */}
             <Environment 
                 background={false}
                 files={'1k.hdr'}
@@ -135,6 +135,6 @@ export default function Display()
             <primitive ref={obj} object={model.scene}  />
             <ambientLight />
             <pointLight />
-        </Stage>
+        {/* </Stage> */}
     </>
 }

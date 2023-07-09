@@ -21,6 +21,7 @@ import Shader585 from './shaders/585/fragment.js'
 import Shader586 from './shaders/586/fragment.js'
 
 
+
 // const material = new ShaderMaterial({
 //     vertexShader: vertex,
 
@@ -53,6 +54,7 @@ export default function App()
     const current = today;
 
     const list = [
+        <Display />,
         <Shader578 />,
         <Shader579 />,
         <Shader580 />,
@@ -66,20 +68,20 @@ export default function App()
 
     return (
         <>
-            {/* <OrbitControls /> */}
+            <OrbitControls />
             <BrowserRouter>
                 <Routes>
-                    <Route path='/'>
-                        <Route index element={list[list.length - 1]} />
-                        <Route path={'578'} element={list[0]}/>
-                        <Route path='579' element={list[1]}/>
-                        <Route path='580' element={list[2]}/>
-                        <Route path='581' element={list[3]}/>
-                        <Route path='582' element={list[4]}/>
-                        <Route path='583' element={list[5]}/>
-                        <Route path='584' element={list[6]}/>
-                        <Route path='585' element={list[7]}/>
-                        <Route path='586' element={list[8]}/>
+                    <Route path='/' element={list[0]}>
+                        <Route index element={list[list.length - 1] } />
+                        <Route path='578' element={list[1]}/>
+                        <Route path='579' element={list[2]}/>
+                        <Route path='580' element={list[3]}/>
+                        <Route path='581' element={list[4]}/>
+                        <Route path='582' element={list[5]}/>
+                        <Route path='583' element={list[6]}/>
+                        <Route path='584' element={list[7]}/>
+                        <Route path='585' element={list[8]}/>
+                        <Route path='586' element={list[9]}/>
                     </Route> 
                 </Routes>
             </BrowserRouter>
