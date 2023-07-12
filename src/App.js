@@ -22,7 +22,7 @@ import Shader585 from './shaders/585/fragment.js'
 import Shader586 from './shaders/586/fragment.js'
 import Shader587 from './shaders/587/fragment.js'
 import Shader588 from './shaders/588/fragment.js'
-
+import Shader589 from './shaders/589/fragment.js'
 
 export default function App()
 {
@@ -48,7 +48,8 @@ export default function App()
         <Shader585 />,
         <Shader586 />,
         <Shader587 />,
-        <Shader588 />
+        <Shader588 />,
+        <Shader589 />
     ]
 
     return (
@@ -56,7 +57,7 @@ export default function App()
             {/* <OrbitControls /> */}
             <BrowserRouter>
                 <Routes>
-                    <Route path='/'>
+                    {/* <Route path='/'> */}
                         <Route index element={list[list.length - 1] } />
                         <Route path='569' element={<Shader569 />}/>
                         <Route path='570' element={<Shader570 />}/>
@@ -78,7 +79,8 @@ export default function App()
                         <Route path='586' element={<Shader586 />}/>
                         <Route path='587' element={<Shader587 />}/>
                         <Route path='588' element={<Shader588 />}/>
-                    </Route> 
+                        <Route path='589' element={<Shader589 />}/>
+                    {/* </Route>  */}
                 </Routes>
             </BrowserRouter>
         </>
