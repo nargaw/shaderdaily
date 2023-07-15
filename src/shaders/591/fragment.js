@@ -12,7 +12,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numFive(vec2(p.x + 0.35, p.y));
         float center = numNine(vec2(p.x -0.03, p.y));
-        float right = numZero(vec2(p.x - 0.42, p.y));
+        float right = numOne(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -51,36 +51,36 @@ const fragmentShader = glsl`
         vec2 newUv8 = newUv;
 
 
-        newUv = Rot(newUv, u_time * 2.25 + cos(u_time));
-        newUv2 = Rot(newUv2, u_time * 2.0 + cos(u_time));
-        newUv3 = Rot(newUv3, u_time * 1.75 + cos(u_time));
-        newUv4 = Rot(newUv4, u_time * 1.5 + cos(u_time));
-        newUv5 = Rot(newUv5, u_time * 1.25 + cos(u_time));
-        newUv6 = Rot(newUv6, u_time * 1. + cos(u_time));
-        newUv7 = Rot(newUv7, u_time * 0.75 + cos(u_time));
-        newUv8 = Rot(newUv8, u_time * 0.5 + cos(u_time));
+        newUv = Rot(newUv,   u_time/4. * 2.25 + cos(u_time));
+        newUv2 = Rot(newUv2, u_time/4. * 2.00 + cos(u_time));
+        newUv3 = Rot(newUv3, u_time/4. * 1.75 + cos(u_time));
+        newUv4 = Rot(newUv4, u_time/4. * 1.50 + cos(u_time));
+        newUv5 = Rot(newUv5, u_time/4. * 1.25 + cos(u_time));
+        newUv6 = Rot(newUv6, u_time/4. * 1.00 + cos(u_time));
+        newUv7 = Rot(newUv7, u_time/4. * 0.75 + cos(u_time));
+        newUv8 = Rot(newUv8, u_time/4. * 0.50 + cos(u_time));
         // newUv -= 0.5;
         // newUv2.x -= 0.2;
 
-        float x = sdPolygonOutline(newUv, 6, 0.8); 
-        float x2 = sdPolygonOutline(newUv2, 6, 0.7);
-        float x3 = sdPolygonOutline(newUv3, 6, 0.6); 
-        float x4 = sdPolygonOutline(newUv4, 6, 0.5); 
-        float x5 = sdPolygonOutline(newUv5, 6, 0.4); 
-        float x6 = sdPolygonOutline(newUv6, 6, 0.3);
-        float x7 = sdPolygonOutline(newUv7, 6, 0.2); 
-        float x8 = sdPolygonOutline(newUv8, 6, 0.1);  
+        float x = sdPolygonOutline(newUv,   4, 0.8); 
+        float x2 = sdPolygonOutline(newUv2, 4, 0.7);
+        float x3 = sdPolygonOutline(newUv3, 4, 0.6); 
+        float x4 = sdPolygonOutline(newUv4, 4, 0.5); 
+        float x5 = sdPolygonOutline(newUv5, 4, 0.4); 
+        float x6 = sdPolygonOutline(newUv6, 4, 0.3);
+        float x7 = sdPolygonOutline(newUv7, 4, 0.2); 
+        float x8 = sdPolygonOutline(newUv8, 4, 0.1);  
         
-        color += 1. - palette(x * 0.59);
-        color += 1. - palette(x2 * 0.58);
-        color += 1. - palette(x3 * 0.57);
-        color += 1. - palette(x4 * 0.56);
-        color += 1. - palette(x5 * 0.55);
-        color += 1. - palette(x6 * 0.54);
-        color += 1. - palette(x7 * 0.53);
-        color += 1. - palette(x8 * 0.52);
+        color += 1. - palette(x  * 0.59 * 2.2 * abs(sin(u_time) + 0.1));
+        color += 1. - palette(x2 * 0.58 * 2.2 * abs(cos(u_time) + 0.2));
+        color += 1. - palette(x3 * 0.57 * 2.2 * abs(sin(u_time) + 0.3));
+        color += 1. - palette(x4 * 0.56 * 2.2 * abs(cos(u_time) + 0.4));
+        color += 1. - palette(x5 * 0.55 * 2.2 * abs(sin(u_time) + 0.5));
+        color += 1. - palette(x6 * 0.54 * 2.2 * abs(cos(u_time) + 0.6));
+        color += 1. - palette(x7 * 0.53 * 2.2 * abs(sin(u_time) + 0.7));
+        color += 1. - palette(x8 * 0.52 * 2.2 * abs(cos(u_time) + 0.8));
 
-        color *= 2.;
+        // color *= 2.;
 
         float numLabel = label(vUv);
         color += numLabel;
