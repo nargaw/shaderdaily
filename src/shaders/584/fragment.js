@@ -186,8 +186,8 @@ const fragmentShader = glsl`
         float x = numTwo(pattern);
         color.r += x;
 
-        float cir = sdCircle(vUv, 0.0125 );
         
+        float cir = sdCircle(vUv, 0.0125 );
         vec3 s = voronoi(uv2 );
         vec3 s2 = voronoi(vec2(uv2.x  + sin(u_time)/8., uv2.y  + sin(u_time)/8.));
         vec3 s3 = voronoi(vec2(uv2.x  + sin(u_time)/16., uv2.y  + sin(u_time)/16.));

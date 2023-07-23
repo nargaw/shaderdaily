@@ -1,7 +1,5 @@
 import glsl from 'babel-plugin-glsl/macro'
 
-import { useGLTF } from '@react-three/drei'
-
 const fragmentShader = glsl`
 
     #define S(a, b, t) smoothstep(a, b, t)
@@ -12,7 +10,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numFive(vec2(p.x + 0.35, p.y));
         float center = numNine(vec2(p.x -0.03, p.y));
-        float right = numSix(vec2(p.x - 0.42, p.y));
+        float right = numSeven(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -202,8 +200,8 @@ const fragmentShader = glsl`
         uv2 = vec2(1.83/r1 + .95 + u_time * 0.025 + r1, a );
         uv2 -= 0.52;
         uv2 *= 2.9;
-        uv2.x -= u_time*0.1;
-        uv2.y += u_time * 0.2;
+        // uv2.x -= u_time*0.1;
+        // uv2.y += u_time * 0.2;
 
         vec2 uv3 = vUv;
         uv3 *= 1.2;
@@ -267,15 +265,24 @@ void main()
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
 }`
 
+import * as THREE from 'three'
 import { Vector2, ShaderMaterial } from 'three'
+import { TextureLoader } from 'three/src/loaders/TextureLoader.js'
+import { useTexture } from '@react-three/drei'
 import { useRef } from 'react'
 import { useFrame, useLoader } from '@react-three/fiber'
 import numbers from '../numLabels/numbers.js'
 import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
+import img from './windowsxp.png'
+console.log(img)
+
 
 // const { nodes } = useGLTF('./Models/tv3.glb')
 // console.log(nodes)
+
+// const xpTexture = useTexture(img)
+// console.log(xpTexture)
 
 const material = new ShaderMaterial({
     vertexShader: vertexShader,
@@ -290,18 +297,20 @@ const material = new ShaderMaterial({
     uniforms: {
         u_time: { type: "f", value: 1.0 },
         u_resolution: { type: "v2", value: new Vector2() },
-        u_mouse: { type: "v2", value: new Vector2() }
+        u_mouse: { type: "v2", value: new Vector2() },
+        // u_texture: { value: xpTexture}
     }
 })
 
 // console.log(material.fragmentShader)
 
-export default function Shader596()
+export default function Shader597()
 {
     const meshRef = useRef()
     
     useFrame(({clock}) => {
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
+        // console.log(xpTexture)
     })
 
     return (
