@@ -274,8 +274,8 @@ import { useFrame, useLoader } from '@react-three/fiber'
 import numbers from '../numLabels/numbers.js'
 import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
-import img from './windowsxp.png'
-console.log(img)
+// import img from './windowsxp.png'
+// console.log(img)
 
 
 // const { nodes } = useGLTF('./Models/tv3.glb')

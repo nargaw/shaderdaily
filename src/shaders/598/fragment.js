@@ -5,7 +5,7 @@ import { useGLTF } from '@react-three/drei'
 const fragmentShader = glsl`
 
     #define S(a, b, t) smoothstep(a, b, t)
-    
+    uniform sampler2D u_texture;
     float label(vec2 p)
     {
         p *= 10.;
@@ -191,6 +191,8 @@ const fragmentShader = glsl`
 
         vec2 uv2 = vUv;
         
+        
+        // vec2 pic = texture2D(u_texture);
 
         // float an = -u_time * 0.5;
         // uv2 = mat2(cos(an),-sin(an),sin(an),cos(an)) * uv2;
@@ -198,12 +200,12 @@ const fragmentShader = glsl`
         float r1 = length(uv2 * .75) ;
         // r1 = abs(r1 );
         float a = atan(uv2.y, uv2.x);
-        a = abs(a * 1.5);
-        uv2 = vec2(1.83/r1 + .95 + u_time * 0.025 + r1, a );
+        a = abs(a * 2.5);
+        uv2 = vec2(1.83/r1 + .45 + -u_time * 0.125 + r1, a );
         uv2 -= 0.52;
-        uv2 *= 2.9;
-        uv2.x -= u_time*0.1;
-        uv2.y += u_time * 0.2;
+        uv2 *= 1.9;
+        // uv2.x -= u_time*0.1;
+        // uv2.y += u_time * 0.2;
 
         vec2 uv3 = vUv;
         uv3 *= 1.2;
@@ -231,8 +233,8 @@ const fragmentShader = glsl`
         c = mix(skycolour1, skycolour2, clamp((f*f*f + f * 0.85),0.0,1.0));
         color += c;
 
-        vec2 cp0 = vec2(-0.5, 1.95);
-        vec2 cp1 = vec2(0.75, 0.5);
+        vec2 cp0 = vec2(-0.65, 1.95);
+        vec2 cp1 = vec2(0.85, 0.4);
         vec2 cp3 = vec2(0.5, 0.5);
         float l = cubicBezierNearlyThroughTwoPoints(uv3.x*0.25, cp0, cp1);
         float l2 = cubicBezierNearlyThroughTwoPoints(uv4.y*0.25, cp0, cp3);
@@ -245,16 +247,21 @@ const fragmentShader = glsl`
         // color *= .7 + cos(t1) * .3 + noise(uv4 + u_time) * 0.5;
         
         color *= vec3( smoothstep(l, l+0.025, vUv.y+0.6));
-        color.g += (1. - smoothstep(l, l+0.025, vUv.y+0.6))* 0.72 * x* y;
+        // color.g += (1. - smoothstep(l, l+0.025, vUv.y+0.6))* 0.72 * x* y;
         
         // color -= vec3(1. - smoothstep(l2, l2, vUv.y+0.5));
 
-        
+
         
         // color += c;
         float numLabel = label(vUv);
         color += numLabel;
-        gl_FragColor = vec4(color, 1.);
+
+        vec4 col = texture2D(u_texture, vec2(vUv.x, vUv.y + 0.305));
+        
+        col.xyz += color;
+        gl_FragColor = vec4(col);
+        // gl_FragColor = texture2D(u_texture, vUv);
     }
 `
 
@@ -268,11 +275,17 @@ void main()
 }`
 
 import { Vector2, ShaderMaterial } from 'three'
+import { useLoader } from '@react-three/fiber'
+import { TextureLoader } from 'three/src/loaders/TextureLoader.js'
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import numbers from '../numLabels/numbers.js'
 import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
+import img from '../598/windowsxp.png'
+import * as THREE from 'three'
+
+console.log(img)
 
 // const { nodes } = useGLTF('./Models/tv3.glb')
 // console.log(nodes)
@@ -290,7 +303,8 @@ const material = new ShaderMaterial({
     uniforms: {
         u_time: { type: "f", value: 1.0 },
         u_resolution: { type: "v2", value: new Vector2() },
-        u_mouse: { type: "v2", value: new Vector2() }
+        u_mouse: { type: "v2", value: new Vector2() },
+        u_texture: {type: "t", value: useLoader(TextureLoader, img) }
     }
 })
 
@@ -299,6 +313,8 @@ const material = new ShaderMaterial({
 export default function Shader598()
 {
     const meshRef = useRef()
+    // const tex = useLoader(TextureLoader, img)
+    // console.log(tex)
     
     useFrame(({clock}) => {
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
