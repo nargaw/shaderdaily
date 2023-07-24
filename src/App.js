@@ -32,6 +32,7 @@ import Shader595 from './shaders/595/fragment.js'
 import Shader596 from './shaders/596/fragment.js'
 import Shader597 from './shaders/597/fragment.js'
 import Shader598 from './shaders/598/fragment.js'
+import Shader599 from './shaders/599/fragment.js'
 
 export default function App()
 {
@@ -67,7 +68,8 @@ export default function App()
         <Shader595 />,
         <Shader596 />, 
         <Shader597 />,
-        <Shader598 />
+        <Shader598 />,
+        <Shader599 />
     ]
 
     return (
@@ -107,6 +109,7 @@ export default function App()
                         <Route path='596' element={<Shader596 />}/>
                         <Route path='597' element={<Shader597 />}/>
                         <Route path='598' element={<Shader598 />}/>
+                        <Route path='599' element={<Shader599 />}/>
                     {/* </Route>  */}
                 </Routes>
             </BrowserRouter>
