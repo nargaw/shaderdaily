@@ -10,14 +10,14 @@ const fragmentShader = glsl`
     {
         p *= 10.;
         p.x -= 0.25;
-        float left = numFive(vec2(p.x + 0.35, p.y));
-        float center = numNine(vec2(p.x -0.03, p.y));
-        float right = numNine(vec2(p.x - 0.42, p.y));
+        float left = numSix(vec2(p.x + 0.35, p.y));
+        float center = numZero(vec2(p.x -0.03, p.y));
+        float right = numZero(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
 
-    vec3 skycolour1 = vec3(0.0, 0.3, 0.8);
+    vec3 skycolour1 = vec3(0.5, 0.3, 0.8);
     vec3 skycolour2 = vec3(0.8, 0.9, 1.0);
 
     float random (in vec2 _st) {
@@ -200,8 +200,8 @@ const fragmentShader = glsl`
         float r1 = length(uv2 * 2.75 +0.6) ;
         // r1 = abs(r1 );
         float a = atan(uv2.y, uv2.x);
-        a = abs(a * 1.5);
-        uv2 = vec2(.000083/r1 + .45 + -u_time * 0.925 + r1, a );
+        a = abs(a * 8.5);
+        uv2 = vec2(.003/r1 + u_time * 0.925 + r1, a );
         // uv2.x -= 0.52;
         // uv2 *= 1.9;
         // uv2.x -= u_time*0.1;
@@ -230,7 +230,7 @@ const fragmentShader = glsl`
 
         float f = fbm(uv2+r * fbm(uv2 + r * fbm(uv2 + r)));
         vec3 c = vec3(0.);
-        c = mix(skycolour1, skycolour2, clamp((f*f*f + f * f * 0.8),0.0,1.0));
+        c = mix(skycolour1 + cos(u_time * 0.3), skycolour2 + abs(sin(u_time * 0.1)/5.) - 0.5, clamp((f*f*f + f * f * 0.8),0.,.8));
 
         
         color += c;
