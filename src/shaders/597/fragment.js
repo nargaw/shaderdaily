@@ -240,7 +240,7 @@ const fragmentShader = glsl`
         uv3.y += sin(t1) * 0.05;
         float x = .7 + cos(t1) * .3 + noise(uv4 + u_time) * 0.5;
         float y = fbm(uv4 + r2 * fbm(uv4 + r2));
-        // color *= .7 + cos(t1) * .3 + noise(uv4 + u_time) * 0.5;
+        color *= .7 + cos(t1) * .3 + noise(uv4 + u_time) * 0.5;
         
         color *= vec3( smoothstep(l, l+0.025, vUv.y+0.6));
         color.g += (1. - smoothstep(l, l+0.025, vUv.y+0.6))* 0.72 * x* y;

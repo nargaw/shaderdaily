@@ -282,8 +282,7 @@ import { useFrame } from '@react-three/fiber'
 import numbers from '../numLabels/numbers.js'
 import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
-import img from '../598/windowsxp.png'
-import * as THREE from 'three'
+
 
 // console.log(img)
 
