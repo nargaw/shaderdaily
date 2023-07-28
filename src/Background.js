@@ -24,7 +24,7 @@ export function Model(props) {
   
   return (
     <group {...props} dispose={null}>
-        <group position={[0, -2.5, 20]} >
+        <group position={[0, -25, 100]} >
             <mesh 
                 geometry={model2.children[0].children[1].geometry}
                 material={material}
