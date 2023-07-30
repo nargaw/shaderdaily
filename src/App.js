@@ -1,5 +1,35 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 //import { OrbitControls } from '@react-three/drei'
+import Shader490 from './shaders/490/fragment.js'
+import Shader491 from './shaders/491/fragment.js'
+import Shader492 from './shaders/492/fragment.js'
+import Shader493 from './shaders/493/fragment.js'
+import Shader494 from './shaders/494/fragment.js'
+import Shader495 from './shaders/495/fragment.js'
+import Shader496 from './shaders/496/fragment.js'
+import Shader497 from './shaders/497/fragment.js'
+import Shader498 from './shaders/498/fragment.js'
+import Shader499 from './shaders/499/fragment.js'
+import Shader500 from './shaders/500/fragment.js'
+import Shader501 from './shaders/501/fragment.js'
+import Shader502 from './shaders/502/fragment.js'
+import Shader503 from './shaders/503/fragment.js'
+import Shader504 from './shaders/504/fragment.js'
+import Shader505 from './shaders/505/fragment.js'
+import Shader506 from './shaders/506/fragment.js'
+import Shader507 from './shaders/507/fragment.js'
+import Shader508 from './shaders/508/fragment.js'
+import Shader509 from './shaders/509/fragment.js'
+import Shader510 from './shaders/510/fragment.js'
+import Shader511 from './shaders/511/fragment.js'
+import Shader512 from './shaders/512/fragment.js'
+import Shader513 from './shaders/513/fragment.js'
+import Shader514 from './shaders/514/fragment.js'
+import Shader515 from './shaders/515/fragment.js'
+import Shader516 from './shaders/516/fragment.js'
+import Shader517 from './shaders/517/fragment.js'
+import Shader518 from './shaders/518/fragment.js'
+import Shader519 from './shaders/519/fragment.js'
 import Shader520 from './shaders/520/fragment.js'
 import Shader521 from './shaders/521/fragment.js'
 import Shader522 from './shaders/522/fragment.js'
@@ -87,6 +117,36 @@ export default function App()
 {
 
     const list = [
+        <Shader490 />,
+        <Shader491 />,
+        <Shader492 />,
+        <Shader493 />,
+        <Shader494 />,
+        <Shader495 />,
+        <Shader496 />,
+        <Shader497 />,
+        <Shader498 />,
+        <Shader499 />,
+        <Shader500 />,
+        <Shader501 />,
+        <Shader502 />,
+        <Shader503 />,
+        <Shader504 />,
+        <Shader505 />,
+        <Shader506 />,
+        <Shader507 />,
+        <Shader508 />,
+        <Shader509 />,
+        <Shader510 />,
+        <Shader511 />,
+        <Shader512 />,
+        <Shader513 />,
+        <Shader514 />,
+        <Shader515 />,
+        <Shader516 />,
+        <Shader517 />,
+        <Shader518 />,
+        <Shader519 />,
         <Shader520 />,
         <Shader521 />,
         <Shader522 />,
@@ -178,6 +238,36 @@ export default function App()
                 <Routes>
                     {/* <Route path='/'> */}
                         <Route index element={list[list.length - 1] } />
+                        <Route path='490' element={<Shader490 />}/>
+                        <Route path='491' element={<Shader491 />}/>
+                        <Route path='492' element={<Shader492 />}/>
+                        <Route path='493' element={<Shader493 />}/>
+                        <Route path='494' element={<Shader494 />}/>
+                        <Route path='495' element={<Shader495 />}/>
+                        <Route path='496' element={<Shader496 />}/>
+                        <Route path='497' element={<Shader497 />}/>
+                        <Route path='498' element={<Shader498 />}/>
+                        <Route path='499' element={<Shader499 />}/>
+                        <Route path='500' element={<Shader500 />}/>
+                        <Route path='501' element={<Shader501 />}/>
+                        <Route path='502' element={<Shader502 />}/>
+                        <Route path='503' element={<Shader503 />}/>
+                        <Route path='504' element={<Shader504 />}/>
+                        <Route path='505' element={<Shader505 />}/>
+                        <Route path='506' element={<Shader506 />}/>
+                        <Route path='507' element={<Shader507 />}/>
+                        <Route path='508' element={<Shader508 />}/>
+                        <Route path='509' element={<Shader509 />}/>
+                        <Route path='510' element={<Shader520 />}/>
+                        <Route path='511' element={<Shader521 />}/>
+                        <Route path='512' element={<Shader522 />}/>
+                        <Route path='513' element={<Shader523 />}/>
+                        <Route path='514' element={<Shader524 />}/>
+                        <Route path='515' element={<Shader525 />}/>
+                        <Route path='516' element={<Shader526 />}/>
+                        <Route path='517' element={<Shader527 />}/>
+                        <Route path='518' element={<Shader528 />}/>
+                        <Route path='519' element={<Shader529 />}/>
                         <Route path='520' element={<Shader520 />}/>
                         <Route path='521' element={<Shader521 />}/>
                         <Route path='522' element={<Shader522 />}/>
