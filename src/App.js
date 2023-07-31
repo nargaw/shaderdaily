@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 //import { OrbitControls } from '@react-three/drei'
+import Shader489 from './shaders/489/fragment.js'
 import Shader490 from './shaders/490/fragment.js'
 import Shader491 from './shaders/491/fragment.js'
 import Shader492 from './shaders/492/fragment.js'
@@ -117,6 +118,7 @@ export default function App()
 {
 
     const list = [
+        <Shader489 />,
         <Shader490 />,
         <Shader491 />,
         <Shader492 />,
@@ -238,6 +240,7 @@ export default function App()
                 <Routes>
                     {/* <Route path='/'> */}
                         <Route index element={list[list.length - 1] } />
+                        <Route path='489' element={<Shader489 />}/>
                         <Route path='490' element={<Shader490 />}/>
                         <Route path='491' element={<Shader491 />}/>
                         <Route path='492' element={<Shader492 />}/>
