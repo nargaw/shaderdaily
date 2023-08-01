@@ -24,7 +24,7 @@ export function Model(props) {
   
   return (
     <group {...props} dispose={null}>
-        <group position={[0, -25, 100]} >
+        <group position={[0, -25, 50]} >
             <mesh 
                 geometry={model2.children[0].children[1].geometry}
                 material={material}
@@ -47,6 +47,7 @@ export function Model(props) {
             />
         </group>
         <ambientLight intensity={0.2}/>
+        <rectAreaLight position={[0, 0, -80]} intensity={30} />
     </group>
   );
 }
