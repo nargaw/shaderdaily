@@ -1,5 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 //import { OrbitControls } from '@react-three/drei'
+import Shader470 from './shaders/470/fragment.js'
+import Shader471 from './shaders/471/fragment.js'
+import Shader472 from './shaders/472/fragment.js'
+import Shader473 from './shaders/473/fragment.js'
+import Shader474 from './shaders/474/fragment.js'
+import Shader475 from './shaders/475/fragment.js'
+import Shader476 from './shaders/476/fragment.js'
+import Shader477 from './shaders/477/fragment.js'
+import Shader478 from './shaders/478/fragment.js'
+import Shader479 from './shaders/479/fragment.js'
 import Shader480 from './shaders/480/fragment.js'
 import Shader481 from './shaders/481/fragment.js'
 import Shader482 from './shaders/482/fragment.js'
@@ -127,6 +137,16 @@ export default function App()
 {
 
     const list = [
+        <Shader470 />,
+        <Shader471 />,
+        <Shader472 />,
+        <Shader473 />,
+        <Shader474 />,
+        <Shader475 />,
+        <Shader476 />,
+        <Shader477 />,
+        <Shader478 />,
+        <Shader479 />,
         <Shader480 />,
         <Shader481 />,
         <Shader482 />,
@@ -258,6 +278,16 @@ export default function App()
                 <Routes>
                     {/* <Route path='/'> */}
                         <Route index element={list[list.length - 1] } />
+                        <Route path='470' element={<Shader470 />}/>
+                        <Route path='471' element={<Shader471 />}/>
+                        <Route path='472' element={<Shader472 />}/>
+                        <Route path='473' element={<Shader473 />}/>
+                        <Route path='474' element={<Shader474 />}/>
+                        <Route path='475' element={<Shader475 />}/>
+                        <Route path='476' element={<Shader476 />}/>
+                        <Route path='477' element={<Shader477 />}/>
+                        <Route path='478' element={<Shader478 />}/>
+                        <Route path='479' element={<Shader479 />}/>
                         <Route path='480' element={<Shader480 />}/>
                         <Route path='481' element={<Shader481 />}/>
                         <Route path='482' element={<Shader482 />}/>
