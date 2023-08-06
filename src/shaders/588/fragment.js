@@ -109,8 +109,8 @@ export default function Shader588()
 
     return (
         <>
-            <mesh ref={meshRef} material={material}>
-                <planeGeometry args={[1, 1, 1, 1]} />
+            <mesh ref={meshRef} material={material} >
+                <boxGeometry args={[2, 2, 0.1]} />
             </mesh>
         </>
     )
