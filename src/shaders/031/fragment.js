@@ -2,36 +2,72 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    varying vec2 vUv;
-#define PI 3.141592653589793
-uniform float u_time;
+    // uniform float u_time;
 
-//Exponential impulse iquilezles.org
-float expImpulse(float x, float k){
-    float h = k*x;
-    return h* exp(1.-h);
-}
+    // varying vec2 vUv;
 
-//sinc curve original iquilezles.org
-// float sinc(float x,float k)
-// {
-//     float a=PI*((k*x-1.);
-//     return sin(a)/a;
-// }
-
-//Sinc curve  - modified
-float sinc(float x, float k){
-    float a = PI * ((k*x - 0.5));
-    return abs(sin(a))/ abs(cos(a));
-}
-
-void main(){
-    // float y = expImpulse(vUv.x, vUv.y / sin(u_time * 0.02) * 10.0);
-    float y=sinc(sin(vUv.y * 20.), sin(u_time * 0.25));
-    float x=sinc(sin(vUv.x * 20.), sin(u_time * 0.25));
-    vec3 color = vec3(cos(y) + sin(x));
-    gl_FragColor = vec4(y * x + vUv.x, vUv.y, 0.5, 1.);
-}
+    void main(){
+        vec3 color = vec3(0.);
+        color.gb += vUv.x - (sin(u_time) ) * 0.35;
+        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
+        color.gb -= 0.1;
+        gl_FragColor = vec4(color, 1.);
+    }
     `
 
-export default fragmentShader
+    const vertexShader = glsl`
+    varying vec2 vUv;
+    
+    void main()
+    {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+    }`
+    
+    import { Vector2, ShaderMaterial } from 'three'
+    import { useRef } from 'react'
+    import { useFrame } from '@react-three/fiber'
+    import numbers from '../numLabels/numbers.js'
+    import preload from '../preload/preload.js'
+    import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
+    
+    
+    
+    const material = new ShaderMaterial({
+        vertexShader: vertexShader,
+    
+        //use for shaders <425
+        //fragmentShader: fragment
+    
+        //use for shader >= 425
+        //clean up the fragment shader
+        //imports from preload, numbers and useful functions
+        fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
+        uniforms: {
+            u_time: { type: "f", value: 1.0 },
+            u_resolution: { type: "v2", value: new Vector2() },
+            u_mouse: { type: "v2", value: new Vector2() },
+            // u_texture: {type: "t", value: useLoader(TextureLoader, img) }
+        }
+    })
+    
+    // console.log(material.fragmentShader)
+    
+    export default function Shader031()
+    {
+        const meshRef = useRef()
+        // const tex = useLoader(TextureLoader, img)
+        // console.log(tex)
+        
+        useFrame(({clock}) => {
+            meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
+        })
+    
+        return (
+            <>
+                <mesh ref={meshRef} material={material} >
+                    <boxGeometry args={[2, 2, 0.1]} />
+                </mesh>
+            </>
+        )
+    }
