@@ -2,15 +2,20 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    // uniform float u_time;
-
-    // varying vec2 vUv;
-
+    float plot(vec2 vUv, float pct){
+        return smoothstep(pct-0.01, pct, vUv.y) - 
+                smoothstep(pct, pct + 0.1, vUv.y);
+    }
+    
+    
     void main(){
-        vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
+        float y = smoothstep(0.1 + abs(atan(u_time)), 0.9 - abs(atan(u_time)) , 0.5 + abs(tan(vUv.x * 20. * abs(cos(u_time * 0.25)))));
+        float x = smoothstep(0.9 - abs(atan(u_time)), 0.1 + abs(atan(u_time)),0.5 +  abs(tan(vUv.y * 20. *abs(cos(u_time * 0.25)))));
+        vec3 color = vec3(y * x);
+    
+        float pct = plot(vUv, (y * x) );
+        color = (1.0 - pct) * color + pct * vec3(0., 1., 0.);
+    
         gl_FragColor = vec4(color, 1.);
     }
     `

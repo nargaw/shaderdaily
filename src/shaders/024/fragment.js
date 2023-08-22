@@ -2,15 +2,10 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    // uniform float u_time;
-
-    // varying vec2 vUv;
-
     void main(){
-        vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
+        float y = step(distance(abs(sin(u_time)), abs(sin(PI))), vUv.x);
+        float x = step(distance(abs(sin(u_time)), abs(cos(PI))), vUv.y);
+        vec3 color = vec3(y * x);
         gl_FragColor = vec4(color, 1.);
     }
     `

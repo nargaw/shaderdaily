@@ -2,9 +2,9 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    uniform float u_time;
+    //uniform float u_time;
 
-    varying vec2 vUv;
+    //varying vec2 vUv;
 
     void main(){
         vec3 color = vec3(0.);

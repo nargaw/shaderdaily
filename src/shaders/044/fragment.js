@@ -2,17 +2,38 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    // uniform float u_time;
+    vec3 colorA = vec3(0.149,0.141,0.912);
+vec3 colorB = vec3(1.000,0.833,0.224);
 
-    // varying vec2 vUv;
+float plot (vec2 st, float pct){
+  return  smoothstep( pct-0.01, pct, st.y) -
+          smoothstep( pct, pct+0.01, st.y);
+}
 
-    void main(){
-        vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
-        gl_FragColor = vec4(color, 1.);
-    }
+//bookofshaders
+vec3 rgb2hsb( in vec3 c ){
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz),
+                 vec4(c.gb, K.xy),
+                 step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r),
+                 vec4(c.r, p.yzx),
+                 step(p.x, c.r));
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)),
+                d / (q.x + e),
+                q.x);
+}
+
+void main(){
+    vec2 vUv = vec2(vUv.x - 0.5, vUv.y - 0.5);
+    vUv *= 3.0;
+    vec3 color = vec3(0.0);
+    color = rgb2hsb(vec3(vUv.x, vUv.y, abs(sin(u_time * 0.5))));
+    color -= rgb2hsb(vec3(vUv.x, vUv.y, abs(cos(u_time * 0.5))));
+    gl_FragColor = vec4(color, 1.);
+}
     `
 
     const vertexShader = glsl`
