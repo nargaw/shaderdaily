@@ -2,15 +2,24 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    // uniform float u_time;
-
-    // varying vec2 vUv;
-
+    mat2 Rot(float a){
+        float s = sin(a);
+        float c = cos(a);
+        return mat2(c, -s, s, c);
+    }
+    
     void main(){
+        vec2 vUv = vec2(vUv.x, vUv.y);
+        vUv = vUv * 2. - 1.;
+        float t = u_time * 0.75;
+        vUv *= Rot(t);
         vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
+        int N = 3;
+        float a  = dot(vUv.x, vUv.y) * TWO_PI * 1. - sin(u_time + TWO_PI);
+        float r = PI/(float(N) * 1.  - (sin(u_time)));
+        float d = cos(floor(.5 + a / r) * r - a) * length(vUv);
+        float shape = 1.0 - smoothstep(.05, 0.9, d);
+        color = vec3(shape * vUv.x + shape, shape * vUv.y + shape, shape);
         gl_FragColor = vec4(color, 1.);
     }
     `
