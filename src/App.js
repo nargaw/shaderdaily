@@ -1,21 +1,21 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 //import { OrbitControls } from '@react-three/drei'
 import Shader001 from './shaders/001/fragment.js'
-// import Shader002 from './shaders/002/fragment.js'
-// import Shader003 from './shaders/003/fragment.js'
-// import Shader004 from './shaders/004/fragment.js'
-// import Shader005 from './shaders/005/fragment.js'
-// import Shader006 from './shaders/006/fragment.js'
-// import Shader007 from './shaders/007/fragment.js'
-// import Shader008 from './shaders/008/fragment.js'
-// import Shader009 from './shaders/009/fragment.js'
-// import Shader010 from './shaders/010/fragment.js'
-// import Shader011 from './shaders/011/fragment.js'
-// import Shader012 from './shaders/012/fragment.js'
-// import Shader013 from './shaders/013/fragment.js'
-// import Shader014 from './shaders/014/fragment.js'
-// import Shader015 from './shaders/015/fragment.js'
-// import Shader016 from './shaders/016/fragment.js'
+import Shader002 from './shaders/002/fragment.js'
+import Shader003 from './shaders/003/fragment.js'
+import Shader004 from './shaders/004/fragment.js'
+import Shader005 from './shaders/005/fragment.js'
+import Shader006 from './shaders/006/fragment.js'
+import Shader007 from './shaders/007/fragment.js'
+import Shader008 from './shaders/008/fragment.js'
+import Shader009 from './shaders/009/fragment.js'
+import Shader010 from './shaders/010/fragment.js'
+import Shader011 from './shaders/011/fragment.js'
+import Shader012 from './shaders/012/fragment.js'
+import Shader013 from './shaders/013/fragment.js'
+import Shader014 from './shaders/014/fragment.js'
+import Shader015 from './shaders/015/fragment.js'
+import Shader016 from './shaders/016/fragment.js'
 import Shader017 from './shaders/017/fragment.js'
 import Shader018 from './shaders/018/fragment.js'
 import Shader019 from './shaders/019/fragment.js'
@@ -607,21 +607,21 @@ export default function App()
 
     const list = [
         <Shader001 />,
-        // <Shader402 />,
-        // <Shader403 />,
-        // <Shader404 />,
-        // <Shader405 />,
-        // <Shader406 />,
-        // <Shader407 />,
-        // <Shader408 />,
-        // <Shader409 />,
-        // <Shader410 />,
-        // <Shader411 />,
-        // <Shader412 />,
-        // <Shader413 />,
-        // <Shader414 />,
-        // <Shader415 />,
-        // <Shader416 />,
+        <Shader002 />,
+        <Shader003 />,
+        <Shader004 />,
+        <Shader005 />,
+        <Shader006 />,
+        <Shader007 />,
+        <Shader008 />,
+        <Shader009 />,
+        <Shader010 />,
+        <Shader011 />,
+        <Shader012 />,
+        <Shader013 />,
+        <Shader014 />,
+        <Shader015 />,
+        <Shader016 />,
         <Shader017 />,
         <Shader018 />,
         <Shader019 />,
@@ -1209,6 +1209,7 @@ export default function App()
         <Shader601 />
     ]
 
+    console.log(list.length)
     return (
         <>
             {/* <OrbitControls /> */}
@@ -1217,21 +1218,21 @@ export default function App()
                     {/* <Route path='/'> */}
                         <Route index element={list[list.length - 1] } />
                         <Route path='001' element={<Shader001 />}/>
-                        {/* <Route path='002' element={<Shader002 />}/> */}
-                        {/* <Route path='003' element={<Shader003 />}/> */}
-                        {/* <Route path='004' element={<Shader004 />}/> */}
-                        {/* <Route path='005' element={<Shader005 />}/> */}
-                        {/* <Route path='006' element={<Shader006 />}/> */}
-                        {/* <Route path='007' element={<Shader007 />}/> */}
-                        {/* <Route path='008' element={<Shader008 />}/> */}
-                        {/* <Route path='009' element={<Shader009 />}/> */}
-                        {/* <Route path='010' element={<Shader010 />}/> */}
-                        {/* <Route path='011' element={<Shader011 />}/> */}
-                        {/* <Route path='012' element={<Shader012 />}/> */}
-                        {/* <Route path='013' element={<Shader013 />}/> */}
-                        {/* <Route path='014' element={<Shader014 />}/> */}
-                        {/* <Route path='015' element={<Shader015 />}/> */}
-                        {/* <Route path='016' element={<Shader016 />}/> */}
+                        <Route path='002' element={<Shader002 />}/>
+                        <Route path='003' element={<Shader003 />}/>
+                        <Route path='004' element={<Shader004 />}/>
+                        <Route path='005' element={<Shader005 />}/>
+                        <Route path='006' element={<Shader006 />}/>
+                        <Route path='007' element={<Shader007 />}/>
+                        <Route path='008' element={<Shader008 />}/>
+                        <Route path='009' element={<Shader009 />}/>
+                        <Route path='010' element={<Shader010 />}/>
+                        <Route path='011' element={<Shader011 />}/>
+                        <Route path='012' element={<Shader012 />}/>
+                        <Route path='013' element={<Shader013 />}/>
+                        <Route path='014' element={<Shader014 />}/>
+                        <Route path='015' element={<Shader015 />}/>
+                        <Route path='016' element={<Shader016 />}/>
                         <Route path='017' element={<Shader017 />}/>
                         <Route path='018' element={<Shader018 />}/>
                         <Route path='019' element={<Shader019 />}/>

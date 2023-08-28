@@ -51,7 +51,7 @@ const fragmentShader =
     
     // console.log(material.fragmentShader)
     
-    export default function Shader089()
+    export default function Shader001()
     {
         const meshRef = useRef()
         // const tex = useLoader(TextureLoader, img)
