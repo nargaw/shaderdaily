@@ -1210,6 +1210,7 @@ export default function App()
     ]
 
     console.log(list.length)
+    let currentPath = '001'
     return (
         <>
             {/* <OrbitControls /> */}

@@ -2,17 +2,53 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    uniform float u_time;
+    //book of shaders
+vec2 random2(vec2 p){
+    return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
+}
 
-    varying vec2 vUv;
+float plot(vec2 vUv,float p){
+    return smoothstep(p + 0.025,p,vUv.y)-
+    smoothstep(p,p-(0.025),vUv.y);
+}
 
-    void main(){
-        vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
-        gl_FragColor = vec4(color, 1.);
+// vec2 Rot(vec2 vUv,float a){
+//     //vUv*=2.;
+//     vUv-=.5;
+//     vUv=mat2(cos(a),-sin(a),
+//     sin(a),cos(a))*vUv;
+//     vUv+=.5;
+//     return vUv;
+// }
+
+void main(){
+    vec2 vUv=vec2(vUv.x,vUv.y);
+    //vUv=Rot(vUv,u_time*.15);
+    vec3 color=vec3(0.);
+    //vUv.x+=u_time*.025;
+    vUv*=5.;
+    vec2 vUvI=floor(vUv);
+    vec2 vUvF=fract(vUv);
+    float m_dist= 0.25;
+    for(int y=-1;y<=1;y++){
+        for(int x=-1;x<=1;x++){
+            vec2 neighbor=vec2(float(x),float(y));
+            vec2 point=random2(vUvI+neighbor);
+            point=.5+.5*cos(u_time+TWO_PI*point);
+            vec2 diff=neighbor+point-vUvF;
+            float dist=length(diff);
+            m_dist=min(m_dist,dist);
+            float y =dist-m_dist;
+            float pct = plot(point, y);
+            color = vec3(pct);
+        }
     }
+    
+    //color +=m_dist;
+    color +=1.-smoothstep(.01,.011,m_dist);
+    //color-=step(.05,abs(sin(10. *m_dist)))*.3;
+    gl_FragColor=vec4(color,1.);
+}
     `
 
     const vertexShader = glsl`
