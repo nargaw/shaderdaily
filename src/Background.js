@@ -20,11 +20,11 @@ export function Model(props) {
     
   })
 
-  console.log(model2)
+//   console.log(model2)
   
   return (
     <group {...props} dispose={null}>
-        <group position={[0, -25, 80]} >
+        <group position={[0, -27, 80]} >
             <mesh 
                 geometry={model2.children[0].children[1].geometry}
                 material={material}

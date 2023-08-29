@@ -1209,7 +1209,7 @@ export default function App()
         <Shader601 />
     ]
 
-    console.log(list.length)
+    // console.log(list.length)
     let currentPath = '001'
     return (
         <>
