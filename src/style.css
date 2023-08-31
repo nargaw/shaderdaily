@@ -29,3 +29,12 @@ body,
     z-index: 2;
     color: white;
 }
+
+.current{
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    z-index: 2;
+    color: white;
+}
+

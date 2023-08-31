@@ -24,7 +24,7 @@ export default function Interface()
         <>
             <button className="back" onClick={goback}>back</button>
             <button className="next" onClick={goNext}>next</button>
-            <h1 className="current"></h1>
+            <h1 className="current">{currentShader}</h1>
         </>
     )
 }
