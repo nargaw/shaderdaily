@@ -610,7 +610,7 @@ export default function App()
     console.log(currentShader)
 
     const setShader = useShader(state => state.setCurrentShader)
-    setShader(130)
+    //setShader(130)
 
     const list = [
         <Shader001 />,

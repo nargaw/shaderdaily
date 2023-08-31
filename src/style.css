@@ -11,3 +11,21 @@ body,
     overflow: hidden;
     margin: 0;
 }
+
+.back{
+    
+    position: absolute;
+    top: 80%;
+    left: 30%;
+    z-index: 2;
+    color: white;
+    
+}
+
+.next{
+    position: absolute;
+    top: 80%;
+    left: 70%;
+    z-index: 2;
+    color: white;
+}

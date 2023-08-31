@@ -5,6 +5,8 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import { Model } from './Background'
 import { OrbitControls } from '@react-three/drei'
+import useShader from './stores/useShader'
+import Interface from './UI/Interface'
 
 const root = createRoot(document.querySelector('#root'))
 
@@ -15,5 +17,6 @@ root.render(
             {/* <OrbitControls /> */}
             <Model />
         </Canvas>
+        <Interface />
     </StrictMode>
 )
