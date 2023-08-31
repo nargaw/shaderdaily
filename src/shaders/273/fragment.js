@@ -44,14 +44,7 @@ float fbm(vec2 vUv){
     return v;
 }
 
-// vec2 Rot(vec2 vUv,float a){
-//     //vUv*=2.;
-//     vUv-=.5;
-//     vUv=mat2(cos(a),-sin(a),
-//     sin(a),cos(a))*vUv;
-//     vUv+=.5;
-//     return vUv;
-// }
+//  
 
 void main(){
     vec2 vUv = vec2(vUv.x, vUv.y);
