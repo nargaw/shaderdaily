@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import useShader from './stores/useShader.js'
 //import { OrbitControls } from '@react-three/drei'
 import Shader001 from './shaders/001/fragment.js'
 import Shader002 from './shaders/002/fragment.js'
@@ -604,6 +605,12 @@ import Shader601 from './shaders/601/fragment.js'
 
 export default function App()
 {
+
+    const currentShader = useShader(state => state.currentShader)
+    console.log(currentShader)
+
+    const setShader = useShader(state => state.setCurrentShader)
+    setShader(130)
 
     const list = [
         <Shader001 />,
@@ -1217,7 +1224,7 @@ export default function App()
             <BrowserRouter>
                 <Routes>
                     {/* <Route path='/'> */}
-                        <Route index element={list[list.length - 1] } />
+                        <Route index element={list[currentShader - 1] } />
                         <Route path='001' element={<Shader001 />}/>
                         <Route path='002' element={<Shader002 />}/>
                         <Route path='003' element={<Shader003 />}/>
