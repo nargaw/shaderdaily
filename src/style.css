@@ -40,7 +40,7 @@ body,
     
 }
 
-.back:focus {
+.back:active {
     border: 2px solid transparent;
     color: #fff;
     box-shadow: 3px 3px 10px rgba(0,0,0,1),
@@ -68,7 +68,7 @@ body,
     -1px -1px 6px rgba(255, 255, 255, 0.4);
 }
 
-.next:focus {
+.next:active {
     border: 2px solid transparent;
     color: #fff;
     box-shadow: 3px 3px 10px rgba(0,0,0,1),
