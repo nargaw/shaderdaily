@@ -607,7 +607,7 @@ export default function App()
 {
 
     const currentShader = useShader(state => state.currentShader)
-    console.log(currentShader)
+    // console.log(currentShader)
 
     const setShader = useShader(state => state.setCurrentShader)
     //setShader(130)

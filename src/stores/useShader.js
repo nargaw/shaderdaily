@@ -3,7 +3,7 @@ import { create } from 'zustand'
 export default create((set, get) => 
 {
     return {
-        currentShader: 200,
+        currentShader: 500,
 
         setCurrentShader: (val) => 
         {

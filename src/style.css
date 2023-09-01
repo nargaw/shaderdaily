@@ -10,31 +10,134 @@ body,
     background: rgba(0, 0, 0, 0.545);
     overflow: hidden;
     margin: 0;
+    font-family: 'Cabin', sans-serif;
+}
+
+.nav{
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Cabin', sans-serif;
+    
 }
 
 .back{
-    
-    position: absolute;
-    top: 80%;
-    left: 30%;
-    z-index: 2;
-    color: white;
+    position: relative;
+    left: -50px;
+    width: 60px;
+    height: 45px;
+    border: none;
+    outline: none;
+    padding: 7px 7px 7px 7px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 15px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
+    font-family: 'Cabin', sans-serif;
     
 }
 
+.back:focus {
+    border: 2px solid transparent;
+    color: #fff;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+    font-family: 'Cabin', sans-serif;
+  }
+
+
 .next{
-    position: absolute;
-    top: 80%;
-    left: 70%;
-    z-index: 2;
-    color: white;
+    position: relative;
+    left: 50px;
+    width: 60px;
+    height: 45px;
+    border: none;
+    outline: none;
+    padding: 7px 7px 7px 7px;
+    /* padding-left: */
+    border-radius: 6px;
+    color: #fff;
+    font-size: 15px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
 }
+
+.next:focus {
+    border: 2px solid transparent;
+    color: #fff;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+  }
 
 .current{
     position: absolute;
-    top: 75%;
+    top: 80%;
+    top: 0px;
+    /* bottom: -40px; */
     left: 50%;
-    z-index: 2;
-    color: white;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-family: 'Cabin', sans-serif;
 }
+
+.form{
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    max-width: 100vw;
+    font-family: 'Cabin', sans-serif;
+}
+
+.submit{
+    position: relative;
+    /* left: 75px; */
+    width: 80px;
+    height: 45px;
+    border: none;
+    outline: none;
+    padding: 7px 7px 7px 7px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 15px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
+    font-family: 'Cabin', sans-serif;
+}
+
+.input{
+    position: relative;
+    /* left: 60px; */
+    width: 160px;
+    height: 45px;
+    border: none;
+    outline: none;
+    padding: 0px 7px 0px 7px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 15px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
+    font-family: 'Cabin', sans-serif;
+}
+
+.input:focus {
+    border: 2px solid transparent;
+    color: #fff;
+    box-shadow: 3px 3px 10px rgba(0,0,0,1),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+  }
 
