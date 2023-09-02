@@ -2,17 +2,102 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    uniform float u_time;
+    //Shaping functions 1.1
+//plot from book of shaders
 
-    varying vec2 vUv;
+float plot(vec2 st, float pct){
+    return smoothstep(pct-0.025, pct, st.y) -
+           smoothstep(pct, pct+0.025, st.y);
+}
 
-    void main(){
-        vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
-        gl_FragColor = vec4(color, 1.);
-    }
+//https://iquilezles.org/articles/functions/
+//1. Almost Identity
+float almostIdentity(float x, float m, float n)
+{
+    //m is threshold (value above m stays unchanged)
+    //n is the value given when signal is zero
+    if(x > m) return x;
+    float a = 2.0 * n -m;
+    float b = 2.0 * m - 3.0 * n;
+    float t = x/m;
+    return(a * t + b) * t* t + n;
+}
+
+
+//2. Almost Identity II
+float almostIdentity2(float x, float n)
+{
+    //square root of a biased square
+    //zero derivate and non-zero second derivative
+    //useful for symmertric function such as mirrored SDFs
+    return sqrt(x*x+n);
+}
+
+//3. Almost Unit Identity
+float almostUnitIdentity(float x)
+{
+    //maps 0 to 0, and 1 to 1
+    //similar to smoothstep()
+    return x * x * (2.0-x);
+}
+
+//4. Smoothstep Integral
+float integralSmoothstep(float x, float T)
+{
+    //smoothstep for velocity signal
+    //smoothly accelerate a stationary object into constant velocity motion
+    //no decelerations
+    if (x > T) return x - T/2.0;
+    return x * x * x * (1.0 - x * 0.5/T)/T/T;
+}
+
+//5. Exponential Impulse
+float expImpulse(float x, float k)
+{
+    float h = k * x;
+    return h * exp(2.0 - h);
+}
+
+//6. Polynomial Impulse
+float quaImpulse(float x, float k)
+{
+    //doesnt use exponentials
+    return 6.0 * sqrt(k) * x/(1.25 + k * x * x);
+}
+
+//adjust fallof shapes - n 
+float polyImpulse(float x, float k, float n)
+{
+    return (n/(n-1.0))*pow((n-1.0)*k, 1.0/n)*x/(1.0 + k * pow(x, n));
+}
+
+void main(){
+    vec2 vUv = vec2(vUv.x, vUv.y);
+    vUv = vUv * 2.;
+    vec3 color = vec3(0.);
+    float y1 = polyImpulse(vUv.x, 0.0, 4.);
+    float pct1 = plot(vUv, y1);
+
+    float y2 = polyImpulse(vUv.x, 0.5, 4. + sin(u_time));
+    float pct2 = plot(vUv, y2);
+
+    float y3 = polyImpulse(vUv.x, 1.0, 4. + cos(u_time));
+    float pct3 = plot(vUv, y3);
+
+    float y4 = polyImpulse(vUv.x, 1.5, 4.);
+    float pct4 = plot(vUv, y4);
+
+    float y5 = polyImpulse(vUv.x, 2.0, 4.);
+    float pct5 = plot(vUv, y5);
+
+    color += pct1 * vec3(1., 1., 0.);
+    color += pct2 * vec3(0., 1., 1.);
+    color += pct3 * vec3(0.5, 1., .5);
+    color += pct4 * vec3(1., 0., 0.);
+    color += pct5 * vec3(0.5, .0, 1.);
+
+    gl_FragColor = vec4(color, 1.);
+}
     `
 
     const vertexShader = glsl`

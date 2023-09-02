@@ -11,15 +11,22 @@ export default function Interface()
     // setShader(430)
 
     const goNext = () => {
-        // console.log('next')
+        
         let current = currentShader
-        setShader(current + 1)
+        if(current < 601){
+            setShader(current + 1)
+            // console.log(current)
+        }
+        
     }
 
     const goBack = () => {
         // console.log('back')
         let current = currentShader
-        setShader(current - 1)
+        if(current > 1){
+            setShader(current - 1)
+            // console.log(current)
+        }
     }
    
     function handleSubmit(e){
@@ -31,21 +38,22 @@ export default function Interface()
         
         // console.log(formJson.shader)
         const num = parseInt(formJson.shader)
-        // console.log(num)
-        // if(num !== isNaN()){
-        //     console.log('yes')
-            
-        // }
-        setShader(num) 
-        document.getElementById("myForm").reset()
+        if(!Number.isNaN(num) && num > 0 && num < 602){
+            setShader(num) 
+        }
 
-        document.addEventListener("wheel", function(event){
-            if(document.activeElement.type === "number"){
-                document.activeElement.blur();
-            }
-        });
-
+        document.getElementById("myForm").reset();
     }
+
+
+    
+    document.addEventListener("wheel", function(event){
+        if(document.activeElement.type === "number"){
+            document.activeElement.blur();
+        }
+    });
+
+
     return(
         <>
             <div className="nav">

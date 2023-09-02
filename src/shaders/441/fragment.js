@@ -12,7 +12,9 @@ glsl`
         return left + center + right;
     }
 
-
+    float random(vec2 vUv){
+        return fract(sin(dot(vUv.yx, vec2(48.48929, 76.83929))) * 727827.3738);
+    }
     
 
     void main()

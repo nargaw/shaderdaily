@@ -2,17 +2,128 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    uniform float u_time;
+    //Shaping functions 1.1
+//plot from book of shaders
 
-    varying vec2 vUv;
+float plot(vec2 st, float pct){
+    return smoothstep(pct-0.02, pct, st.y) -
+           smoothstep(pct, pct+0.02, st.y);
+}
 
-    void main(){
-        vec3 color = vec3(0.);
-        color.gb += vUv.x - (sin(u_time) ) * 0.35;
-        color.gb *= vUv.y - (sin(u_time) ) * 0.35;
-        color.gb -= 0.1;
-        gl_FragColor = vec4(color, 1.);
+/*
+https://iquilezles.org/articles/distfunctions2d/
+*/
+
+// //circle sdf
+// float sdCircle(vec2 p, float r)
+// {
+//     return length(p) - r;
+// }
+
+// //box
+// float sdBox(vec2 p, vec2 b)
+// {
+//     vec2 d = abs(p) - b;
+//     return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
+// }
+
+// //segment
+// float sdSegment(vec2 p, vec2 a, vec2 b)
+// {
+//     vec2 pa = p - a;
+//     vec2 ba = b - a;
+//     float h = clamp(dot(pa, ba)/dot(ba,ba), 0., 1.);
+//     return length(pa - ba * h);
+// }
+
+//equilateral triangle
+float sdEqTriangle(vec2 p)
+{
+    float k = sqrt(3.0);
+    p.x = abs(p.x) - 1.0;
+    p.y = p.y + 1.0/k;
+    if(p.x + k * p.y > 0.0){
+        p = vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;
     }
+    p.x -= clamp(p.x, -2.0, 0.0);
+    return -length(p) * sin(p.y);
+}
+
+//regular hexagon
+float sdHexagon(vec2 p, float r)
+{
+    vec3 k = vec3(-0.866025404,0.5,0.577350269);
+    p = abs(p);
+    p -= 2.0 * min(dot(k.xy,p), 0.0) * k.xy;
+    p -= vec2(clamp(p.x, -k.z*r, k.z*r), r);
+    return length(p) * sin(p.y);
+}
+
+//hexagram
+// float sdHexagram(vec2 p, float r)
+// {
+//     vec4 k = vec4(-0.5,0.8660254038,0.5773502692,1.7320508076);
+//     p = abs(p);
+//     p -= 2.0 * min(dot(k.xy,p), 0.0) * k.xy;
+//     p -= 2.0 * min(dot(k.yx,p), 0.0) * k.yx;
+//     p -= vec2(clamp(p.x,r*k.z, r*k.w), r);
+//     return length(p) * sin(p.y);
+// }
+
+// //arc
+// float sdArc(vec2 p, vec2 sc, float ra, float rb){
+//     //sc is arc's aperture
+//     p.x = abs(p.x);
+//     sc = vec2(sin(sc.x), cos(sc.y));
+//     if (sc.y * p.x > sc.x * p.y){
+//         return length(p - sc*ra) - rb;
+//     }
+//     else {
+//         return abs(length(p) - ra) - rb;
+//     }
+// }
+
+// vec2 Rot(vec2 vUv, float a){
+//     vUv -= 0.5;
+//     vUv = mat2(cos(a), -sin(a),
+//                sin(a), cos(a)) * vUv;
+//     vUv += 0.5;
+//     return vUv;
+// }
+
+
+void main(){
+    vec2 vUv = vec2(vUv.x, vUv.y);
+    vec2 vUv2 = vUv;
+    vec2 vUv3 = vUv;
+    vec2 vUv4 = vUv;
+    vec2 vUv5 = vUv;
+
+    vUv = Rot(vUv,   u_time * 0.15);
+
+    vUv = vUv * (100. *sin(u_time * 0.5) + 25.) - (50. * sin(u_time * 0.5) + 12.5);    
+    vec3 color = vec3(0.);
+    
+    float y1 = sdHexagram(vUv, 1.5);
+    float y2 = sdHexagram(vUv, 1.2);
+    float y21 = sdHexagram(vUv, 1.0);
+    float y211 = sdHexagram(vUv, 0.8);
+    float y2111 = sdHexagram(vUv, 0.5);
+
+    y1 = smoothstep(0.0, 0.015, y1); //yellow
+    y2 = smoothstep(0.0, 0.015, y2); //teal
+    y21 = smoothstep(0.0, 0.015, y21); //green
+    y211 = smoothstep(0.0, 0.015, y211); //red
+    y2111 = smoothstep(0.0, 0.015, y2111); //red
+
+    color += y1;
+    color += y2 ;
+    color *= y21 ;
+    color *= y211;
+    color *= y2111;
+
+    gl_FragColor = vec4(color, 1.);
+}
     `
 
     const vertexShader = glsl`
