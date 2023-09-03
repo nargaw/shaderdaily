@@ -5,27 +5,25 @@ export default function Interface()
 {
 
     const currentShader = useShader(state => state.currentShader)
-    // console.log(currentShader)
-
     const setShader = useShader(state => state.setCurrentShader)
-    // setShader(430)
+
+    const informationStatus = useShader(state => state.information)
+    const infoActive = useShader(state => state.activateInformation)
+    const infoDeactivate = useShader(state => state.deactivateInformation)
 
     const goNext = () => {
         
         let current = currentShader
         if(current < 601){
             setShader(current + 1)
-            // console.log(current)
         }
         
     }
 
     const goBack = () => {
-        // console.log('back')
         let current = currentShader
         if(current > 1){
             setShader(current - 1)
-            // console.log(current)
         }
     }
    
@@ -46,12 +44,38 @@ export default function Interface()
     }
 
 
+    const toggleInfo = () => {
+        if(informationStatus === false){
+            document.getElementsByClassName('webgl')[0].style.opacity = "0.15"
+            document.getElementsByClassName('nav')[0].style.opacity = "0.025"
+            document.getElementsByClassName('form')[0].style.opacity = "0.025"
+            document.getElementsByClassName('icon')[0].style.opacity = "0.025"
+            infoActive()
+        } 
+    }
+
+    const closeInfo = () => {
+        document.getElementsByClassName('webgl')[0].style.opacity = "1.0"
+        document.getElementsByClassName('nav')[0].style.opacity = "1.0"
+        document.getElementsByClassName('form')[0].style.opacity = "1.0"
+        document.getElementsByClassName('icon')[0].style.opacity = "1.0"
+        infoDeactivate()
+    }
+
+
     
     document.addEventListener("wheel", function(event){
         if(document.activeElement.type === "number"){
             document.activeElement.blur();
         }
     });
+
+    const handleEmail = () => {
+        const email = 'nateargaw@gmail.com'
+        navigator.clipboard.writeText(email)
+        alert('Copied email: ' + email)
+    }
+
 
 
     return(
@@ -67,7 +91,41 @@ export default function Interface()
                 <input type="number" name="shader" placeholder="Enter Shader Number" className="input" />
                 <input type="submit"  value="Submit" className="submit"/>
             </form>
-            
+
+            <div className="icon" onClick={toggleInfo}>
+                <i className="fa-solid fa-info"></i>
+            </div>
+
+            {
+                informationStatus && <div className="container">
+                    <div className="close" onClick={closeInfo}><i className="fa-solid fa-x"></i></div>
+                    <h1 className="header">Welcome to Shader Daily!</h1>
+                    <p className="text">
+                        This website is a result of my personal journey towards learning the magic of Shaders. A shader is a computer program that uses a variety of specialized functions and algorithms to calculate the color value of each pixel in a rendered result using the graphics processing unit (GPU). Shaders are used in a variety of industries ranging from cinema to video games. The programming language used in shaders depends on the target environment. This target environment uses GLSL (Graphics Library Shader Language). This shader program requires a vertex shader and a fragment shader. The vertex shader is not manipulated in this website and kept standard for all results. The fragment shader is modified for each result. The rendering result and experience is achieved using Three.js and React-Three-Fiber. <br /> <br/> Thank you for visiting! <br/> <br/>Nate Argaw
+                    </p>
+                    <div className="contact">
+                        <div className="mail" onClick={handleEmail}>
+                            <a href="mailto: nateargaw@gmail.com"></a>
+                            <i className="fa-solid fa-envelope"></i>
+                        </div>
+                        <div className="twitter">
+                            <a href="https://twitter.com/nate_dev_">
+                                <i className="fa-brands fa-x-twitter"></i> 
+                            </a>
+                        </div>
+                        <div className="linkedin">
+                            <a href="https://www.linkedin.com/in/nateargaw/">
+                                <i className="fa-brands fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                        <div className="instagram">
+                            <a href="https://www.instagram.com/shaderdaily/">
+                                <i className="fa-brands fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }    
         </>
     )
 }
