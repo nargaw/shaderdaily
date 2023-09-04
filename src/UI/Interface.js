@@ -14,7 +14,7 @@ export default function Interface()
     const goNext = () => {
         
         let current = currentShader
-        if(current < 601){
+        if(current < 602){
             setShader(current + 1)
         }
         
