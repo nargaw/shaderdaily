@@ -40,7 +40,7 @@ export default function Interface()
         
         // console.log(formJson.shader)
         const num = parseInt(formJson.shader)
-        if(!Number.isNaN(num) && num > 0 && num < 602){
+        if(!Number.isNaN(num) && num > 0 && num <= 602){
             setShader(num) 
         }
 

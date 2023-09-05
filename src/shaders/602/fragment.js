@@ -109,17 +109,18 @@ const fragmentShader = glsl`
         
         return vec4(c,d);
     }
-/////////////////////////
+
+    /////////////////////////
 
     #define MAX_STEPS 100
     #define MAX_DIST 100.
     #define SURF_DIST .01
 
     ///////////////////////
-// Primitives
-///////////////////////
- 
-// Sphere - exact
+    // Primitives
+    ///////////////////////
+    
+    // Sphere - exact
     float sphereSDF( vec3 p, float s ) {
         return length(p)-s;
     }
@@ -167,77 +168,69 @@ const fragmentShader = glsl`
         // Rotate the whole scene
     
    
-    // Box0
-    vec3 b0s = vec3(.75,.75,.75); //box size
-    vec3 b0p = vec3(0.,1.2,1.); // box position
-    b0p = p-b0p;
-    b0p.yz *=Rotate(u_time * .2);
-    b0p.xz *=Rotate(u_time * .2);
-    vec4 b0 = vec4(BoxColor.rgb,boxSDF(b0p,b0s)); // Box Color, box distance field
+        // Box0
+        vec3 b0s = vec3(.75,.75,.75); //box size
+        vec3 b0p = vec3(0.,2.2,1.); // box position
+        b0p = p-b0p;
+        b0p.yz *=Rotate(u_time * 1.2);
+        b0p.xz *=Rotate(u_time * 1.2);
+        vec4 b0 = vec4(BoxColor.rgb,boxSDF(b0p,b0s)); // Box Color, box distance field
 
-    //Box1
-    vec3 b1s = vec3(.85,.5,.5); //box size
-    vec3 b1p = vec3(0.,1.2,1.); // box position
-    b1p = p-b1p;
-    b1p.yz *=Rotate(u_time * .2);
-    b1p.xz *=Rotate(u_time * .2);
-    vec4 b1 = vec4(BoxColor1.rgb,boxSDF(b1p,b1s)); // Box Color, box distance 
+        //Box1
+        vec3 b1s = vec3(.85,.5,.5); //box size
+        vec3 b1p = vec3(0.,1.2,1.); // box position
+        b1p = p-b1p;
+        b1p.yz *=Rotate(u_time * .2);
+        b1p.xz *=Rotate(u_time * .2);
+        vec4 b1 = vec4(BoxColor1.rgb,boxSDF(b1p,b1s)); // Box Color, box distance 
 
-    //Box2
-    vec3 b2s = vec3(.5,.5,.85); //box size
-    vec3 b2p = vec3(0.,1.2,1.); // box position
-    b2p = p-b2p;
-    b2p.yz *=Rotate(u_time * .2);
-    b2p.xz *=Rotate(u_time * .2);
-    vec4 b2 = vec4(BoxColor1.rgb,boxSDF(b2p,b2s)); // Box Color, box distance 
+        //Box2
+        vec3 b2s = vec3(.5,.5,.85); //box size
+        vec3 b2p = vec3(0.,1.2,1.); // box position
+        b2p = p-b2p;
+        b2p.yz *=Rotate(u_time * 1.5);
+        b2p.xz *=Rotate(u_time * 1.5);
+        vec4 b2 = vec4(BoxColor1.rgb,boxSDF(b2p,b2s)); // Box Color, box distance 
 
-    // p.xz *=Rotate(u_time * .2);
-   
-    // Sphere.
-    vec3 s0p=vec3(0.,2.,1.);
-    s0p=p-s0p;
-    vec4 s0 = vec4(SphereColor.rgb,sphereSDF(s0p,.5));
+        // p.xz *=Rotate(u_time * .2);
+    
+        // Sphere.
+        vec3 s0p=vec3(0.,2.,1.);
+        s0p=p-s0p;
+        vec4 s0 = vec4(SphereColor.rgb,sphereSDF(s0p,.5));
 
-    vec3 s1p=vec3(0.,0.5,1.);
-    s1p=p-s1p;
-    vec4 s1 = vec4(SphereColor.rgb,sphereSDF(s1p,.5));
-     
-    // Cylinders
-    float c0h = 1.,c0r = .55; // Cylinder height, radius.
-    vec3 c0p = p - vec3 (0,1,2.); // Position
-    vec4 c0 = vec4(CylinderColor.rgb,cappedCylinderSDF(c0p,c0h,c0r)); 
-     
-    float c1h = 1.,c1r = .55; 
-    vec3 c1p = p - vec3 (0,1,0); 
-    c1p.xy *= Rotate(PI*.5);  // Rotate
-    vec4 c1 = vec4(CylinderColor.rgb,cappedCylinderSDF(c1p,c1h,c1r)); 
-     
-    float c2h = 1.,c2r = .55; 
-    vec3 c2p = p - vec3 (0,1,0);
-    c2p.xy *= Rotate(PI*.5);  
-    c2p.yz *= Rotate(PI*.5);  
-    vec4 c2 = vec4(CylinderColor.rgb,cappedCylinderSDF(c2p,c2h,c2r)); 
-   
-    // Plane
-    vec4 p0 = vec4(GroundColor.rgb,planeSDF(p,vec4(0,1,0,0)));
- 
-    vec4 scene = vec4(0), csg0 = vec4(0), csg1 = vec4(0), csg2 = vec4(0), csg3 = vec4(0);
-     
-    csg0 = smoothDifferenceSDF(b0, b1, 0.15); // Intersect box with sphere creating a CSG object.
+        vec3 s1p=vec3(0.,2.2,1.);
+        s1p=p-s1p;
+        s1p.yz *=Rotate(u_time * .2);
+        s1p.xz *=Rotate(u_time * .2);
+        vec4 s1 = vec4(SphereColor.rgb,sphereSDF(s1p,.75));
+        
+        // Cylinders
+        float c0h = 1.,c0r = .55; // Cylinder height, radius.
+        vec3 c0p = p - vec3 (0,1,2.); // Position
+        vec4 c0 = vec4(CylinderColor.rgb,cappedCylinderSDF(c0p,c0h,c0r)); 
+        
+        float c1h = 1.,c1r = .55; 
+        vec3 c1p = p - vec3 (0,1,0); 
+        c1p.xy *= Rotate(PI*.5);  // Rotate
+        vec4 c1 = vec4(CylinderColor.rgb,cappedCylinderSDF(c1p,c1h,c1r)); 
+        
+        float c2h = 1.,c2r = .55; 
+        vec3 c2p = p - vec3 (0,1,0);
+        c2p.xy *= Rotate(PI*.5);  
+        c2p.yz *= Rotate(PI*.5);  
+        vec4 c2 = vec4(CylinderColor.rgb,cappedCylinderSDF(c2p,c2h,c2r)); 
+    
+        // Plane
+        vec4 p0 = vec4(GroundColor.rgb,planeSDF(p,vec4(0,1,0,0)));
+    
+        vec4 scene = vec4(0), csg0 = vec4(0), csg1 = vec4(0), csg2 = vec4(0), csg3 = vec4(0);
+        
+        csg0 = smoothDifferenceSDF(b0, s1, 0.15); // Intersect box with sphere creating a CSG object.
 
-    csg1 = smoothDifferenceSDF(csg0, s0, 0.15 + sin(u_time * 1.5)/8.);
-     
-    csg2 = smoothDifferenceSDF(csg1, s1, 0.15 + cos(u_time * 1.5)/8.);
-
-    csg3 = smoothDifferenceSDF(csg0, b2, 0.15);
-     
-    // csg0 = differenceSDF(csg0,csg1); // Subtract cylinders from boxsphere
-     
-    // scene = unionSDF(csg0,p0); // Use Union(min) on the CSG and the ground plane 
-
-    scene = unionSDF(csg3, p0);
- 
-    return scene;
+        scene = unionSDF(csg0, p0);
+    
+        return scene;
     }
 
     float RayMarch(vec3 ro,vec3 rd, inout vec3 dColor)
@@ -307,7 +300,7 @@ const fragmentShader = glsl`
         vec2 uv2 = vUv;
         uv2 -= 0.5;
 
-        vec3 ro = vec3(0,2.,-2.0); // Ray Origin/Camera position
+        vec3 ro = vec3(0,4.5,-5.0); // Ray Origin/Camera position
         vec3 rd = normalize(vec3(uv2.x,uv2.y,1)); // Ray Direction
 
         rd.zy *= Rotate(PI*-.1); // Rotate camera down on the x-axis
