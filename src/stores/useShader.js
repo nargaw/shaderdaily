@@ -3,7 +3,7 @@ import { create } from 'zustand'
 export default create((set, get) => 
 {
     return {
-        currentShader: 602,
+        currentShader: Math.floor(Math.random() * 600) + 1,
 
         information: false,
 
