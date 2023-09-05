@@ -26,6 +26,10 @@ export default function Interface()
             setShader(current - 1)
         }
     }
+
+    const random = () => {
+        setShader(Math.floor(Math.random() * 600) + 1)
+    }
    
     function handleSubmit(e){
         e.preventDefault()
@@ -94,6 +98,10 @@ export default function Interface()
 
             <div className="icon" onClick={toggleInfo}>
                 <i className="fa-solid fa-info"></i>
+            </div>
+
+            <div className="random" onClick={random}>
+                <i className="fa-solid fa-shuffle"></i>
             </div>
 
             {
