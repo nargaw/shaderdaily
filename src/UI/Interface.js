@@ -14,7 +14,7 @@ export default function Interface()
     const goNext = () => {
         
         let current = currentShader
-        if(current < 603){
+        if(current < 604){
             setShader(current + 1)
         }
         
@@ -40,7 +40,7 @@ export default function Interface()
         
         // console.log(formJson.shader)
         const num = parseInt(formJson.shader)
-        if(!Number.isNaN(num) && num > 0 && num <= 603){
+        if(!Number.isNaN(num) && num > 0 && num <= 604){
             setShader(num) 
         }
 
