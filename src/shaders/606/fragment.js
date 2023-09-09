@@ -7,11 +7,9 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numSix(vec2(p.x + 0.35, p.y));
         float center = numZero(vec2(p.x -0.03, p.y));
-        float right = numFive(vec2(p.x - 0.42, p.y));
+        float right = numSix(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
-
-    #define ANTIALIASING
 
     const vec4 BoxColor = vec4(1,0,0,1);
     const vec4 SphereColor = vec4(0,1,0,1);
@@ -101,15 +99,10 @@ const fragmentShader = glsl`
         b0p.yz *=Rotate(u_time * 1.2);
         b0p.xz *=Rotate(u_time * 1.2);
         vec4 b0 = vec4(BoxColor.rgb,boxSDF(b0p,b0s)); // Box Color, box distance field
-    
-        // Sphere
-        vec3 s0p=vec3(0.,2.2,1.);
-        s0p=p-s0p;
-        vec4 s0 = vec4(SphereColor.rgb,sphereSDF(s0p,.95));
 
         //Box2
         vec3 b1s = vec3(0.25);
-        vec3 b1p = vec3(0., 2. + sin(u_time * 1.5) + 0.75 * 1.5, 1.);
+        vec3 b1p = vec3(0. + sin(u_time * 1.5) * 2.25, 2. + cos(u_time * 1.5) * 0.5, 1.);
         b1p = p - b1p;
         b1p.yz *=Rotate(-u_time * 2.2);
         b1p.xz *=Rotate(-u_time * 2.2);
@@ -122,11 +115,26 @@ const fragmentShader = glsl`
         b2p.yz *=Rotate(u_time * 2.2);
         b2p.xz *=Rotate(u_time * 2.2);
         vec4 b2 = vec4(BoxColor.rgb, boxSDF(b2p, b2s));
+        
+            
+        // Sphere
+        vec3 s0p=vec3(0.,2.2,1.);
+        s0p=p-s0p;
+        vec4 s0 = vec4(SphereColor.rgb,sphereSDF(s0p,.95));
+
+        vec3 s1p=vec3(0. + sin(u_time * 1.5) * 2.25, 2. + cos(u_time * 1.5) * 0.5, 1.);
+        s1p=p-s1p;
+        vec4 s1 = vec4(SphereColor.rgb,sphereSDF(s1p,.25));
+
+        vec3 s2p=vec3(0. + cos(u_time * 1.5) * 2.25, 2. + sin(u_time * 1.5) * 0.5, 1.);
+        s2p=p-s2p;
+        vec4 s2 = vec4(SphereColor.rgb,sphereSDF(s2p,.25));
+
 
         // Plane
         vec4 p0 = vec4(GroundColor.rgb,planeSDF(p,vec4(0,1,0,0)));
     
-        vec4 scene = vec4(0), csg0 = vec4(0), csg1 = vec4(0), csg2 = vec4(0), csg3 = vec4(0);
+        vec4 scene = vec4(0), csg0 = vec4(0), csg1 = vec4(0), csg2 = vec4(0), csg3 = vec4(0), csg4 = vec4(0);
         
         csg0 = smoothDifferenceSDF(b0, s0, 0.15); // difference box with sphere creating a CSG object.
 
@@ -134,7 +142,11 @@ const fragmentShader = glsl`
 
         csg2 = smoothUnionSDF(csg1, b2, 0.15);
 
-        scene = smoothUnionSDF(csg2, p0, 0.15);
+        csg3 = smoothDifferenceSDF(csg2, s1, 0.15);
+
+        csg4 = smoothDifferenceSDF(csg3, s2, 0.15);
+
+        scene = smoothUnionSDF(csg4, p0, 0.15);
     
         return scene;
     }
@@ -198,21 +210,14 @@ const fragmentShader = glsl`
         return color * dif;
     }
 
-    void main()
-    {
-        vec2 vUv = vec2(vUv.x, vUv.y);
+    vec4 fC(vec2 vUv){
+        vUv = vec2(vUv.x, vUv.y);
         vec3 color = vec3(0.);
-
-        #ifdef ANTIALIASING
-        vec3 oh = vec3(0.0);
-        vec4 tmp = vec4(0.0);
-        #endif
-
 
         vec2 uv2 = vUv;
         uv2 -= 0.5;
 
-        vec3 ro = vec3(0,4.5,-5.0); // Ray Origin/Camera position
+        vec3 ro = vec3(0,4.5,-6.0); // Ray Origin/Camera position
         vec3 rd = normalize(vec3(uv2.x,uv2.y,1)); // Ray Direction
 
         rd.zy *= Rotate(PI*-.1); // Rotate camera down on the x-axis
@@ -223,10 +228,21 @@ const fragmentShader = glsl`
         vec3 dif=GetLight(p,difColor);// Diffuse lighting
         color  = vec3(dif);
 
-        
         float numLabel = label(vUv);
         color += numLabel;
-        gl_FragColor = vec4(color, 1.);
+
+        return vec4(color, 1.);
+    }
+
+    void main()
+    {
+        //https://www.shadertoy.com/view/wtjfRV
+        //anti-alias
+        gl_FragColor = vec4(0.);
+        float A = 4.;  // Change A to define the level of anti-aliasing (1 to 16) ... higher numbers are REALLY slow!  
+        float s = 1./A, x, y;
+        for (x=-.5; x<.5; x+=s) for (y=-.5; y<.5; y+=s) gl_FragColor += min ( fC(vec2(vUv.x,vUv.y)), 1.0);
+        gl_FragColor /= A*A;
     }
 `
 
@@ -265,7 +281,7 @@ const material = new ShaderMaterial({
 
 // console.log(material.fragmentShader)
 
-export default function Shader605()
+export default function Shader606()
 {
     const meshRef = useRef()
     

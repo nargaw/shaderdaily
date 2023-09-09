@@ -256,7 +256,7 @@ export default function Shader604()
 
     return (
         <>
-            <mesh ref={meshRef} material={material} >
+            <mesh dispose={null} ref={meshRef} material={material} >
                 <boxGeometry args={[2, 2, 0.1]} />
             </mesh>
         </>
