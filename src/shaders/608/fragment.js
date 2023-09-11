@@ -119,11 +119,25 @@ const fragmentShader = glsl`
         vec4 s0 = vec4(SphereColor.rgb,sphereSDF(s0p,.95));
 
         //box frame
-        vec3 bfs = vec3(.75,.75,.75); //box size
+        vec3 bfs = vec3(1.5,1.5,1.5); //box size
         vec3 bfp = vec3(0.,2.2,1.); // box position
         bfp = p - bfp;
-        bfp.yz *=Rotate(u_time * 1.2);
-        vec4 bf = vec4(BoxColor.rgb, sdBoxFrame(bfp, bfs, 0.025));
+        bfp.xz *=Rotate(sin(u_time + 0.5) * 1.25);
+        vec4 bf = vec4(BoxColor.rgb, sdBoxFrame(bfp, bfs, 0.05));
+
+        //box frame
+        vec3 bfs2 = vec3(.75,.75,.75); //box size
+        vec3 bfp2 = vec3(0.,2.2,1.); // box position
+        bfp2 = p - bfp2;
+        bfp2.xz *=Rotate(sin(u_time + 0.25) * 1.25);
+        vec4 bf2 = vec4(BoxColor.rgb, sdBoxFrame(bfp2, bfs2, 0.05));
+
+        //box frame
+        vec3 bfs3 = vec3(.325,.325,.325); //box size
+        vec3 bfp3 = vec3(0.,2.2,1.); // box position
+        bfp3 = p - bfp3;
+        bfp3.xz *=Rotate(sin(u_time) * 1.25);
+        vec4 bf3 = vec4(BoxColor.rgb, sdBoxFrame(bfp3, bfs3, 0.05));
 
 
         // Plane
@@ -131,9 +145,9 @@ const fragmentShader = glsl`
     
         vec4 scene = vec4(0), csg0 = vec4(0), csg1 = vec4(0), csg2 = vec4(0), csg3 = vec4(0);
         
-        // csg0 = smoothDifferenceSDF(bf, s0, 0.15); 
+        csg0 = smoothUnionSDF(bf, bf2, 0.15); 
 
-        scene = smoothUnionSDF(bf, p0, 0.15);
+        scene = smoothUnionSDF(csg0, bf3, 0.15);
     
         return scene;
     }
@@ -181,7 +195,7 @@ const fragmentShader = glsl`
         vec3 color = c.rgb * colorIntensity;
     
         // Directional light
-        vec3 lightPos=vec3(4.,5.,0.);// Light Position
+        vec3 lightPos=vec3(0.,4.,0.);// Light Position
     
         vec3 l=normalize(lightPos-p);// Light Vector
         vec3 n=GetNormal(p);// Normal Vector
@@ -211,10 +225,10 @@ const fragmentShader = glsl`
         vec2 uv2 = vUv;
         uv2 -= 0.5;
 
-        vec3 ro = vec3(0,4.5,-5.0); // Ray Origin/Camera position
+        vec3 ro = vec3(0,5.,-8.0 + sin(u_time) + .45 * 15.); // Ray Origin/Camera position
         vec3 rd = normalize(vec3(uv2.x,uv2.y,1)); // Ray Direction
 
-        rd.zy *= Rotate(PI*-.1); // Rotate camera down on the x-axis
+        rd.zy *= Rotate(PI*-.3); // Rotate camera down on the x-axis
         
         float d=RayMarch(ro,rd,difColor);// Distance
 
@@ -271,7 +285,7 @@ export default function Shader608()
     useFrame(({clock}) => {
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
 
-        console.log(clock.elapsedTime)
+        // console.log(clock.elapsedTime)
     })
 
     return (
