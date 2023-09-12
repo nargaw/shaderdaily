@@ -7,7 +7,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numSix(vec2(p.x + 0.35, p.y));
         float center = numZero(vec2(p.x -0.03, p.y));
-        float right = numEight(vec2(p.x - 0.42, p.y));
+        float right = numNine(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -122,22 +122,22 @@ const fragmentShader = glsl`
         vec3 bfs = vec3(1.5,1.5,1.5); //box size
         vec3 bfp = vec3(0.,2.2,1.); // box position
         bfp = p - bfp;
-        bfp.xz *=Rotate(sin(u_time + 0.5) * 1.25);
-        vec4 bf = vec4(BoxColor.rgb, sdBoxFrame(bfp, bfs, 0.05));
+        bfp.xz *=Rotate(sin(u_time * 1.15) * 1.5);
+        vec4 bf = vec4(BoxColor.rgb, sdBoxFrame(bfp, bfs, 0.075));
 
         //box frame
         vec3 bfs2 = vec3(.75,.75,.75); //box size
         vec3 bfp2 = vec3(0.,2.2,1.); // box position
         bfp2 = p - bfp2;
-        bfp2.xz *=Rotate(sin(u_time + 0.25) * 1.25);
-        vec4 bf2 = vec4(BoxColor.rgb, sdBoxFrame(bfp2, bfs2, 0.05));
+        bfp2.xz *=Rotate(sin(u_time * 1.125) * 1.5);
+        vec4 bf2 = vec4(BoxColor.rgb, sdBoxFrame(bfp2, bfs2, 0.075));
 
         //box frame
         vec3 bfs3 = vec3(.325,.325,.325); //box size
         vec3 bfp3 = vec3(0.,2.2,1.); // box position
         bfp3 = p - bfp3;
-        bfp3.xz *=Rotate(sin(u_time) * 1.25);
-        vec4 bf3 = vec4(BoxColor.rgb, sdBoxFrame(bfp3, bfs3, 0.05));
+        bfp3.xz *=Rotate(sin(u_time * 1.) * 1.5);
+        vec4 bf3 = vec4(BoxColor.rgb, sdBoxFrame(bfp3, bfs3, 0.075));
 
 
         // Plane
@@ -147,7 +147,9 @@ const fragmentShader = glsl`
         
         csg0 = smoothUnionSDF(bf, bf2, 0.15); 
 
-        scene = smoothUnionSDF(csg0, bf3, 0.15);
+        csg1 = smoothUnionSDF(csg0, bf3, 0.15);
+
+        scene = smoothUnionSDF(csg1, p0, 0.15);
     
         return scene;
     }
@@ -195,7 +197,7 @@ const fragmentShader = glsl`
         vec3 color = c.rgb * colorIntensity;
     
         // Directional light
-        vec3 lightPos=vec3(0.,4.,0.);// Light Position
+        vec3 lightPos=vec3(0.,6.,0.);// Light Position
     
         vec3 l=normalize(lightPos-p);// Light Vector
         vec3 n=GetNormal(p);// Normal Vector
@@ -222,10 +224,10 @@ const fragmentShader = glsl`
         vec2 uv2 = vUv;
         uv2 -= 0.5;
 
-        vec3 ro = vec3(0,5.,-8.0 + sin(u_time) + .45 * 15.); // Ray Origin/Camera position
+        vec3 ro = vec3(0,2.2,-4. + sin(u_time * 0.25 + 0.5)  * 5.); // Ray Origin/Camera position
         vec3 rd = normalize(vec3(uv2.x,uv2.y,1)); // Ray Direction
 
-        rd.zy *= Rotate(PI*-.3); // Rotate camera down on the x-axis
+        // rd.zy *= Rotate(PI*-.2); // Rotate camera down on the x-axis
         
         float d=RayMarch(ro,rd,difColor);// Distance
 
@@ -275,7 +277,7 @@ const material = new ShaderMaterial({
 
 // console.log(material.fragmentShader)
 
-export default function Shader608()
+export default function Shader609()
 {
     const meshRef = useRef()
     
