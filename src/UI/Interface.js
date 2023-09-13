@@ -11,10 +11,12 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
+    const total = 610
+    
     const goNext = () => {
         
         let current = currentShader
-        if(current < 609){
+        if(current < total){
             setShader(current + 1)
         }
         
@@ -28,7 +30,7 @@ export default function Interface()
     }
 
     const random = () => {
-        setShader(Math.floor(Math.random() * 600) + 1)
+        setShader(Math.floor(Math.random() * total) + 1)
     }
    
     function handleSubmit(e){
@@ -40,7 +42,7 @@ export default function Interface()
         
         // console.log(formJson.shader)
         const num = parseInt(formJson.shader)
-        if(!Number.isNaN(num) && num > 0 && num <= 609){
+        if(!Number.isNaN(num) && num > 0 && num <= total){
             setShader(num) 
         }
 
