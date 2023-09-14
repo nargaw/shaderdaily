@@ -7,6 +7,8 @@ export default create((set, get) =>
 
         information: false,
 
+        total: 0,
+
         setCurrentShader: (val) => 
         {
             set((state) => ({currentShader: val}))
@@ -20,6 +22,11 @@ export default create((set, get) =>
         deactivateInformation: () =>
         {
             set((state) => ({information: false}))
+        },
+
+        setTotal: (val) =>
+        {
+            set((state) => ({total: val}))
         }
     }
 })
