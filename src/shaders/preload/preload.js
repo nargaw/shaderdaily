@@ -13,6 +13,7 @@ glsl`
     #define TWO_PI 6.28318530718
     uniform float u_time;
     uniform vec2 u_resolution;
+    uniform vec3 u_mouse;
 `
 
 export default preload
