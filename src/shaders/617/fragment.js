@@ -7,7 +7,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numSix(vec2(p.x + 0.35, p.y));
         float center = numOne(vec2(p.x -0.03, p.y));
-        float right = numSix(vec2(p.x - 0.42, p.y));
+        float right = numSeven(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -16,6 +16,8 @@ const fragmentShader = glsl`
     #define SURF_DIST .01
     #define S smoothstep
     #define T u_time
+
+    uniform samplerCube u_cubemap;
 
     /////////////////////////////
     // Smooth blending operators
@@ -63,11 +65,11 @@ const fragmentShader = glsl`
         return d;
     }
 
-    float RayMarch(vec3 ro, vec3 rd){
+    float RayMarch(vec3 ro, vec3 rd, float side){
         float dO = 0.;
         for(int i = 0; i < MAX_STEPS; i++){
             vec3 p = ro + rd * dO;
-            float dS = GetDist(p);
+            float dS = GetDist(p) * side;
             dO += dS;
             if(dO > MAX_DIST || abs(dS)<SURF_DIST) break;
         }
@@ -96,27 +98,43 @@ const fragmentShader = glsl`
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec3 color = vec3(0.);
 
-        vec2 m = u_mouse.xy/u_resolution.xy;
+        vec2 m = u_mouse.xy;
 
         vec2 uv2 = vUv;
         uv2 -= 0.5;
 
         vec3 ro = vec3 (0., 3., -3);
-        ro.yz *= Rot(-T*PI + 1. * 0.125);
-        ro.xz *= Rot(-T*TWO_PI * 0.125);
+        ro.yz *= Rot(-m.y*PI + 1.);
+        ro.xz *= Rot(-m.x*TWO_PI);
 
         vec3 rd = GetRayDir(uv2, ro, vec3(0.), 1.);
-        vec3 col = vec3(0.);
 
-        float d = RayMarch(ro, rd);
+        // vec3 col = vec3(0.);
+        vec3 col = texture(u_cubemap, rd).rgb;
+
+        float d = RayMarch(ro, rd, 1.); //outside of obj
+
+        float IOR = 1.45;
 
         if(d < MAX_DIST){
-            vec3 p = ro + rd * d;
-            vec3 n = GetNormal(p);
-            vec3 r = reflect(rd, n);
+            vec3 p = ro + rd * d; //3d hit position
+            vec3 n = GetNormal(p); //normal of surface orientation
+            vec3 reflectDir = reflect(rd, n);
 
-            float dif = dot(n , normalize(vec3(1., 2., 3.))) * .5 + .5;
-            col = vec3(dif);
+            vec3 rdIn = refract(rd, n, 1. /IOR);//ray dir entering
+
+            vec3 pEnter = p - n * SURF_DIST * 3.;
+            float dIn = RayMarch(pEnter, rdIn, -1.); //inside of obj
+
+            vec3 pExit = pEnter + rdIn * dIn; //3d position of exit
+            vec3 nExit = -GetNormal(pExit); //normal of exit
+
+            vec3 rdOut = refract(rdIn, nExit, IOR);
+            if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
+
+            vec3 reflTex = texture(u_cubemap, rdOut).rgb;
+
+            col = vec3(reflTex);
             color += col;
         }
 
@@ -141,44 +159,68 @@ void main()
 }`
 
 import { Vector2, ShaderMaterial } from 'three'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import numbers from '../numLabels/numbers.js'
 import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
-
-const material = new ShaderMaterial({
-    vertexShader: vertexShader,
-
-    //use for shaders <425
-    //fragmentShader: fragment
-
-    //use for shader >= 425
-    //clean up the fragment shader
-    //imports from preload, numbers and useful functions
-    fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
-    uniforms: {
-        u_time: { type: "f", value: 1.0 },
-        u_resolution: { type: "v2", value: new Vector2() },
-        u_mouse: { type: "v2", value: new Vector2() }
-    }
-})
+import * as THREE from 'three'
 
 // console.log(material.fragmentShader)
 
-export default function Shader616()
+export default function Shader617()
 {
+
+    const r = 'https://threejs.org/examples/textures/cube/Bridge2/';
+    const urls = [ r + 'posx.jpg', r + 'negx.jpg',
+    r + 'posy.jpg', r + 'negy.jpg',
+    r + 'posz.jpg', r + 'negz.jpg' ];
+
+    const textureCube = new THREE.CubeTextureLoader().load(urls)
+    console.log(textureCube)
+
+    const material = new ShaderMaterial({
+        vertexShader: vertexShader,
+    
+        //use for shaders <425
+        //fragmentShader: fragment
+    
+        //use for shader >= 425
+        //clean up the fragment shader
+        //imports from preload, numbers and useful functions
+        fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
+        uniforms: {
+            u_time: { type: "f", value: 1.0 },
+            u_resolution: { type: "v2", value: new Vector2() },
+            u_mouse: { type: "v2", value: new Vector2() },
+            u_cubemap: { value: textureCube}
+        }
+    })
+
     const meshRef = useRef()
+
+    let mouseX;
+    let mouseY;
+
+    useEffect(() => {
+        const geometry = meshRef.current.geometry
+        geometry.computeBoundingBox()
+        console.log(geometry.boundingBox)
+    }, [meshRef.current])
     
     useFrame(({clock}) => {
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
-        
+        meshRef.current.material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         // console.log(clock.elapsedTime)
     })
 
+    
+
     addEventListener('mousemove', (e) => {
-        let x = (e.clientX / window.innerWidth) * 2 - 1;
-        let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        // let x = (e.clientX / window.innerWidth) * 2 - 1;
+        // let y = -(e.clientY / window.innerHeight) * 2 + 1;
+        mouseX = (e.clientX / window.innerWidth);
+        mouseY = -(e.clientY / window.innerHeight) + 1;
         // console.log('x: '+ x + 'y: ' + y)
     })
 
