@@ -90,15 +90,15 @@ export default function Interface()
     return(
         <>
             <div className="nav">
-                <button className="back" onClick={goBack}>back</button>
-                <button className="next" onClick={goNext}>next</button>
+                {!informationStatus && <button className="back" onClick={goBack}>back</button>}
+                {!informationStatus && <button className="next" onClick={goNext}>next</button>}
                 <h1 className="current">{currentShader}</h1>
             </div>
             
             
             <form id='myForm' className="form" onSubmit={handleSubmit}>
-                <input type="number" name="shader" placeholder="Enter Shader Number" className="input" />
-                <input type="submit"  value="Submit" className="submit"/>
+                {!informationStatus && <input type="number" name="shader" placeholder="Enter Shader Number" className="input" />}
+                {!informationStatus && <input type="submit"  value="Submit" className="submit"/>}
             </form>
 
             <div className="icon" onClick={toggleInfo}>
@@ -106,7 +106,7 @@ export default function Interface()
             </div>
 
             <div className="random" onClick={random}>
-                <i className="fa-solid fa-shuffle"></i>
+                {!informationStatus && <i className="fa-solid fa-shuffle"></i>}
             </div>
 
             {
