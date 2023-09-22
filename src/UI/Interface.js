@@ -57,6 +57,7 @@ export default function Interface()
             document.getElementsByClassName('nav')[0].style.opacity = "0.025"
             document.getElementsByClassName('form')[0].style.opacity = "0.025"
             document.getElementsByClassName('icon')[0].style.opacity = "0.025"
+            document.getElementsByClassName('random')[0].style.opacity = "0.025"
             infoActive()
         } 
     }
@@ -66,6 +67,7 @@ export default function Interface()
         document.getElementsByClassName('nav')[0].style.opacity = "1.0"
         document.getElementsByClassName('form')[0].style.opacity = "1.0"
         document.getElementsByClassName('icon')[0].style.opacity = "1.0"
+        document.getElementsByClassName('random')[0].style.opacity = "1.0"
         infoDeactivate()
     }
 
