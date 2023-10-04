@@ -46,7 +46,7 @@ const fragmentShader = glsl`
     {
         float d = DistLine(p, a, b);
         float m = S(.03, 0.01, d);
-        m *= S(1.2, .8, length(a -b));
+        m *= S(1.0, .5, length(a -b));
         return m;
     }
 
