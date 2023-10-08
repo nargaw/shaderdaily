@@ -57,6 +57,9 @@ const fragmentShader = glsl`
 
     float sdBox(vec3 p, vec3 s){
         p = abs(p) - s;
+        float noise = cnoise(p) * 0.5 * sin(u_time);
+        p.x += noise;
+        p.y += noise;
         return length(max(p, 0.)) + min(max(p.x, max(p.y, p.z)), 0.);
     }
 
@@ -89,18 +92,20 @@ const fragmentShader = glsl`
         vec3 p1 = p;
         vec3 p2 = p;
         vec3 p3 = p;
+        // p.y += 1.;
 
+        
         p2.zy *= Rot(PI * 0.5 + u_time);
         p2.xy *= Rot(PI * 0.5 + u_time);
         p2.zx *= Rot(PI * 0.5 + u_time);
 
-        float plane = planeSDF(p,vec4(0,1,0,0));
+        float plane = planeSDF(p ,vec4(0,1,0,0));
 
-        float d1 = sdBox(p2, vec3(0.5 + sin(u_time)/4. + 0.2));
+        float d1 = sdBox(p2, vec3(0.5));
 
         float d2 = sdSphere(p, 0.75 + sin(u_time)/4. + 0.2);
 
-        float total = opSmoothSubtraction(d1, d2, 0.15);
+        float total = d1;
 
         
 
@@ -178,8 +183,8 @@ const fragmentShader = glsl`
         vec3 rd = GetRayDir(uv2, ro, vec3(0.), 1.);
 
         // vec3 col = vec3(0.);
-        vec3 col = texture(u_cubemap, rd).rgb;
-        // vec3 col = vec3(.0);
+        // vec3 col = texture(u_cubemap, rd).rgb;
+        vec3 col = vec3(.8);
 
         float d = RayMarch(ro, rd, 1.); //outside of obj
 
@@ -236,7 +241,7 @@ const fragmentShader = glsl`
             // col = n * 0.5 + 0.5;
         }
 
-        col = pow(col, vec3(.4545));
+        // col = pow(col, vec3(.4545));
 
         vec3 dif=GetLight(col,difColor);// Diffuse lighting
         // color  = vec3(dif + col);
