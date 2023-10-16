@@ -93,7 +93,7 @@ const fragmentShader = glsl`
         vec3 p2 = p;
         vec3 p3 = p;
         
-        p1 += (cnoise(p1) * 0.1) * (sin(u_time) / 10. + 1.);
+        p1 += (cnoise(p1 + sin(u_time)) * 0.1) * (sin(u_time) / 10. + 1.);
         float plane = planeSDF(p ,vec4(0,1,0,0));
 
         float d1 = sdBox(p2, vec3(0.5));
@@ -325,12 +325,16 @@ export default function Shader639()
     
 
     addEventListener('mousemove', (e) => {
-        // let x = (e.clientX / window.innerWidth) * 2 - 1;
-        // let y = -(e.clientY / window.innerHeight) * 2 + 1;
         mouseX = (e.clientX / window.innerWidth);
         mouseY = -(e.clientY / window.innerHeight) + 1;
-        // console.log('x: '+ x + 'y: ' + y)
     })
+
+    addEventListener('contextmenu', e => e.preventDefault())
+
+    addEventListener('touchmove', (e) => {
+        mouseX = (e.changedTouches[0].clientX / window.innerWidth);
+        mouseY = -(e.changedTouches[0].clientY / window.innerHeight) + 1;
+    }, {passive: false})
 
     return (
         <>
