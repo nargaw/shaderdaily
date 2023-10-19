@@ -67,7 +67,7 @@ export default function Shader642()
     r + 'pz.jpg', r + 'nz.jpg' ];
 
     const textureCube = new THREE.CubeTextureLoader().load(urls)
-    console.log(textureCube)
+    // console.log(textureCube)
 
     const material = new ShaderMaterial({
         vertexShader: vertexShader,
@@ -94,18 +94,46 @@ export default function Shader642()
     let mouseY;
 
     const size = new THREE.Vector3()
+    const topLeft = new THREE.Vector3(-1, -1, 0)
+    const topRight = new THREE.Vector3(1, -1, 0)
+    const bottomLeft = new THREE.Vector3(-1, 1, 0)
+    const bottomRight = new THREE.Vector3(1, 1, 0)
     useEffect(() => {
         const bbox = new THREE.Box3().setFromObject(meshRef.current).getSize(size)
-        console.log(meshRef.current.position)
     }, [meshRef.current])
 
     useThree(({camera}) => {
-        if(size){
+        if(topLeft){
             size.project(camera)
+            topLeft.project(camera)
+            // console.log(topLeft)
         }
         // console.log(size)
     })
 
+    const sizeX = (1 + size.x) / 2 * window.innerWidth
+    const sizeY = (1 - size.y) / 2 * window.innerHeight
+
+    // console.log(sizeX, sizeY)
+
+    const topLeftX = (1 + topLeft.x) / 2 * window.innerWidth
+    const topLeftY = (1 - topLeft.y) / 2 * window.innerHeight
+
+    const topRightX = (1 + topRight.x) / 2 * window.innerWidth
+    const topRightY = (1 - topRight.y) / 2 * window.innerHeight
+
+    // const bottomLeftX = (1 + bottomLeft.x) / 2 * window.innerWidth
+    // const bottomLeftY = (1 - bottomLeft.y) / 2 * window.innerHeight
+
+    // const bottomRightX = (1 + bottomRight.x) / 2 * window.innerWidth
+    // const bottomRightY = (1 - bottomRight.y) / 2 * window.innerHeight
+
+    // console.log(topLeftX, topLeftY)
+    // console.log(topRightX, topRightY)
+
+    // const planeWidth = (topRightX - topLeftX)
+
+    // console.log(planeWidth)
     
     useFrame(({clock}) => {
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
