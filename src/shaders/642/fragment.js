@@ -25,13 +25,16 @@ const fragmentShader = glsl`
         vec2 uv2 = vUv;
         uv2 -= .5;
 
-        vec3 col;
-        col = mix(col, vec3(1.0), smoothstep(.05, 0.04, length(vUv - abs(u_mouse.xy))));
-        col = clamp(col, 0., 1.);
+        vec3 col = vec3((sin(u_time)/2.) + 0.5, 0.5, 0.);
 
-        col = vec3(-0.01, -0.01, -0.005) + col;
+        float d = length(vUv - abs(u_mouse.xy)) - 0.2;
+        color += (step(0., -d)) * col;
 
-        color += col;
+        float glow = 0.005/ d;
+        glow = clamp(glow, 0., 1.);
+        glow = glow * 15. * (sin(u_time)/10. + 0.75);
+
+        color += col * glow ;
 
         float numLabel = label(vUv);
         color += numLabel;
@@ -81,7 +84,7 @@ export default function Shader642()
         fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
         uniforms: {
             u_time: { type: "f", value: 1.0 },
-            u_resolution: { type: "v2", value: new Vector2() },
+            u_resolution: { type: "v2", value: new Vector2(1, 1) },
             u_mouse: { type: "v2", value: new Vector2() },
             u_cubemap: { value: textureCube}
         }
