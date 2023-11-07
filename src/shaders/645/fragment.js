@@ -108,11 +108,6 @@ const fragmentShader = glsl`
             m += glow(uv2, vec2(u_mouse.xy));
             m += sparkle * (sin(t+fract(p[i].x) * 10.) * .5 + .5);
         }
-        // m += Line(gv, p[1], p[3]);
-        // m += Line(gv, p[1], p[5]);
-        // m += Line(gv, p[7], p[3]);
-        // m += Line(gv, p[7], p[5]);
-
         return m;
     }
 
@@ -139,7 +134,6 @@ const fragmentShader = glsl`
             float z = fract(i + t);//reuse layers
             float size = mix(10., .5, z);
             float fade = S(0., 0.5, z) * S(1., 0.8, z);
-            // x += glow(uv2 * size + i * 20., vec2(u_mouse.xy)) * fade;
             x += Layer(uv2 * size + i * 20.) * fade;
         }
         
