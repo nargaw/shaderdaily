@@ -36,7 +36,7 @@ export default function MusicInterface()
                 console.log(time.current)
                 progress.current.style.width = ((elapsedTime/203) * 100) + '%'
             }
-            console.log('here')
+            // console.log('here')
         })
 
         return () =>
