@@ -1,0 +1,66 @@
+.interface
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    font-family: 'Major Mono Display', monospace;
+    color: #ffffff;
+}
+
+.start
+{
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    /* width: 100%; */
+    color: #ffffff;
+    font-size: 20px;
+    background: #00000033;
+    border: 1px solid #ffffff;
+    padding: 10px;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+#Progress_Status {
+    width: 40vw;
+    background-color: rgb(88, 87, 87);
+    border-radius: 50px;
+}
+
+.restart
+{
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    /* width: 100%; */
+    color: #ffffff;
+    font-size: 20px;
+    background: #00000033;
+    border: 1px solid #ffffff;
+    padding: 10px;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.progress
+{
+    width: 1%;
+    height: 2px;
+    background-color: #bdbdbd;
+    text-align: center;
+    line-height: 32px;
+    /* color: whitesmoke; */
+    border-radius: 50px;
+}
+
+.off{
+    display: none;
+}

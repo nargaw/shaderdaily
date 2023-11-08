@@ -9,6 +9,18 @@ export default create((set, get) =>
 
         total: 0,
 
+        songPlaying: false,
+
+        setSongOn: () => 
+        {
+            set((state) => ({songPlaying: true}))
+        },
+
+        setSongOff: () => 
+        {
+            set((state) => ({songPlaying: false}))
+        },
+
         setCurrentShader: (val) => 
         {
             set((state) => ({currentShader: val}))
