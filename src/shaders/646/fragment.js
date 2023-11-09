@@ -199,45 +199,39 @@ export default function Shader646()
 
     const [music, setMusic] = useState(false)
     
-
     const listener = new THREE.AudioListener()
-    const sound = useRef() 
-    sound.current = new THREE.Audio(listener)
+    const sound = new THREE.Audio(listener)
     if(camera) {
         camera.add(listener)
     }
     const audioLoader = new THREE.AudioLoader()    
     const playMusic = () => {
         audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
-            sound.current.setBuffer( buffer );
-            sound.current.setLoop( false );
-            sound.current.setVolume( 0.5 );
-            sound.current.play()
-            if(sound.current.isPlaying){
+            sound.setBuffer( buffer );
+            sound.setLoop( false );
+            sound.setVolume( 0.5 );
+            sound.play()
+            if(sound.isPlaying){
                 console.log('playing')
                 setMusic(true)
                 setSongOn()
                 startSong() 
-            } 
-            if(!sound.current.isPlaying){
+            }
+            sound.onEnded(() => {
                 console.log('ended')
                 setMusic(false)
                 turnOffSong()
-            }
-            // sound.current.onEnded(() => {
-            //     
-            // })
+            })
         })
     }
     const fftSize = 128
     const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat
-    const analyser = useRef()
-    const u_audio = useRef()
+    
+    let analyser = new THREE.AudioAnalyser(sound, fftSize)  
+   
     useEffect(() => {
-        analyser.current = new THREE.AudioAnalyser(sound.current, fftSize)
-        console.log(analyser.current.data)
-        u_audio.current = new THREE.DataTexture(analyser.current.data, fftSize/2, 1, format)
-    }, [sound.current])
+        analyser = new THREE.AudioAnalyser(sound, fftSize)
+    }, [analyser, sound])
   
     const material = new ShaderMaterial({
         vertexShader: vertexShader,
@@ -247,27 +241,20 @@ export default function Shader646()
             u_resolution: { type: "v2", value: new Vector2(1, 1) },
             u_mouse: { type: "v2", value: new Vector2() },
             u_cubemap: { value: textureCube},
-            u_audio: { value: u_audio.current }
+            u_audio: { value: new THREE.DataTexture(analyser.data, fftSize/2, 1, format) }
         }
     })
 
-    
-    
-    
     const meshRef = useRef()
 
     let mouseX;
     let mouseY;
   
     useFrame(({clock}) => {
-        // console.log(sound.current.isPlaying)
-        analyser.current.getFrequencyData()
-        // console.log(analyser.current.getFrequencyData())
+        analyser.getFrequencyData()
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
         meshRef.current.material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         meshRef.current.material.uniforms.u_audio.value.needsUpdate = true
-        console.log(u_audio.current)
-        
     })
 
     addEventListener('mousemove', (e) => {
