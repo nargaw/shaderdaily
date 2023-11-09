@@ -3,7 +3,7 @@ import glsl from 'babel-plugin-glsl/macro'
 const fragmentShader = glsl`
 
     #define S(a, b, t) smoothstep(a, b, t)
-    
+    uniform sampler2D u_audio;
     float label(vec2 p)
     {
         p *= 10.;
@@ -119,29 +119,35 @@ const fragmentShader = glsl`
 
         vec2 vUv = vec2(vUv.x, vUv.y);
         // vec2 vUv = gl_FragCoord.xy/u_resolution.xy;
-        vec3 color = vec3(0.);
-        
+        vec3 color = vec3(.0);
+        vec3 bckgdcl = vec3(0.125);
         vec2 uv2 = vUv;
         uv2 -= .5;
 
-        vec3 colx = vec3((sin(u_time))/2. + 1., 0.3, 0.);
+        float f = texture2D(u_audio, vec2(uv2.x, 0.)).r;
+        float i = step( uv2.y, f ) * step( f - 0.0125, uv2.y );
+        vec3 col = mix(color, bckgdcl, i);
 
-        float x = 0.;
-        float t = u_time * 0.05;
-        
-        for(float i =0.; i <1.; i+= 1./4.)
-        {
-            float z = fract(i + t);//reuse layers
-            float size = mix(10., .5, z);
-            float fade = S(0., 0.5, z) * S(1., 0.8, z);
-            x += Layer(uv2 * size + i * 20.) * fade;
-        }
-        
-        vec3 base = sin(t * vec3(.345, .456, .678)) * .4 + .6;
-        vec3 col = x * base;
-        col += uv2.y * base * 0.2;
-        col -= uv2.x  * base * 0.2;
         color += col;
+
+        // vec3 colx = vec3((sin(u_time))/2. + 1., 0.3, 0.);
+
+        // float x = 0.;
+        // float t = u_time * 0.05;
+        
+        // for(float i =0.; i <1.; i+= 1./4.)
+        // {
+        //     float z = fract(i + t);//reuse layers
+        //     float size = mix(10., .5, z);
+        //     float fade = S(0., 0.5, z) * S(1., 0.8, z);
+        //     x += Layer(uv2 * size + i * 20.) * fade;
+        // }
+        
+        // vec3 base = sin(t * vec3(.345, .456, .678)) * .4 + .6;
+        // vec3 col = x * base;
+        // col += uv2.y * base * 0.2;
+        // col -= uv2.x  * base * 0.2;
+        // color += col;
 
         float numLabel = label(vUv);
         color += numLabel;
@@ -179,7 +185,60 @@ export default function Shader646()
     const textureCube = new THREE.CubeTextureLoader().load(urls)
 
     const setSongOn = useShader(state => state.setSongOn)
+    const startSong = useShader(state => state.startSong)
+    const turnOffSong = useShader(state => state.setSongOff)
+    
 
+    let camera = null
+    let renderer = null
+
+    useThree((state) => {
+        camera = state.camera
+        renderer = state.gl
+    })
+
+    const [music, setMusic] = useState(false)
+    
+
+    const listener = new THREE.AudioListener()
+    const sound = useRef() 
+    sound.current = new THREE.Audio(listener)
+    if(camera) {
+        camera.add(listener)
+    }
+    const audioLoader = new THREE.AudioLoader()    
+    const playMusic = () => {
+        audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
+            sound.current.setBuffer( buffer );
+            sound.current.setLoop( false );
+            sound.current.setVolume( 0.5 );
+            sound.current.play()
+            if(sound.current.isPlaying){
+                console.log('playing')
+                setMusic(true)
+                setSongOn()
+                startSong() 
+            } 
+            if(!sound.current.isPlaying){
+                console.log('ended')
+                setMusic(false)
+                turnOffSong()
+            }
+            // sound.current.onEnded(() => {
+            //     
+            // })
+        })
+    }
+    const fftSize = 128
+    const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat
+    const analyser = useRef()
+    const u_audio = useRef()
+    useEffect(() => {
+        analyser.current = new THREE.AudioAnalyser(sound.current, fftSize)
+        console.log(analyser.current.data)
+        u_audio.current = new THREE.DataTexture(analyser.current.data, fftSize/2, 1, format)
+    }, [sound.current])
+  
     const material = new ShaderMaterial({
         vertexShader: vertexShader,
         fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
@@ -187,44 +246,28 @@ export default function Shader646()
             u_time: { type: "f", value: 1.0 },
             u_resolution: { type: "v2", value: new Vector2(1, 1) },
             u_mouse: { type: "v2", value: new Vector2() },
-            u_cubemap: { value: textureCube}
+            u_cubemap: { value: textureCube},
+            u_audio: { value: u_audio.current }
         }
     })
 
-    let camera = null
-
-    useThree((state) => {
-        camera = state.camera
-    })
-
-    const [music, setMusic] = useState(false)
-
-    const playMusic = () => {
-        const listener = new THREE.AudioListener()
-        const sound = new THREE.Audio(listener)
-        if(camera) {
-            camera.add(listener)
-        }
-        const audioLoader = new THREE.AudioLoader()
-        audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
-            console.log(buffer)
-            sound.setBuffer( buffer );
-            sound.setLoop( true );
-            sound.setVolume( 0.5 );
-            sound.play()
-        })
-        setMusic(true)
-        setSongOn()
-    }
-
+    
+    
+    
     const meshRef = useRef()
 
     let mouseX;
     let mouseY;
   
     useFrame(({clock}) => {
+        // console.log(sound.current.isPlaying)
+        analyser.current.getFrequencyData()
+        // console.log(analyser.current.getFrequencyData())
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
         meshRef.current.material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
+        meshRef.current.material.uniforms.u_audio.value.needsUpdate = true
+        console.log(u_audio.current)
+        
     })
 
     addEventListener('mousemove', (e) => {

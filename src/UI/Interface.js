@@ -109,7 +109,8 @@ export default function Interface()
             <div className="random" onClick={random}>
                 {!informationStatus && <i className="fa-solid fa-shuffle"></i>}
             </div>
-            <MusicInterface />
+            {currentShader === 646 && <MusicInterface />}
+            {console.log(currentShader)}
 
             {
                 informationStatus && <div className="container">

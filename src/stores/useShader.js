@@ -11,14 +11,30 @@ export default create((set, get) =>
 
         songPlaying: false,
 
+        songStartTime: 0,
+
+        songStatus: 'off',
+
+        startSong: () =>
+        {
+            set((state) => ({songStatus: 'playing'}))
+            set((state) => ({songStartTime: Date.now()}))
+            set((state) => ({songPlaying: true}))
+            return get().songStartTime
+        },
+
+        getSongTime: () => {
+            return get().songStartTime
+        },
+
         setSongOn: () => 
         {
-            set((state) => ({songPlaying: true}))
+            
         },
 
         setSongOff: () => 
         {
-            set((state) => ({songPlaying: false}))
+            set((state) => ({songStartTime: 0}))
         },
 
         setCurrentShader: (val) => 
