@@ -25,9 +25,8 @@ const fragmentShader = glsl`
         // uv2 -= .5;
 
         float f = texture2D(u_audio, vec2(vUv.x, 0.)).r;
-        f = max(f, 0.1);
-        f = min(f, 0.9);
-        float i = step( uv2.y, f  ) * step( f - 0.0125, uv2.y );
+        f = clamp(f, 0.1, 0.9);
+        float i = step( uv2.y, f ) * step( f - 0.0125, uv2.y );
         
         vec3 col = mix(color, bckgdcl, i);
 
