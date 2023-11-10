@@ -1,6 +1,6 @@
 import { useId } from "react";
 import useShader from "../stores/useShader";
-import MusicInterface from "./MusicInterface";
+import MusicInterface646 from "./MusicInterface646";
 
 export default function Interface()
 {
@@ -109,7 +109,7 @@ export default function Interface()
             <div className="random" onClick={random}>
                 {!informationStatus && <i className="fa-solid fa-shuffle"></i>}
             </div>
-            {currentShader === 646 && <MusicInterface />}
+            {currentShader === 646 && <MusicInterface646 />}
             {console.log(currentShader)}
 
             {

@@ -3,7 +3,7 @@ import useShader from "../stores/useShader";
 import { useEffect, useRef } from "react";
 import { addEffect } from '@react-three/fiber';
 
-export default function MusicInterface()
+export default function MusicInterface646()
 {
     const songStatus = useShader(state => state.songPlaying)
     const getSongTime = useShader(state => state.getSongTime)
