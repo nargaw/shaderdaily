@@ -14,140 +14,24 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
 
-    float glow(vec2 uv2, vec2 m){
-        m = vec2(u_mouse.xy);
-        float n = noise2D(uv2 + u_time) * .5;
-        float d = length(vUv  - abs(u_mouse.xy) ) - 0.25 ;
-        //color = (step(0., -d)) * col * n;
-        //color += cir * col;
-
-        
-        float glow = 0.001/ -d * n;
-        float glow2 = 0.0001/ d * n;
-        glow = clamp(glow, 0., 1.);
-        glow2 = clamp(glow2, 0., 1.);
-        glow = glow * 15. * (sin(u_time * 1.)/10. + 0.75);
-        glow2 = glow2 * 15. * (sin(u_time * 1.)/10. + 0.75);
-
-        return glow + glow2;
-    }
-
-    #define S(a, b, t) smoothstep(a, b, t)
-
-    float DistLine(vec2 p, vec2 a, vec2 b)
-    {
-        vec2 pa = p - a;
-        vec2 ba = b - a;
-        float t = clamp(dot(pa, ba)/ dot(ba, ba), 0., 1.);
-        return length(pa - ba * t);
-    }
-
-    float N21(vec2 p)
-    {
-        p = fract(p * vec2(445.23, 789.92));
-        p += dot(p, p + 54.23 );
-        return fract(p.x * p.y);
-    }
-
-    vec2 N22(vec2 p)
-    {
-        float n = N21(p);
-        return vec2(n, N21(p + n));
-    }
-
-    vec2 GetPos(vec2 id, vec2 offset)
-    {
-        vec2 n = N22(id+offset) * u_time;
-        // float x = sin(u_time* n.x);
-        // float y = cos(u_time*n.y);
-        return offset + sin(n) * .4;
-    }
-
-    float Line(vec2 p, vec2 a, vec2 b)
-    {
-        float d = DistLine(p, a, b);
-        float m = S(.03, 0.01, d);
-        float d2 = length(a - b);
-        m *= S(1.2, .8, d2) * .5 + S(.05, .03, abs(d2-.75));
-        return m;
-    }
-
-    float Layer(vec2 uv2)
-    {
-        float m;
-        vec2 gv = fract(uv2) - 0.5;
-        vec2 id = floor(uv2);
-
-        // vec2 p = N22(id) - 0.5;
-
-        vec2 p[9];
-
-        // vec2 p = GetPos(id);
-        // float d = length(gv - p);
-        // m = S(0.1, 0.05, d);
-
-
-        int i = 0;
-        for(float y=-1.; y <=1.; y++)
-        {
-            for(float x=-1.; x<=1.; x++)
-            {
-                p[i++]= GetPos(id, vec2(x, y));
-            }
-        }
-
-        float t = u_time * 10.;
-
-        for(int i=0; i < 9; i++)
-        {
-            // m += Line(gv, p[4], p[i]);
-            
-            vec2 j = (p[i] - gv) * 40.;
-            float sparkle = 1. / dot(j, j);
-
-            m += glow(uv2, vec2(u_mouse.xy));
-            m += sparkle * (sin(t+fract(p[i].x) * 10.) * .5 + .5);
-        }
-        return m;
-    }
-
-    
-
-    
     void main()
     {
 
         vec2 vUv = vec2(vUv.x, vUv.y);
         // vec2 vUv = gl_FragCoord.xy/u_resolution.xy;
-        vec3 color = vec3(.0);
-        vec3 bckgdcl = vec3(0.125);
+        vec3 color = vec3(.0, 0., 0.);
+        vec3 bckgdcl = vec3(0.825, 0.5, 0.6);
         vec2 uv2 = vUv;
-        uv2 -= .5;
+        // uv2 -= .5;
 
-        float f = texture2D(u_audio, vec2(uv2.x, 0.)).r;
-        float i = step( uv2.y, f ) * step( f - 0.0125, uv2.y );
+        float f = texture2D(u_audio, vec2(vUv.x, 0.)).r;
+        f = max(f, 0.1);
+        f = min(f, 0.9);
+        float i = step( uv2.y, f  ) * step( f - 0.0125, uv2.y );
+        
         vec3 col = mix(color, bckgdcl, i);
 
-        color += col;
-
-        // vec3 colx = vec3((sin(u_time))/2. + 1., 0.3, 0.);
-
-        // float x = 0.;
-        // float t = u_time * 0.05;
-        
-        // for(float i =0.; i <1.; i+= 1./4.)
-        // {
-        //     float z = fract(i + t);//reuse layers
-        //     float size = mix(10., .5, z);
-        //     float fade = S(0., 0.5, z) * S(1., 0.8, z);
-        //     x += Layer(uv2 * size + i * 20.) * fade;
-        // }
-        
-        // vec3 base = sin(t * vec3(.345, .456, .678)) * .4 + .6;
-        // vec3 col = x * base;
-        // col += uv2.y * base * 0.2;
-        // col -= uv2.x  * base * 0.2;
-        // color += col;
+        color += col.g * i;
 
         float numLabel = label(vUv);
         color += numLabel;
@@ -198,8 +82,11 @@ export default function Shader646()
     })
 
     const [music, setMusic] = useState(false)
-    
+    const fftSize = 128
+    const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat
     const listener = new THREE.AudioListener()
+    const analyser = useRef()
+    const analyserTexture = useRef()
     const sound = new THREE.Audio(listener)
     if(camera) {
         camera.add(listener)
@@ -208,9 +95,12 @@ export default function Shader646()
     const playMusic = () => {
         audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
             sound.setBuffer( buffer );
-            sound.setLoop( false );
+            sound.setLoop( true );
             sound.setVolume( 0.5 );
+            console.log(sound)
             sound.play()
+            analyser.current = new THREE.AudioAnalyser(sound, fftSize)
+            analyserTexture.current = new THREE.DataTexture(analyser.current.data, 64, 1, format)  
             if(sound.isPlaying){
                 console.log('playing')
                 setMusic(true)
@@ -224,15 +114,11 @@ export default function Shader646()
             })
         })
     }
-    const fftSize = 128
-    const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat
+
     
-    let analyser = new THREE.AudioAnalyser(sound, fftSize)  
-   
-    useEffect(() => {
-        analyser = new THREE.AudioAnalyser(sound, fftSize)
-    }, [analyser, sound])
-  
+    
+    
+    
     const material = new ShaderMaterial({
         vertexShader: vertexShader,
         fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
@@ -241,7 +127,7 @@ export default function Shader646()
             u_resolution: { type: "v2", value: new Vector2(1, 1) },
             u_mouse: { type: "v2", value: new Vector2() },
             u_cubemap: { value: textureCube},
-            u_audio: { value: new THREE.DataTexture(analyser.data, fftSize/2, 1, format) }
+            u_audio: { value: analyserTexture.current }
         }
     })
 
@@ -251,10 +137,11 @@ export default function Shader646()
     let mouseY;
   
     useFrame(({clock}) => {
-        analyser.getFrequencyData()
+        if(analyser.current) analyser.current.getFrequencyData()
         meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
         meshRef.current.material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
-        meshRef.current.material.uniforms.u_audio.value.needsUpdate = true
+        if(meshRef.current.material.uniforms.u_audio.value) meshRef.current.material.uniforms.u_audio.value.needsUpdate = true
+        listener.needsUpdate = true
     })
 
     addEventListener('mousemove', (e) => {
