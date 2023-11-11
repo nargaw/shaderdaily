@@ -1,5 +1,6 @@
 // import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import useShader from './stores/useShader.js'
+import { useThree } from '@react-three/fiber'
 //import { OrbitControls } from '@react-three/drei'
 import Shader001 from './shaders/001/fragment.js'
 import Shader002 from './shaders/002/fragment.js'

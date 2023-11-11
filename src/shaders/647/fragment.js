@@ -136,9 +136,9 @@ export default function Shader647()
     }
     const audioLoader = new THREE.AudioLoader()    
     const playMusic = () => {
-        audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
+        audioLoader.load('./Audio/polaroid-arston.ogg', (buffer) => {
             sound.current.setBuffer( buffer );
-            sound.current.setLoop( true );
+            sound.current.setLoop( false );
             sound.current.setVolume( 0.5 );
             console.log(sound.current)
             sound.current.play()
@@ -153,11 +153,13 @@ export default function Shader647()
             
             if(!sound.current.isPlaying){
                 console.log('ended')
+                sound.current.pause()
                 setMusic(false)
                 turnOffSong()
             }
         })
     }
+
     
     const material = new ShaderMaterial({
         vertexShader: vertexShader,

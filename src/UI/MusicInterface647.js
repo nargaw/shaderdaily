@@ -33,9 +33,9 @@ export default function MusicInterface647()
             elapsedTime = Date.now() - startTime
             elapsedTime /= 1000
 
-            if(time.current && elapsedTime > 0 && elapsedTime <= 137){
+            if(time.current && elapsedTime > 0 && elapsedTime <= 204){
                 time.current.textContent = timeDisplay(elapsedTime)
-                progress.current.style.width = ((elapsedTime/137) * 100) + '%'
+                progress.current.style.width = ((elapsedTime/204) * 100) + '%'
             }
         })
 
@@ -48,8 +48,8 @@ export default function MusicInterface647()
     return <>
         <div className="interface">
             {/* {songStatus && <div className="start" onClick={startSong}>start</div> } */}
-            <div className="song">song: new adventure</div>
-            <div className="artist">artist: matrika </div>
+            <div className="song">song: polaroid</div>
+            <div className="artist">artist: arston </div>
             <div id='Progress_Status'>
                 <div className="progress" ref={progress}></div>
             </div>
