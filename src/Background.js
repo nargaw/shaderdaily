@@ -3,6 +3,7 @@
 import React, { useRef } from "react";
 import { useGLTF, useTexture, useFBX } from "@react-three/drei";
 import * as THREE from 'three'
+import { useThree } from "@react-three/fiber";
 
 export function Model(props) {
   const model2 = useFBX("./Models/warehouse2/source/WareHouse.fbx");

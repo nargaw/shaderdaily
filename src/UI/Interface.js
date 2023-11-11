@@ -1,6 +1,7 @@
 import { useId } from "react";
 import useShader from "../stores/useShader";
 import MusicInterface646 from "./MusicInterface646";
+import MusicInterface647 from "./MusicInterface647";
 
 export default function Interface()
 {
@@ -12,7 +13,7 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
-    const total = 646
+    const total = 647
     // console.log(total)
     
     const goNext = () => {
@@ -110,6 +111,7 @@ export default function Interface()
                 {!informationStatus && <i className="fa-solid fa-shuffle"></i>}
             </div>
             {currentShader === 646 && <MusicInterface646 />}
+            {currentShader === 647 && <MusicInterface647 />}
             {console.log(currentShader)}
 
             {
