@@ -2,9 +2,9 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(vec2 vUv){
-        return fract(sin(dot(vUv.xy, vec2(83.8237492, 12.3874298))) *  2349236.8732947);
-    }
+    // float rand(vec2 vUv){
+    //     return fract(sin(dot(vUv.xy, vec2(83.8237492, 12.3874298))) *  2349236.8732947);
+    // }
     
     // vec2 Rot(vec2 vUv, float angle){
     //     vUv -= 0.5;

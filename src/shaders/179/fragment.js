@@ -12,7 +12,7 @@ const fragmentShader =
     }
     
     //2D random
-    float rand(vec2 vUv){
+    float rand2(vec2 vUv){
         return fract(sin(dot(vUv.xy,vec2(23.74927,89.23476)))*64827.27364872);
     }
     

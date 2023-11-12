@@ -4,11 +4,11 @@ const fragmentShader =
     glsl`
     uniform float u_rand;
     //rand
-float rand(float x){
+float rand2(float x){
     return fract(sin(x)* 1e4);
 }
 
-float rand(vec2 vUv){
+float rand2(vec2 vUv){
     return fract(sin(dot(vUv.xy, vec2(25. * u_rand, 98. * u_rand))) * 2347081. * u_rand);
 }
 

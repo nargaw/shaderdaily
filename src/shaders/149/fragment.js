@@ -4,11 +4,11 @@ const fragmentShader =
     glsl`
 //random
 
-float rand(in float x){
+float rand2(in float x){
     return fract(sin(x)*1e4);
 }
 
-float rand(vec2 vUv){
+float rand2(vec2 vUv){
     return fract(sin(dot(vUv.xy, vec2(23.487503, 89.37610982))) * 45873.34028347);
 }
 
@@ -36,7 +36,7 @@ void main(){
     vUv *= grid;
     vec2 ipos = floor(vUv); //integer
     vec2 fpos = fract(vUv); //fraction
-    vec2 tile = truchetPattern(fpos, rand(ipos * sin(u_time*.000000125)) );
+    vec2 tile = truchetPattern(fpos, rand2(ipos * sin(u_time*.000000125)) );
     float c = (step(length(tile ),.6)-
          step(length(tile ),0.4) ) +
         (step(length(tile-vec2(1.) ),0.6) -

@@ -2,23 +2,23 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(vec2 vUv){
+    float rand2(vec2 vUv){
         return fract(sin(dot(vUv.xy, vec2(12.4859, 75.2389234))) * 45687.28934720);
     }
     
-    float rand(float x){
+    float rand2(float x){
         return fract(sin(x) * 10000.0);
     }
     
     //book of shaders
     float pattern(vec2 vUv, vec2 v, float t){
         vec2 p = floor(vUv + v);
-        return step(t, rand(100. + p * 0.00001) + rand(p.x) * 0.1);
+        return step(t, rand2(100. + p * 0.00001) + rand2(p.x) * 0.1);
     }
     
     float pattern2(vec2 vUv, vec2 v, float t){
         vec2 p = floor(vUv + v);
-        return step(t, rand(100. + p * 0.00001) + rand(p.y) * 0.1);
+        return step(t, rand2(100. + p * 0.00001) + rand2(p.y) * 0.1);
     }
     
     
@@ -33,15 +33,15 @@ const fragmentShader =
         vec2 ipos = floor(vUv);
         vec2 fpos = fract(vUv);
     
-        vec2 vel = vec2(u_time * (rand(10.0)) * max(grid.y, grid.x));
-        vel *= vec2(-1., 0.0) * rand(1.0 + ipos.y);
+        vec2 vel = vec2(u_time * (rand2(10.0)) * max(grid.y, grid.x));
+        vel *= vec2(-1., 0.0) * rand2(1.0 + ipos.y);
     
-        vec2 vel2 = vec2(u_time * (rand(10.0)) * max(grid.y, grid.x));
-        vel2 *= vec2(0.0, 1.0) * rand(1.0 + ipos.x);
+        vec2 vel2 = vec2(u_time * (rand2(10.0)) * max(grid.y, grid.x));
+        vel2 *= vec2(0.0, 1.0) * rand2(1.0 + ipos.x);
     
         vec2 offset = vec2(0., 0.);
-        color.r = pattern(vUv + offset, vel, rand(0.1) * 0.5);
-        color.g = pattern2(vUv + offset, vel2, rand(0.1) * 0.15);
+        color.r = pattern(vUv + offset, vel, rand2(0.1) * 0.5);
+        color.g = pattern2(vUv + offset, vel2, rand2(0.1) * 0.15);
     
         color *= 1. - step(0.99999999, fpos.y);
         color += step(0.99999, fpos.x);

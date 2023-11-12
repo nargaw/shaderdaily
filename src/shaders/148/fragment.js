@@ -2,7 +2,7 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(vec2 vUv){
+    float rand2(vec2 vUv){
         return fract(sin(dot(vUv.xy, vec2(12.9898, 78.233))) * 43758.649273);
     }
     
@@ -12,8 +12,8 @@ const fragmentShader =
         vec2 ipos = floor(vec2(vUv.x - u_time, vUv.y));
         vec2 fpos = fract(vec2(vUv.x + u_time, vUv.y));
         vec3 color = vec3(0.);
-        float y = rand(ipos);
-        float x = rand(fpos);
+        float y = rand2(ipos);
+        float x = rand2(fpos);
     
         color = vec3(y*x * y);
         gl_FragColor = vec4(color, 1.);

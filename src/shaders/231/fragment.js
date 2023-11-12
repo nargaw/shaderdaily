@@ -2,7 +2,6 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    uniform vec2 u_mouse;
 
     //book of shaders
 vec2 random2(vec2 p){

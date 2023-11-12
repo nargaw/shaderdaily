@@ -2,7 +2,7 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(vec2 vUv){
+    float rand2(vec2 vUv){
         return fract(sin(dot(vUv.xy, vec2(83.8237492, 12.3874298))) *  2349236.8732947);
     }
     
@@ -42,7 +42,7 @@ const fragmentShader =
         vUv *= 10.;
         vec2 ipos = floor(vUv);
         vec2 fpos = fract(vUv);
-        vec2 tile = tPattern(fpos, rand(ipos ));
+        vec2 tile = tPattern(fpos, rand2(ipos ));
         float y = BoxBorder(tile, vec2(0.15 * (sin(u_time * 0.15))));
         float x = CirOutline(tile, vec2(0.5 * abs(sin(u_time * 0.15)), 0.5 * abs(cos(u_time * 0.15))), 0.5);
         color = vec3(x);

@@ -8,9 +8,9 @@ const fragmentShader =
         return y-x;
     }
     
-    float rand(vec2 vUv){
-        return fract(sin(dot(vUv.xy,vec2(12.9898,78.233)))*43724.3497231);
-    }
+    // float randx(vec2 vUv){
+    //     return fract(sin(dot(vUv.xy,vec2(12.9898,78.233)))*43724.3497231);
+    // }
     
     float rand1(float x){
         return fract(sin(x)*1e4);

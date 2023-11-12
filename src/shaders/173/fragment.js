@@ -2,14 +2,14 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(float x){
-        return fract(sin(x)* 1e4);
-    }
+    // float rand(float x){
+    //     return fract(sin(x)* 1e4);
+    // }
     
-    //2D random
-    float rand(vec2 vUv){
-        return fract(sin(dot(vUv.xy, vec2(23.74927,89.23476))) * 64827.27364872 + rand(u_time * 0.00001));
-    }
+    // //2D random
+    // float rand(vec2 vUv){
+    //     return fract(sin(dot(vUv.xy, vec2(23.74927,89.23476))) * 64827.27364872 + rand(u_time * 0.00001));
+    // }
     
     // 2D Noise based on Morgan McGuire @morgan3d
     // https://www.shadertoy.com/view/4dS3Wd

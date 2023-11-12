@@ -2,6 +2,7 @@ import { useId } from "react";
 import useShader from "../stores/useShader";
 import MusicInterface646 from "./MusicInterface646";
 import MusicInterface647 from "./MusicInterface647";
+import MusicInterface648 from "./MusicInterface648";
 
 export default function Interface()
 {
@@ -13,7 +14,7 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
-    const total = 647
+    const total = 648
     // console.log(total)
     
     const goNext = () => {
@@ -112,6 +113,7 @@ export default function Interface()
             </div>
             {currentShader === 646 && <MusicInterface646 />}
             {currentShader === 647 && <MusicInterface647 />}
+            {currentShader === 648 && <MusicInterface648 />}
             {console.log(currentShader)}
 
             {

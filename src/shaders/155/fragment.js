@@ -6,9 +6,9 @@ const fragmentShader =
         return fract(sin(x)*1e4);
     }
     //random
-    float rand(vec2 vUv){
-        return fract(sin(dot(vUv.xy, vec2(12.483017652, 87.8729301234))) * 49763419.2834798234);
-    }
+    // float rand(vec2 vUv){
+    //     return fract(sin(dot(vUv.xy, vec2(12.483017652, 87.8729301234))) * 49763419.2834798234);
+    // }
     //book of shaders
     vec2 tPattern(vec2 vUv, float i){
         i = fract((i - 0.5) * 2.0);

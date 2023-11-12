@@ -2,11 +2,11 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(float x){
+    float rand2(float x){
         return fract(sin(x) * 56937.29837492);
     }
     
-    float rand(vec2 vUv){
+    float rand2(vec2 vUv){
         return fract(sin(dot(vUv.xy, vec2(14.4385, 89.2384972))) * 56937.29837492);
     }
     
@@ -18,10 +18,10 @@ const fragmentShader =
         vec2 vUv = vec2(vUv.x, vUv.y);
         vUv *= 2.0 - 1.0;
         vec2 cUv = vUv;
-        vUv = vec2(rand(vUv.x) + (u_time * 0.0000002), rand(vUv.y));
+        vUv = vec2(rand2(vUv.x) + (u_time * 0.0000002), rand2(vUv.y));
         vUv = vUv * 20.;
         vec3 color = vec3(0.);
-        float x = rand(vec2(vUv.x, vUv.y));
+        float x = rand2(vec2(vUv.x, vUv.y));
         float y = pow((x), 100.);
         float cir = Cir(cUv, vec2((0.5 * x) + sin(u_time * 0.5), 0.5), 0.25);
         float cir2 = Cir(cUv, vec2(0.5, (0.5 * x) + sin(u_time * 0.5)), 0.25);

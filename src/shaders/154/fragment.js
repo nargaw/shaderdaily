@@ -2,9 +2,9 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = 
     glsl`
-    float rand(vec2 vUv){
-        return fract(sin(dot(vUv.xy, vec2(34.89327402, 347023874))) * 23469273.38497290347);
-    }
+    // float rand(vec2 vUv){
+    //     return fract(sin(dot(vUv.xy, vec2(34.89327402, 347023874))) * 23469273.38497290347);
+    // }
     
     vec2 Tile2(vec2 vUv, float zoom, float speed){
         vUv *= zoom;

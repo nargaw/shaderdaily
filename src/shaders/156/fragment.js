@@ -3,11 +3,11 @@ import glsl from 'babel-plugin-glsl/macro'
 const fragmentShader = 
     glsl`
     //random
-float rand(vec2 vUv){
+float rand2(vec2 vUv){
     return fract(sin(dot(vUv.xy, vec2(12.483017652, 87.8729301234))) * 49763419.2834798234);
 }
 
-float rand(float x) {
+float rand2(float x) {
     return fract(sin(x)*1e4);
 }
 
@@ -35,7 +35,7 @@ void main(){
     vUv *= 10.0;
     vec2 ipos = floor(vUv);
     vec2 fpos = fract(vUv);
-    vec2 tile = tPattern(fpos, rand(ipos * u_time * 0.000000001));
+    vec2 tile = tPattern(fpos, rand2(ipos * u_time * 0.000000001));
     float y = abs(sin(tile.x));
     float s = plot(tile, y);
     color = vec3(s);
