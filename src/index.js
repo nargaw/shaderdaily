@@ -6,6 +6,7 @@ import App from './App'
 import { Model } from './Background'
 import { OrbitControls } from '@react-three/drei'
 import Interface from './UI/Interface'
+import Cleanup from './Cleanup'
 
 const root = createRoot(document.querySelector('#root'))
 
@@ -15,6 +16,7 @@ root.render(
             <App />
             {/* <OrbitControls /> */}
             <Model />
+            <Cleanup />
         </Canvas>
         <Interface />
     </StrictMode>

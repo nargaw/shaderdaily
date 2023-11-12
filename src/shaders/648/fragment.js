@@ -152,29 +152,49 @@ export default function Shader648()
         camera.add(listener)
     }
     const audioLoader = new THREE.AudioLoader()    
-    const playMusic = () => {
-        audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
-            sound.current.setBuffer( buffer );
-            sound.current.setLoop( true );
-            sound.current.setVolume( 0.5 );
-            console.log(sound.current)
-            sound.current.play()
-            analyser.current = new THREE.AudioAnalyser(sound.current, fftSize)
-            analyserTexture.current = new THREE.DataTexture(analyser.current.data, 64, 1, format)  
-            if(sound.current.isPlaying){
-                console.log('playing')
-                setMusic(true)
-                setSongOn()
-                startSong() 
-            }
+    
+    audioLoader.load('./Audio/new-adventure-matrika.ogg', (buffer) => {
+        sound.current.setBuffer( buffer );
+        sound.current.setLoop( false );
+        sound.current.setVolume( 0.5 );
+        // sound.current.play()
+        // sound.current.stop(100000)
+        
+        // if(sound.current.isPlaying){
+        //     console.log('playing')
+        //     setMusic(true)
+        //     setSongOn()
+        //     startSong() 
+        // } else {
+        //     console.log('ended')
+        //     setMusic(false)
+        //     turnOffSong()
+        // }
             
-            if(!sound.current.isPlaying){
-                console.log('ended')
-                setMusic(false)
-                turnOffSong()
-            }
-        })
+        // if(!sound.current.isPlaying){
+        //     console.log('ended')
+        //     setMusic(false)
+        //     turnOffSong()
+        // }
+    })
+
+
+    const play = () => {
+        sound.current.play()
+        analyser.current = new THREE.AudioAnalyser(sound.current, fftSize)
+        analyserTexture.current = new THREE.DataTexture(analyser.current.data, 64, 1, format)  
+        setMusic(true)
+        setSongOn()
+        startSong() 
     }
+
+    // const stop = () => {
+    //     sound.current.stop()
+    //     analyser.current = null
+    //     analyserTexture.current = null
+    //     setMusic(false)
+    //     turnOffSong() 
+    // }
     
     const material = new ShaderMaterial({
         vertexShader: vertexShader,
@@ -226,13 +246,30 @@ export default function Shader648()
         backgroundColor: '#000000',
         padding: '10px'
     }
+    const stopStyle = {
+        cursor: 'pointer',
+        color: 'white',
+        alignItems: 'center',
+        display: 'inline-flex',
+        justifyContent: 'center',
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: '#000000',
+        padding: '10px'
+    }
 
     return (
         <>
             {!music && <Html>
-                <div className='play'><button onClick={playMusic} style={playStyle}>Play</button></div>
+                    <div className='play'><button onClick={play} style={playStyle}>Play</button></div>
             </Html>}
+            {/* {music && <Html>
+                    <div className='stop'><button onClick={stop} style={stopStyle}>Stop</button></div>
+            </Html>} */}
             <mesh dispose={null} ref={meshRef} material={material} >
+                
                 <boxGeometry args={[2, 2, 0.1]} />
             </mesh>
         </>
