@@ -92,22 +92,12 @@ const fragmentShader = glsl`
     }
 
 
-    float glow(vec2 uv2, vec2 m, float d){
-        m = vec2(u_mouse.xy);
-        float n = noise2D(uv2 + u_time) * .5;
-        // float d = length(vUv  - abs(u_mouse.xy) ) - 0.25 ;
-        //color = (step(0., -d)) * col * n;
-        //color += cir * col;
-
-        
-        float glow = 0.0001/ -d * n;
-        float glow2 = 0.0001/ d * n;
-        glow = clamp(glow, 0., 1.);
-        glow2 = clamp(glow2, 0., 1.);
-        glow = glow * 1. * (sin(u_time * 1.)/10. + 0.75);
-        glow2 = glow2 * 1. * (sin(u_time * 1.)/10. + 0.75);
-
-        return glow;
+    float glow(vec2 uv2, float d){
+        float dist = 1.0/length(uv2);
+        dist *= 0.2;
+        dist = pow(dist, 0.8);
+        d *= dist;
+        return d;
     }
 
     float plot(vec2 vUv,float p){
@@ -126,53 +116,37 @@ const fragmentShader = glsl`
         vec3 color = vec3(0.);
         
         vec2 uv2 = vUv;
-        uv2 -= .5;
+        uv2 *= 2.;
+        uv2 -= 1.;
 
-            float n = snoise(vUv + u_time) * 1.0;
-        float y = sin((vUv.x * n) + u_time) / 10.0;
-        float p1 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.1), y));
-        float p2 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.2), y));
-        float p3 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.3), y));
-        float p4 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.4), y));
-        float p5 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.5), y));
-        float p6 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.0), y));
-        float p7 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.1), y));
-        float p8 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.2), y));
-        float p9 = glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.3), y));
-        float p10 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.4), y));
-        float p11 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.5), y));
-        float p12 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.6), y));
-        float p13 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.7), y));
-        float p14 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.8), y));
-        float p15 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 0.9), y));
-        float p16 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 1.0), y));
-        float p17 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.6), y));
-        float p18 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.7), y));
-        float p19 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.8), y));
-        float p20 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 0.9), y));
-        float p21 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 1.0), y));
-        float p22 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y - 1.1), y));
-        float p23 =glow(uv2, u_mouse, plot(vec2(vUv.x, vUv.y + 1.1), y));
-        color += vec3(p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p11 + p12 + p13 + p14 + p15 + p16 + p17 + p18 + p19 + p20 + p21 + p22 + p23);
-
-        // vec3 colx = vec3((sin(u_time))/2. + 1., 0.3, 0.);
-
-        // float x = 0.;
-        // float t = u_time * 0.05;
-        // float d =  length(vUv  - abs(u_mouse.xy) ) - 0.25 ;
-        // for(float i =0.; i <1.; i+= 1./4.)
-        // {
-        //     float z = fract(i + t);//reuse layers
-        //     float size = mix(10., .5, z);
-        //     float fade = S(0., 0.5, z) * S(1., 0.8, z);
-        //     x += glow(uv2 * size + i * 20., vec2(u_mouse.xy), d) * fade;
-        // }
-        
-        // vec3 base = sin(t * vec3(.345, .456, .678)) * .4 + .6;
-        // vec3 col = x * base;
-        // col += uv2.y * base * 0.2;
-        // col -= uv2.x  * base * 0.2;
-        // color += col;
+        // float y = vUv.x;
+        vec2 m = u_mouse;
+        float n = snoise(uv2 - u_mouse) * 4.0 ;
+        float y = sin((uv2.x * n) + u_time) / 10.0;
+        float p1 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.1), y));
+        float p2 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.2), y));
+        float p3 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.3), y));
+        float p4 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.4), y));
+        float p5 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.5), y));
+        float p6 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.0), y));
+        float p7 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.1), y));
+        float p8 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.2), y));
+        float p9 =  glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.3), y));
+        float p10 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.4), y));
+        float p11 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.5), y));
+        float p12 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.6), y));
+        float p13 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.7), y));
+        float p14 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.8), y));
+        float p15 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 0.9), y));
+        float p16 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 1.0), y));
+        float p17 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.6), y));
+        float p18 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.7), y));
+        float p19 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.8), y));
+        float p20 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 0.9), y));
+        float p21 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 1.0), y));
+        float p22 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y - 1.1), y));
+        float p23 = glow(uv2 + n, plot(vec2(uv2.x, uv2.y + 1.1), y));
+        color += p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p11 + p12 + p13 + p14 + p15 + p16 + p17 + p18 + p19 + p20 + p21 + p22 + p23;
 
         float numLabel = label(vUv);
         color += numLabel;
