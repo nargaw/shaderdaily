@@ -374,6 +374,42 @@ float cnoise(vec3 P){
     return 2.2 * n_xyz;
 }
 
+float Sphere_SDF(vec3 point, float radius)
+{
+    return length(point) - radius;
+}
+
+float Box_SDF(vec3 point, vec3 size)
+{
+    vec3 q = abs(point) - size;
+    return length(max(q, 0.)) + min(max(q.x, max(q.y, q.z)), 0.);
+}
+
+float Plane_SDF(vec3 point, vec3 normal, float h)
+{
+    return dot(point, normal) + h;
+}
+
+float Smooth_Difference_SDF(float shape1, float shape2, float value) 
+{
+    float h = clamp(0.5 - 0.5 * (shape2 + shape1) / value, 0., 1.);
+    return mix(shape2, -shape1, h) + value * h * (1. - h);
+}
+
+float Smooth_Union_SDF( float shape1, float shape2, float value)
+{
+    float h = clamp( 0.5 + 0.5 * (shape2 - shape1)/value, 0., 1.);
+    return mix(shape2, shape1, h) - value * h * (1. - h);
+}
+
+float Smooth_Intersection_SDF(float shape1, float shape2, float value)
+{
+    float h = clamp(0.5 - 0.5 * (shape2 - shape1)/ value, 0., 1.);
+    return mix(shape2, shape1, h) + value * h * (1. - h);
+}
+
+
+
 `
 
 export default usefulFunctions
