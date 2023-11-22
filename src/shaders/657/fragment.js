@@ -272,7 +272,7 @@ export default function Shader657()
     return (
         <>
             <mesh dispose={null} ref={meshRef} material={material} >
-                <boxGeometry args={[4, 4, 0.1]} />
+                <boxGeometry args={[2, 2, 0.1]} />
             </mesh>
         </>
     )
