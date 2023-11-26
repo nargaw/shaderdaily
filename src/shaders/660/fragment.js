@@ -32,23 +32,24 @@ const fragmentShader = glsl`
         float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.5;
 
         vec3 newPoint1 = point;
-        // newPoint1.x -= 0.;
-        float sphere = Sphere_SDF(vec3(newPoint1), 0.5) + displacement ;
-        float box = Box_SDF(vec3(newPoint1), vec3(0.5)) + displacement;
+        newPoint1.x += sin(u_time) * 2.;
+        // newPoint1.y += cos(u_time) * 2.;
+        float sphere = Sphere_SDF(vec3(newPoint1), 0.5) ;
+        float box = Box_SDF(vec3(newPoint1), vec3(0.5)) ;
 
         vec3 newPoint2 = point;
-        float sphere2 = Sphere_SDF(vec3(newPoint2), 1.) + displacement ;
+        float sphere2 = Sphere_SDF(vec3(newPoint2), 1.) ;
         float box2 = Box_SDF(vec3(newPoint2), vec3(1.));
 
         vec3 newPoint3 = point;
         // newPoint3.x += 2.5;
-        float sphere3 = Sphere_SDF(vec3(newPoint3), 1.1) + displacement ;
-        float box3 = Box_SDF(vec3(newPoint3), vec3(1.)) + displacement;
+        float sphere3 = Sphere_SDF(vec3(newPoint3), 1.1) ;
+        float box3 = Box_SDF(vec3(newPoint3), vec3(1.)) ;
 
         float total_map;
 
         // total_map += box;
-        float map1 = Smooth_Intersection_SDF(sphere, box, 0.15);
+        float map1 = Smooth_Intersection_SDF(sphere, box, 0.15) + displacement;
 
         float map2 = Smooth_Union_SDF(sphere2, box2, 0.15);
 
@@ -142,17 +143,17 @@ const fragmentShader = glsl`
             rdOut = refract(rdIn, nExit, IOR-abb);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.r = 1.;
-            // reflTex.r = texture(u_cubemap, rdOut).r;
+            reflTex.r = texture(u_cubemap, rdOut).r;
 
             rdOut = refract(rdIn, nExit, IOR);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.g = .5;
-            // reflTex.g = texture(u_cubemap, rdOut).g;
+            reflTex.g = texture(u_cubemap, rdOut).g;
 
             rdOut = refract(rdIn, nExit, IOR+abb);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.b = .5;
-            // reflTex.b = texture(u_cubemap, rdOut).b;
+            reflTex.b = texture(u_cubemap, rdOut).b;
 
             float dens = 0.1;
             float optDist = exp(-dIn * dens);
@@ -243,7 +244,7 @@ export default function Shader660()
     return (
         <>
             <mesh dispose={null} ref={meshRef} material={material} >
-                <boxGeometry args={[2, 2, 0.1]} />
+                <boxGeometry args={[4, 4, 0.1]} />
             </mesh>
         </>
     )
