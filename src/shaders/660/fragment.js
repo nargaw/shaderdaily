@@ -55,7 +55,7 @@ const fragmentShader = glsl`
 
         float map3 = Smooth_Difference_SDF(sphere3, box3, 0.15);
 
-        float map = Smooth_Union_SDF(map1, map3, 0.15);
+        float map = Smooth_Union_SDF(map1, map3, 0.1);
 
         // map = Smooth_Union_SDF(map, map3, 0.15);
         
@@ -143,17 +143,17 @@ const fragmentShader = glsl`
             rdOut = refract(rdIn, nExit, IOR-abb);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.r = 1.;
-            reflTex.r = texture(u_cubemap, rdOut).r;
+            // reflTex.r = texture(u_cubemap, rdOut).r;
 
             rdOut = refract(rdIn, nExit, IOR);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.g = .5;
-            reflTex.g = texture(u_cubemap, rdOut).g;
+            // reflTex.g = texture(u_cubemap, rdOut).g;
 
             rdOut = refract(rdIn, nExit, IOR+abb);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.b = .5;
-            reflTex.b = texture(u_cubemap, rdOut).b;
+            // reflTex.b = texture(u_cubemap, rdOut).b;
 
             float dens = 0.1;
             float optDist = exp(-dIn * dens);
@@ -244,7 +244,7 @@ export default function Shader660()
     return (
         <>
             <mesh dispose={null} ref={meshRef} material={material} >
-                <boxGeometry args={[4, 4, 0.1]} />
+                <boxGeometry args={[2, 2, 0.1]} />
             </mesh>
         </>
     )
