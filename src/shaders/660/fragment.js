@@ -119,7 +119,7 @@ const fragmentShader = glsl`
         float ray_march_scene = ray_march(ray_origin, ray_direction, 1.);
         // vec3 col = vec3(0.);
         vec3 col = texture(u_cubemap, ray_direction).rgb;
-        float IOR = 1.;
+        float IOR = 1.45;
 
         if(ray_march_scene < 1000.){
             vec3 point = ray_origin + ray_direction * ray_march_scene;
