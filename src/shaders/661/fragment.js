@@ -16,24 +16,151 @@ const fragmentShader = glsl`
 
     uniform samplerCube u_cubemap;
 
-   
+    mat2 Rotate(float a) {
+        float s=sin(a); float c=cos(a);
+        return mat2(c,-s,s,c);
+    }
+
+    float randomFunc(vec2 n) { 
+        return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+    }
+
+    float sdBoxFrame( vec3 p, vec3 b, float e )
+    {
+        p = abs(p  )-b;
+        vec3 q = abs(p+e)-e;
+        return min(min(
+            length(max(vec3(p.x,q.y,q.z),0.0))+min(max(p.x,max(q.y,q.z)),0.0),
+            length(max(vec3(q.x,p.y,q.z),0.0))+min(max(q.x,max(p.y,q.z)),0.0)),
+            length(max(vec3(q.x,q.y,p.z),0.0))+min(max(q.x,max(q.y,p.z)),0.0));
+    }
+
+    float draw_scene(vec3 point)
+    {
+        //distortion
+        float noise = cnoise(vec3(point + sin(u_time))) * 1.;
+        float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.15;
+
+        float box = sdBoxFrame(point, vec3(1.0 + displacement), 0.05 );
+
+        float total_map;
+
+        total_map += box;
+        
+        // total_map += map;
+
+        return total_map;
+    }
+
+    vec3 getNormal(vec3 point)
+    {
+        vec3 val = vec3(0.01, vec2(0.));
+        float x = draw_scene(point + val.xyy) - draw_scene(point - val.xyy);
+        float y = draw_scene(point + val.yxy) - draw_scene(point - val.yxy);
+        float z = draw_scene(point + val.yyx) - draw_scene(point - val.yyx);
+        vec3 normal = vec3(x, y, z);
+        return normalize(normal);
+    }
+
+    float ray_march(vec3 ro, vec3 rd, float side)
+    {
+        float tot_dist = 0.;
+        for(int i = 0; i < 1000; i++)
+        {
+            vec3 pos = ro + tot_dist * rd;
+            float dist = draw_scene(pos) * side;
+
+            tot_dist += dist;
+            if(tot_dist > 1000. || abs(dist) < 0.0001) break;
+        }
+        return tot_dist;
+    }
+
+    vec3 GetRayDir(vec2 uv, vec3 p, vec3 l, float z){
+        vec3 
+            f = normalize(l - p),
+            r = normalize(cross(vec3(0., 1., 0.), f)),
+            u = cross(f, r),
+            c = f * z,
+            i = c + uv.x*r + uv.y*u;
+        
+        return normalize(i);
+    }
 
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec2 uv2 = vUv;
-        // uv2 -= 0.5;
+        uv2 -= 0.5;
 
         vec2 m = u_mouse.xy;
 
         vec3 color = vec3(0.);
 
-        //hw1
-        color = vec3(1. - uv2.x);
+        vec3 cam_pos = vec3(0., 0., -6.);
+        vec3 ray_origin = cam_pos;
+        ray_origin.yz *= Rotate(-m.y*PI + 1.);
+        ray_origin.xz *= Rotate(-m.x*TWO_PI);
+        // vec3 ray_direction = vec3(uv2, 1.);
+        vec3 ray_direction = GetRayDir(uv2, ray_origin, vec3(0.), 1.);
 
-        //hw2
-        color = vec3(uv2.y, 0., uv2.x);
+        float ray_march_scene = ray_march(ray_origin, ray_direction, 1.);
+        // vec3 col = vec3(0.);
+        vec3 col = texture(u_cubemap, ray_direction).rgb;
+        float IOR = 1.45;
 
+        if(ray_march_scene < 1000.){
+            vec3 point = ray_origin + ray_direction * ray_march_scene;
+            vec3 normal = getNormal(point);
+            vec3 r = reflect(ray_direction, normal);
+
+            // vec3 refOutside = vec3(1.);
+            vec3 refOutside = texture(u_cubemap, r ).rgb;
+            vec3 rdIn = refract(ray_direction, normal, 1./IOR);
+
+            vec3 pEnter = point - normal * .00001 * 3.;
+            float dIn = ray_march(pEnter, rdIn, -1.);
+
+            vec3 pExit = pEnter + rdIn * dIn;
+            vec3 nExit = -getNormal(pExit);
+
+            vec3 reflTex = vec3(0.);
+            vec3 rdOut = vec3(0.);
+
+            float abb = 0.01;
+            rdOut = refract(rdIn, nExit, IOR-abb);
+            if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
+            // reflTex.r = 1.;
+            // reflTex.r = texture(u_cubemap, rdOut).r;
+
+            rdOut = refract(rdIn, nExit, IOR);
+            if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
+            // reflTex.g = .5;
+            // reflTex.g = texture(u_cubemap, rdOut).g;
+
+            rdOut = refract(rdIn, nExit, IOR+abb);
+            if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
+            // reflTex.b = .5;
+            // reflTex.b = texture(u_cubemap, rdOut).b;
+
+            float dens = 0.1;
+            float optDist = exp(-dIn * dens);
+
+            col = reflTex * optDist;
+
+            float fresnel = pow(1. + dot(ray_direction, normal), 2.);
+
+            col = mix(reflTex, refOutside, fresnel);
+            color += col;
+
+            // col = normal * .5 + .5;
+        }
+
+        // col = pow(col, vec3(.4545));
+
+        color += col;
+
+        // color += ray_march_scene;
 
         float numLabel = label(vUv);
         color += numLabel;
@@ -58,7 +185,7 @@ import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
 import * as THREE from 'three'
 
-export default function Shader660()
+export default function Shader661()
 {
     const r = './Models/EnvMaps/1/';
     const urls = [ r + 'px.png', r + 'nx.png',
@@ -105,7 +232,7 @@ export default function Shader660()
     return (
         <>
             <mesh dispose={null} ref={meshRef} material={material} >
-                <boxGeometry args={[2, 2, 0.1]} />
+                <boxGeometry args={[4.5, 4.5, 0.1]} />
             </mesh>
         </>
     )
