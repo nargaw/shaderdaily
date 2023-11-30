@@ -10,7 +10,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numSix(vec2(p.x + 0.35, p.y));
         float center = numSix(vec2(p.x -0.03, p.y));
-        float right = numOne(vec2(p.x - 0.42, p.y));
+        float right = numTwo(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -35,18 +35,53 @@ const fragmentShader = glsl`
             length(max(vec3(q.x,q.y,p.z),0.0))+min(max(q.x,max(q.y,p.z)),0.0));
     }
 
+    float sdPyramid( vec3 p, float h )
+    {
+        float m2 = h*h + 0.25;
+            
+        p.xz = abs(p.xz);
+        p.xz = (p.z>p.x) ? p.zx : p.xz;
+        p.xz -= 0.5;
+
+        vec3 q = vec3( p.z, h*p.y - 0.5*p.x, h*p.x + 0.5*p.y);
+        
+        float s = max(-q.x,0.0);
+        float t = clamp( (q.y-0.5*p.z)/(m2+0.25), 0.0, 1.0 );
+            
+        float a = m2*(q.x+s)*(q.x+s) + q.y*q.y;
+        float b = m2*(q.x+0.5*t)*(q.x+0.5*t) + (q.y-m2*t)*(q.y-m2*t);
+            
+        float d2 = min(q.y,-q.x*m2-q.y*0.5) > 0.0 ? 0.0 : min(a,b);
+            
+        return sqrt( (d2+q.z*q.z)/m2 ) * sign(max(q.z,-p.y));
+    }
+
+    float sdPlane( vec3 p, vec3 n, float h )
+    {
+        // n must be normalized
+        return dot(p,n) + h;
+    }
+
+   
+
     float draw_scene(vec3 point)
     {
         //distortion
         float noise = cnoise(vec3(point + sin(u_time))) * 1.;
         float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.15;
 
-        float box = sdBoxFrame(point, vec3(1.0 + displacement), 0.05 );
-
+        vec3 newPoint = point;
+        newPoint.y += 0.5;
+        vec3 newPoint2 = point;
+        newPoint.y -= 1.5;
+        // float box = sdBoxFrame(point, vec3(1.0 + displacement), 0.05 );
+        float plane = sdPlane(newPoint, vec3(0,1,0), 1.);
+        float pyramid = sdPyramid(newPoint2 , 1.);
         float total_map;
 
-        total_map += box;
-        
+        // total_map += box;
+        total_map += plane;
+        total_map = Smooth_Union_SDF(total_map, pyramid, 0.05);
         // total_map += map;
 
         return total_map;
@@ -97,10 +132,11 @@ const fragmentShader = glsl`
 
         vec3 color = vec3(0.);
 
-        vec3 cam_pos = vec3(0., 0., -6.);
+        vec3 cam_pos = vec3(0., 5., -3.);
         vec3 ray_origin = cam_pos;
-        ray_origin.yz *= Rotate(-m.y*PI + 1.);
+        // ray_origin.yz *= Rotate(-m.y*PI + 0.5);
         ray_origin.xz *= Rotate(-m.x*TWO_PI);
+        ray_origin.y = clamp(ray_origin.y, 0.1, 2.);
         // vec3 ray_direction = vec3(uv2, 1.);
         vec3 ray_direction = GetRayDir(uv2, ray_origin, vec3(0.), 1.);
 
@@ -131,17 +167,17 @@ const fragmentShader = glsl`
             rdOut = refract(rdIn, nExit, IOR-abb);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.r = 1.;
-            // reflTex.r = texture(u_cubemap, rdOut).r;
+            reflTex.r = texture(u_cubemap, rdOut).r;
 
             rdOut = refract(rdIn, nExit, IOR);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.g = .5;
-            // reflTex.g = texture(u_cubemap, rdOut).g;
+            reflTex.g = texture(u_cubemap, rdOut).g;
 
             rdOut = refract(rdIn, nExit, IOR+abb);
             if(dot(rdOut, rdOut)==0.) rdOut = reflect(rdIn, nExit);
             // reflTex.b = .5;
-            // reflTex.b = texture(u_cubemap, rdOut).b;
+            reflTex.b = texture(u_cubemap, rdOut).b;
 
             float dens = 0.1;
             float optDist = exp(-dIn * dens);
@@ -156,7 +192,7 @@ const fragmentShader = glsl`
             // col = normal * .5 + .5;
         }
 
-        // col = pow(col, vec3(.4545));
+        col = pow(col, vec3(2.94545));
 
         color += col;
 
@@ -185,7 +221,7 @@ import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
 import * as THREE from 'three'
 
-export default function Shader661()
+export default function Shader662()
 {
     const r = './Models/EnvMaps/1/';
     const urls = [ r + 'px.png', r + 'nx.png',
@@ -232,7 +268,7 @@ export default function Shader661()
     return (
         <>
             <mesh dispose={null} ref={meshRef} material={material} >
-                <boxGeometry args={[2, 2, 0.1]} />
+                <boxGeometry args={[4.5, 4.5, 0.1]} />
             </mesh>
         </>
     )
