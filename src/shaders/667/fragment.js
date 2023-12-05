@@ -10,7 +10,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numSix(vec2(p.x + 0.35, p.y));
         float center = numSix(vec2(p.x -0.03, p.y));
-        float right = numSix(vec2(p.x - 0.42, p.y));
+        float right = numSeven(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -83,31 +83,12 @@ const fragmentShader = glsl`
     {
         //distortion
         float noise = cnoise(vec3(point + sin(u_time))) * 1.;
-        float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.1;
+        float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.01;
 
         vec3 newPoint = point;
-        newPoint.x += 4.5;
-
-        newPoint.xz *= Rotate(PI * 0.5);
-        newPoint.yz *= Rotate(PI * 0.5);
-
-        newPoint.yx *= Rotate((u_time * 0.3));
-        newPoint.yx *= Rotate((u_time* 0.3));
-        point.yx *= Rotate((u_time* 0.3));
-        point.yx *= Rotate((u_time* 0.3));
-        
-
-        float knot = sdKnot(point, 3. ) + displacement;
-        
-        float knot2 = sdKnot(newPoint, 3. ) + displacement;
+        float plane = sdPlane(point, vec3(0., 1., 0.), 0.5) + displacement;
         float total_map;
-
-
-        // total_map += box;
-        // total_map += plane;
-        // total_map += octahedron;
-        total_map += knot;
-        total_map = Smooth_Union_SDF(total_map, knot2, 0.015);
+        total_map += plane;
 
         return total_map;
     }
@@ -160,14 +141,14 @@ const fragmentShader = glsl`
         vec3 cam_pos = vec3(0., 0., -30.);
         vec3 ray_origin = cam_pos;
         // ray_origin.yz *= Rotate(-m.y*PI + 1.);
-        ray_origin.xz *= Rotate(-m.x*TWO_PI + (u_time * 0.25));
+        ray_origin.xz *= Rotate(-m.x*TWO_PI );
         ray_origin.y = clamp(ray_origin.y, -1., 1.);
         // vec3 ray_direction = vec3(uv2, 1.);
         vec3 ray_direction = GetRayDir(uv2, ray_origin, vec3(0.), 1.);
 
         float ray_march_scene = ray_march(ray_origin, ray_direction, 1.);
-        vec3 col = vec3(0.);
-        // vec3 col = texture(u_cubemap, ray_direction).rgb;
+        // vec3 col = vec3(0.);
+        vec3 col = texture(u_cubemap, ray_direction).rgb;
         float IOR = 1.45;
 
         if(ray_march_scene < 1000.){
@@ -246,7 +227,7 @@ import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
 import * as THREE from 'three'
 
-export default function Shader666()
+export default function Shader667()
 {
     const r = './Models/EnvMaps/1/';
     const urls = [ r + 'px.png', r + 'nx.png',
