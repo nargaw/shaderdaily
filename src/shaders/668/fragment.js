@@ -83,13 +83,29 @@ const fragmentShader = glsl`
     {
         //distortion
         float noise = cnoise(vec3(point + sin(u_time))) * 1.;
-        float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.01;
+        float displacement = sin((noise + cos(u_time) * 1.) * point.x) * sin((noise + sin(u_time) * 1.) * point.y) * cos((noise + cos(u_time) * 1.) * point.z) * 0.1;
 
         vec3 newPoint = point;
-        float plane = sdPlane(point, vec3(0., 1., 0.), 0.5) + displacement;
-        float total_map;
-        total_map += plane;
+        newPoint.x += 4.5;
 
+        newPoint.xz *= Rotate(PI * 0.5);
+        newPoint.yz *= Rotate(PI * 0.5);
+
+        newPoint.yx *= Rotate((u_time));
+        newPoint.yx *= Rotate((u_time));
+        point.yx *= Rotate((u_time));
+        point.yx *= Rotate((u_time));
+        
+
+        float knot = sdKnot(point, 1.5) + displacement;
+        
+        float knot2 = sdKnot(newPoint, 1.5) + displacement;
+
+        float boxFrame = sdBoxFrame(point, vec3(10.), 0.5);
+        float total_map;
+
+        total_map = Smooth_Union_SDF(knot, knot2, 0.015);
+        total_map = Smooth_Union_SDF(total_map, boxFrame, 0.015);
         return total_map;
     }
 
