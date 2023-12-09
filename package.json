@@ -16,6 +16,7 @@
     "@react-three/postprocessing": "^2.14.13",
     "babel-plugin-glsl": "^1.0.0",
     "glslify": "^7.1.1",
+    "leva": "^0.9.35",
     "postprocessing": "^6.32.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
