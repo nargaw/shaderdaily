@@ -162,7 +162,7 @@ export default function Shader672()
         },
     })
 
-    const geometry = new THREE.PlaneGeometry(4.5, 4.5)
+    const geometry = new THREE.PlaneGeometry(2, 2)
     // geometry.setAttribute(
     //     'newColors',
     //     new THREE.Float32BufferAttribute(colorFloats, 3)
