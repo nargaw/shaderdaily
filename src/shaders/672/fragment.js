@@ -86,7 +86,7 @@ export default function Shader672()
     const textureCube = new THREE.CubeTextureLoader().load(urls)
 
     const loader = new THREE.TextureLoader()
-    const metal =  loader.load('./Models/Textures/Metal/color.png')
+    const metal =  loader.load('./Models/Textures/Metal/color.jpg')
     // console.log(metal)
     const {x, y, z, w} = useControls('tint color', {
         x:      
