@@ -4,6 +4,7 @@ const fragmentShader = glsl`
 
     #define S(a, b, t) smoothstep(a, b, t)
     #define grid 10.
+    #define time u_time
     
     float label(vec2 p)
     {
@@ -15,73 +16,36 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
 
-    vec3 red = vec3(1., 0., 0.);
-    vec3 blue = vec3(0., 0., 1.);
-    vec3 white = vec3(1., 1., 1.);
-    vec3 green = vec3(0., 1., 0.);
-    vec3 cyan = vec3(0., 1., 1.);
-    vec3 orange = vec3(1., 0.75, 0.5);
-    vec3 purple = vec3(1., 0., 1.);
-    vec3 black = vec3(0., 0., 0.);
-    vec3 yellow = vec3(1., 1., 0.);
+    //inverseLerp 
+    float inverseLerp(float v, float minVal, float maxVal){
+        return (v - minVal) / (maxVal - minVal);
+    }
+
+    //remap
+    float remap(float v, float minIn, float maxIn, float minOut, float maxOut){
+        float t = inverseLerp(v, minIn, maxIn);
+        return mix(minOut, maxOut, t);
+    }
 
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec2 uv2 = vUv;
-  
-        vec3 color = vec3(0.75);
+        vec3 color = vec3(0.);
+        uv2 -= 0.5;
+        vec2 m = vec2(u_mouse.x, -u_mouse.y);
+        float n = noise2D(uv2 - m * (u_time)) ;
+
         
-        vec2 center = uv2 - 0.5;
+        uv2 *= n;
+        float t1 = sin(uv2.x * 100. + time * 2.);
+        float t2 = sin(uv2.y * 100. + time * 2.);
 
-        //abs -10 -> 10
-        //floor 1.8 -> 1
-        //ceil 1.1 -> 2
-        //round 5.6 -> 6
-        //fract eg 2.9 -> 0.9
-        //modulo mod(5.2, 2.5) -> 0.2 remainder
-
-
-
-        //grid
-        vec2 cell = fract(center * grid);
-        cell = abs(cell - 0.5);
-        float distToCell = 1. - 2. * max(cell.x, cell.y);
-        float cellLine = smoothstep(0.0, 0.05, distToCell);
-        float xAxis = smoothstep(0.0, 0.002, abs(uv2.y - 0.5));
-        float yAxis = smoothstep(0.0, 0.002, abs(uv2.x - 0.5));
-
-        //lines
-        vec2 pos = center * grid;
-        float value1 = pos.x;
-        float value2 = abs(pos.x);
-        float value3 = floor(pos.x);
-        float value4 = ceil(pos.x);
-        float value5 = round(pos.x);
-        float value6 = fract(pos.x);
-        float funcLine1 = smoothstep(0.0, 0.075, abs(pos.y - value1));
-        float funcLine2 = smoothstep(0.0, 0.075, abs(pos.y - value2));
-        float funcLine3 = smoothstep(0.0, 0.075, abs(pos.y - value3));
-        float funcLine4 = smoothstep(0.0, 0.075, abs(pos.y - value4));
-        float funcLine5 = smoothstep(0.0, 0.075, abs(pos.y - value5));
-        float funcLine6 = smoothstep(0.0, 0.075, abs(pos.y - value6));
-
-        color = mix(black, color, cellLine);
-        color = mix(blue, color, xAxis);
-        color = mix(blue, color, yAxis);
-        color = mix(yellow, color, funcLine1);
-        color = mix(red, color, funcLine2);
-        color = mix(green, color, funcLine3);
-        color = mix(cyan, color, funcLine4);
-        color = mix(purple, color, funcLine5);
-        color = mix(orange, color, funcLine6);
-        // color = vec3(cellLine);
-        
+        color = vec3(t2 * t1);
 
         float numLabel = label(vUv);
-        color = mix(color, vec3(0.), numLabel) ;
+        color = mix(color, vec3(1.), numLabel) ;
         gl_FragColor = vec4(color, 1.);
-        // gl_FragColor = texture2D(u_diffuse, vUv);
     }
 `
 
@@ -140,12 +104,18 @@ export default function Shader677()
 
     let mouseX;
     let mouseY;
+
+    let currentTime = 0
+    useThree((state) => {
+        currentTime = state.clock.elapsedTime
+    })
     
     useFrame(({clock}) => {
-        meshRef.current.material.uniforms.u_time.value = clock.elapsedTime
+        meshRef.current.material.uniforms.u_time.value = clock.elapsedTime - currentTime
         meshRef.current.material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
-        // console.log(clock.elapsedTime)
+        // console.log(meshRef.current.material.uniforms.u_time.value)
     })
+
 
     addEventListener('mousemove', (e) => {
         mouseX = (e.clientX / window.innerWidth);
