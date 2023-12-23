@@ -44,63 +44,7 @@ const fragmentShader = glsl`
     }
 `
 
-const fragmentShader2 = glsl`
-
-    #define S(a, b, t) smoothstep(a, b, t)
-    #define grid 10.
-    #define time u_time
-    
-    float label(vec2 p)
-    {
-        p *= 10.;
-        p.x -= 0.25;
-        float left = numSix(vec2(p.x + 0.35, p.y));
-        float center = numEight(vec2(p.x -0.03, p.y));
-        float right = numTwo(vec2(p.x - 0.42, p.y));
-        return left + center + right ;
-    }
-
-    //inverseLerp 
-    float inverseLerp(float v, float minVal, float maxVal){
-        return (v - minVal) / (maxVal - minVal);
-    }
-
-    //remap
-    float remap(float v, float minIn, float maxIn, float minOut, float maxOut){
-        float t = inverseLerp(v, minIn, maxIn);
-        return mix(minOut, maxOut, t);
-    }
-
-
-    void main()
-    {
-        vec2 vUv = vec2(vUv.x, vUv.y);
-        vec2 uv2 = vUv;
-        vec3 color = vec3(0.);
-        // uv2 -= 0.5;
-
-        float numLabel = label(vUv);
-        color = mix(color, vec3(1.), numLabel) ;
-        gl_FragColor = vec4(color, 1.);
-    }
-`
-
 const vertexShader = glsl`
-varying vec2 vUv;
-attribute vec3 newColors;
-
-varying vec3 vColor;
-
-void main()
-{
-    vColor = newColors;
-    
-    // gl_Position = vec4(position, 1.);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
-    vUv = uv;
-}`
-
-const vertexShader2 = glsl`
 varying vec2 vUv;
 attribute vec3 newColors;
 
@@ -123,6 +67,7 @@ import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
 import * as THREE from 'three'
 import { folder, useControls } from 'leva'
+import { useGLTF } from '@react-three/drei'
 
 export default function Shader682()
 {
@@ -136,8 +81,11 @@ export default function Shader682()
     const loader = new THREE.TextureLoader()
 
     const tvTexture = loader.load('./Models/Textures/TV/tv.jpg')
-   
-    const material = new ShaderMaterial({
+
+    const suz = useGLTF('./Models/suzanne/suz.glb')
+    const testMaterial = new THREE.MeshNormalMaterial()
+
+    const material = new THREE.ShaderMaterial({
         vertexShader: vertexShader,
         fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
         uniforms: {
@@ -149,24 +97,7 @@ export default function Shader682()
         },
     })
 
-    const material2 = new ShaderMaterial({
-        vertexShader: vertexShader2,
-        fragmentShader: preload + usefulFunctions + numbers + fragmentShader2,
-        uniforms: {
-            u_time: { type: "f", value: 1.0 },
-            u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.inner) },
-            u_mouse: { type: "v2", value: new Vector2() },
-            u_texture: {value: tvTexture},
-            u_background: {value: textureCube}
-        },
-    })
-
     const geometry = new THREE.PlaneGeometry(2., 2.)
-    // geometry.setAttribute(
-    //     'newColors',
-    //     new THREE.Float32BufferAttribute(colorFloats, 3)
-    // )
-
 
     const meshRef = useRef()
 
@@ -179,9 +110,8 @@ export default function Shader682()
     })
     
     useFrame(({clock}) => {
-        meshRef.current.material.uniforms.u_time.value = clock.elapsedTime - currentTime
-        meshRef.current.material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
-        // console.log(meshRef.current.material.uniforms.u_time.value)
+        material.uniforms.u_time.value = clock.elapsedTime - currentTime
+        material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
     })
 
 
@@ -200,12 +130,19 @@ export default function Shader682()
 
     return (
         <>
-            <mesh 
+            {/* <mesh 
                 dispose={null} 
                 ref={meshRef} 
                 material={material} 
                 geometry={geometry}
-            />
+            /> */}
+            {/* <primitive object={suz.scene}/> */}
+            {suz && <mesh 
+                ref={meshRef}  
+                geometry={geometry}
+                material={testMaterial}
+                scale={[1.]}
+            />}
         </>
     )
 }
