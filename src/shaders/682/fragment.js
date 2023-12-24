@@ -8,6 +8,8 @@ const fragmentShader = glsl`
 
     uniform sampler2D u_texture;
     uniform samplerCube u_background;
+
+    varying vec3 vNormal;
     
     float label(vec2 p)
     {
@@ -38,8 +40,34 @@ const fragmentShader = glsl`
         vec3 color = vec3(0.);
         // uv2 -= 0.5;
 
-        float numLabel = label(vUv);
-        color = mix(color, vec3(1.), numLabel) ;
+
+
+        vec3 baseColor = vec3(0.5);
+        vec3 lighting = vec3(0.);
+
+        vec3 normal = normalize(vNormal);
+
+        //ambient
+        vec3 ambientLight = vec3(0.5);
+
+        lighting = ambientLight;
+
+        //hemiLighting
+        vec3 skyColor = vec3(0., 0.3, 0.6);
+        vec3 groundColor = vec3(0.6, 0.3, 0.1);
+
+        float hemiMix = remap(normal.y, -1., 1., 0., 1.);
+        vec3 hemi = mix(groundColor, skyColor, hemiMix);
+
+        lighting = ambientLight * 0. + hemi;
+
+
+        color = baseColor * lighting;
+
+        // color = normal;
+        
+        // float numLabel = label(vUv);
+        // color = mix(color, vec3(1.), numLabel) ;
         gl_FragColor = vec4(color, 1.);
     }
 `
@@ -47,6 +75,8 @@ const fragmentShader = glsl`
 const vertexShader = glsl`
 varying vec2 vUv;
 attribute vec3 newColors;
+
+varying vec3 vNormal;
 
 varying vec3 vColor;
 
@@ -56,6 +86,7 @@ void main()
     
     // gl_Position = vec4(position, 1.);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+    vNormal = (modelMatrix * vec4(normal, 0.)).xyz;
     vUv = uv;
 }`
 
@@ -110,6 +141,7 @@ export default function Shader682()
     })
     
     useFrame(({clock}) => {
+        meshRef.current.rotation.y += 0.01
         material.uniforms.u_time.value = clock.elapsedTime - currentTime
         material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
     })
@@ -130,19 +162,12 @@ export default function Shader682()
 
     return (
         <>
-            {/* <mesh 
-                dispose={null} 
+            <mesh 
                 ref={meshRef} 
-                material={material} 
-                geometry={geometry}
-            /> */}
-            {/* <primitive object={suz.scene}/> */}
-            {suz && <mesh 
-                ref={meshRef}  
-                geometry={geometry}
-                material={testMaterial}
-                scale={[1.]}
-            />}
+                scale={0.5} 
+                geometry={suz.scene.children[0].geometry}
+                material={material}    
+            />
         </>
     )
 }
