@@ -1,0 +1,172 @@
+import glsl from 'babel-plugin-glsl/macro'
+
+const fragmentShader = glsl`
+
+    #define S(a, b, t) smoothstep(a, b, t)
+    #define time u_time
+
+    uniform sampler2D u_texture;
+    uniform samplerCube u_background;
+
+    float label(vec2 p)
+    {
+        p *= 10.;
+        p.x -= 0.25;
+        float left = numSix(vec2(p.x + 0.35, p.y));
+        float center = numNine(vec2(p.x -0.03, p.y));
+        float right = numOne(vec2(p.x - 0.42, p.y));
+        return left + center + right ;
+    }
+
+    vec3 Y = vec3(1., 1., 0.5);
+    vec3 B = vec3(0.25, 0.25, 1.);
+    vec3 R = vec3(1., 0.25, 0.25);
+    vec3 G = vec3(0.25, 1., 0.25);
+    vec3 P = vec3(1., 0.25, 1.);
+
+    float inverseLerp(float v, float minValue, float maxValue){
+        return(v - minValue) / (maxValue - minValue);
+    }
+
+    float remap(float v, float inMin, float inMax, float outMin, float outMax)
+    {
+        float t = inverseLerp(v, inMin, inMax);
+        return mix(outMin, outMax, t);
+    }
+
+    vec3 bkGroundColor(){
+        float distFromCenter = length(abs(vUv - 0.5));
+
+        float vignette = 1. - distFromCenter;
+        vignette = smoothstep(0.0, 0.7, vignette);
+        vignette = remap(vignette, 0., 1., 0.3, 1.);
+
+        return vec3(vignette);
+    }
+
+    vec3 drawGrid(vec3 color, vec3 lineColor, float cellSpacing, float lineWidth){
+        vec2 center = vUv - 0.5;
+        vec2 cells = abs(fract(center * u_resolution/cellSpacing) - 0.5);
+        float distToEdge = (0.5 - max(cells.x, cells.y)) * cellSpacing;
+        float lines = smoothstep(0., lineWidth, distToEdge);
+
+        color = mix(lineColor, color, lines);
+        return color;
+    }
+
+    void main()
+    {
+        vec2 vUv = vec2(vUv.x, vUv.y);
+        vec2 uv2 = vUv;
+        vec3 color = vec3(0.);
+
+        color = bkGroundColor();
+        color = drawGrid(color, vec3(0.5), 10., 1.);
+        color = drawGrid(color, vec3(0.0), 100., 2.);
+        
+        float numLabel = label(vUv);
+        color = mix(color, vec3(1.), numLabel) ;
+        gl_FragColor = vec4(color, 1.);
+    }
+`
+
+const vertexShader = glsl`
+varying vec2 vUv;
+
+void main()
+{
+    vUv = uv;
+    vec3 localSpacePosition = position;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(localSpacePosition, 1.);
+}`
+
+import { Vector2, ShaderMaterial } from 'three'
+import { useRef, useEffect } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import numbers from '../numLabels/numbers.js'
+import preload from '../preload/preload.js'
+import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
+import * as THREE from 'three'
+import { folder, useControls } from 'leva'
+import { useGLTF, OrbitControls } from '@react-three/drei'
+
+export default function Shader691()
+{
+    const r = './Models/EnvMaps/0/';
+    const urls = [ 
+        r + 'px.jpg', 
+        r + 'nx.jpg',
+        r + 'py.jpg', 
+        r + 'ny.jpg',
+        r + 'pz.jpg', 
+        r + 'nz.jpg' ];
+
+    const textureCube = new THREE.CubeTextureLoader().load(urls)
+
+    const loader = new THREE.TextureLoader()
+
+    const tvTexture = loader.load('./Models/Textures/TV/tv.jpg')
+
+    const suz = useGLTF('./Models/suzanne/suz.glb')
+    const testMaterial = new THREE.MeshNormalMaterial()
+    
+    const material = new THREE.ShaderMaterial({
+        vertexShader: vertexShader ,
+        fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
+        uniforms: {
+            u_cameraPosition: {value: new THREE.Vector3()},
+            u_time: { type: "f", value: 1.0 },
+            u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
+            u_mouse: { type: "v2", value: new Vector2() },
+            u_texture: {value: tvTexture},
+            u_background: {value: textureCube}
+        },
+    })
+
+    const geometry = new THREE.PlaneGeometry(2., 2.)
+    // const geometry = new THREE.BoxGeometry(2., 2., 2., 5.);
+    const icosaGeometry = new THREE.IcosahedronGeometry(1, 128)
+    const meshRef = useRef()
+
+    let mouseX;
+    let mouseY;
+
+    let currentTime = 0
+    
+    useThree((state) => {
+        currentTime = state.clock.elapsedTime
+    })
+    
+    useFrame(({clock, camera}) => {
+        material.uniforms.u_cameraPosition.value = camera.position
+        material.uniforms.u_time.value = clock.elapsedTime - currentTime
+        material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
+    })
+
+
+    addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth);
+        mouseY = -(e.clientY / window.innerHeight) + 1;
+    })
+
+    addEventListener('contextmenu', e => e.preventDefault())
+
+    addEventListener('touchmove', (e) => {
+        mouseX = (e.changedTouches[0].clientX / window.innerWidth);
+        mouseY = -(e.changedTouches[0].clientY / window.innerHeight) + 1;
+    }, {passive: false})
+
+
+    return (
+        <>
+            <mesh 
+                ref={meshRef} 
+                // scale={0.5} 
+                // geometry={suz.scene.children[0].geometry}
+                // geometry={icosaGeometry}
+                geometry={geometry}
+                material={material}    
+            />
+        </>
+    )
+}
