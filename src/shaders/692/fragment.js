@@ -14,7 +14,7 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         float left = numSix(vec2(p.x + 0.35, p.y));
         float center = numNine(vec2(p.x -0.03, p.y));
-        float right = numOne(vec2(p.x - 0.42, p.y));
+        float right = numTwo(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -54,19 +54,46 @@ const fragmentShader = glsl`
         return color;
     }
 
+    float sdfCircle(vec2 p, float r){
+        return length(p) - r;
+    }
+
+    float sdfLine(vec2 p, vec2 a, vec2 b){
+        vec2 pa = p - a;
+        vec2 ba = b - a;
+        float h = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.);
+        return  length(pa - ba * h);
+    }
+
+    float sdfBox(vec2 p, vec2 b){
+        vec2 d = abs(p) -b;
+        return length(max(d, 0.)) + min(max(d.x, d.y), 0.);
+    }
+
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec2 uv2 = vUv;
-        vec2 pixelCoords = vUv - 0.5 * u_resolution;
+        vec2 pixelCoords = (vUv - 0.5) * u_resolution;
         vec3 color = vec3(0.);
+
+        vec2 pixelCoordsRot = Rot(pixelCoords, u_time * 2.);
 
         color = bkGroundColor();
         color = drawGrid(color, vec3(0.5), 10., 1.);
         color = drawGrid(color, vec3(0.0), 100., 2.);
+
+        // float d = sdfCircle(pixelCoords, 100.);
+        // color = mix(R, color, step(0., d));
+
+        // float d = sdfLine(pixelCoords, vec2(-100., -50.), vec2(200, -75.0));
+        // color = mix(R, color, step(5., d));
+
+        float d = sdfBox(pixelCoordsRot, vec2(300., 100.));
+        color = mix(R, color, step(0., d));
         
         float numLabel = label(vUv);
-        color = mix(color, vec3(1.), numLabel) ;
+        color = mix(color, vec3(0.), numLabel) ;
         gl_FragColor = vec4(color, 1.);
     }
 `
@@ -92,7 +119,7 @@ import * as THREE from 'three'
 import { folder, useControls } from 'leva'
 import { useGLTF, OrbitControls } from '@react-three/drei'
 
-export default function Shader691()
+export default function Shader692()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
