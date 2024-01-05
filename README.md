@@ -4,7 +4,7 @@ Welcome to Shader Daily!
 
 This is where all the shaders are placed in a single unified repository. 
 
-The shaders are organized by number and update daily.
+The shaders are organized by number in the '/shaders' folder. The shaders are updated daily.
 
 The shaders are available for use for non-commercial purposes such as learning and personal projects.
 
