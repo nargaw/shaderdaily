@@ -113,7 +113,7 @@ const fragmentShader = glsl`
             smoothstep(0.0, 1.0, pow(vUv.x * vUv.y, 0.5))
         );
 
-        float dayLength = 30.0;
+        float dayLength = 10.0;
         float dayTime = mod(time, dayLength);
 
         vec3 color;
