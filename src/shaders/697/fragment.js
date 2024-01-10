@@ -159,7 +159,7 @@ const fragmentShader = glsl`
         {
             float size = 2. * mix(2., 1., (i / NUM_CLOUDS) + 0.1 * hash(vec2(i)));
             float speed = size * 0.25;
-            vec2 offset = vec2(i * 200. + time * 100. * speed + hash(vec2(i)), 200. * hash(vec2(i)));
+            vec2 offset = vec2(i * 200. + time * 100. * speed + hash(vec2(i)), 100. * hash(vec2(i)));
             offset.y += 200.;
             vec2 pos = pixelCoords - offset;
 
@@ -174,19 +174,22 @@ const fragmentShader = glsl`
         }
 
         
-        // const float NUM_HILLS = 5.0;
-        // for(float i = 0.; i < NUM_HILLS; i+= 1.0)
-        // {
-        //     float size = 1.;
-        //     float offset = vec2(i * 200, 0);
-        //     vec2 pos = pixelCoords - offset;
-        //     pos = mod(pos, u_resolution);
-        //     pos = pos - u_resolution * 0.5;
+        const float NUM_HILLS = 8.0;
+        for(float i = 0.; i < NUM_HILLS; i+= 1.0)
+        {
+            float size = 350. * mix(2., 1., (i/NUM_HILLS) + 0.1 * hash(vec2(i)));
+            vec2 offset = vec2(i * 400. + 350. * hash(vec2(i)), -250.);
+            vec2 pos = pixelCoords - offset;
+            // pos = mod(pos, u_resolution);
+            // pos = pos - u_resolution * 0.5;
 
-        //     float hills = sdfCircle(pixelCoords, 100.);
-
-        //     color = mix(vec3(0., 1., 0.), color, smoothstep(0., 1., hills));
-        // }
+            float hills = sdfCircle(pos, size);
+            float hillShadow = sdfCircle(pos + vec2(25.) - 50., size );
+            color = mix(color, vec3(0.), 0.5 * smoothstep(0., -100., hillShadow));
+            color += 0.1 * mix(vec3(1.0), vec3(0.0), smoothstep(-10.0, 15.0, hills));
+            color = mix(vec3(0., 1. - (i * 0.05), 0.), color, smoothstep(0., 1., hills));
+            
+        }
         
         float numLabel = label(pixelCoords);
         color = mix(color, vec3(0.), numLabel) ;
