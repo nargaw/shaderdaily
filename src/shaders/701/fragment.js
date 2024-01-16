@@ -21,10 +21,10 @@ const fragmentShader = glsl`
     float label(vec2 p)
     {
 
-        // p *= 10.;
-        p *= 0.01;
+        p *= 10.;
+        // p *= 0.01;
         p.x -= 0.25;
-        p = p +  vec2(7., 3.5);
+        // p = p +  vec2(7., 3.5);
         float left = numSeven(vec2(p.x + 0.35, p.y));
         float center = numZero(vec2(p.x -0.03, p.y));
         float right = numOne(vec2(p.x - 0.42, p.y));
@@ -140,7 +140,7 @@ float fbm(vec3 p, int octaves, float persistence, float lacunarity) {
         color = DrawMountains(color, vec3(0.55, 0.35, 0.17), mountainCoords, 0.);
     
 
-        float numLabel = label(pixelCoords);
+        float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
         gl_FragColor = vec4(color, 1.);
     }
@@ -153,8 +153,8 @@ void main()
 {
     vUv = uv;
     vec3 localSpacePosition = position;
-    gl_Position = vec4(localSpacePosition, 1.);
-    // gl_Position = projectionMatrix * modelViewMatrix * vec4(localSpacePosition, 1.);
+    // gl_Position = vec4(localSpacePosition, 1.);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(localSpacePosition, 1.);
 }`
 
 import { Vector2, ShaderMaterial } from 'three'
