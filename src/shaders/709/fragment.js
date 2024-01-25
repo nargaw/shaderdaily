@@ -284,7 +284,7 @@ const fragmentShader = glsl`
 
             vec3 noiseCoord = wsPosition * 2.;
             float noiseSample = fbm(noiseCoord, 6, 0.5, 2., 4.5);
-            float moistureMap = fbm(noiseCoord * 0.5 + vec3(20.), 2, 0.5, 2., 1.);
+            float moistureMap = fbm(noiseCoord * 0.5 + vec3(120.), 2, 0.5, 2., 1.);
 
             // planetColor = vec3(noiseSample);
             vec3 waterColor = mix(
@@ -293,7 +293,7 @@ const fragmentShader = glsl`
                 smoothstep(0.02, 0.06, noiseSample));
             vec3 landColor = mix(
                 u_color1,
-                vec3(0.2, 0.3, 0.6),
+                u_color2,
                 smoothstep(0.05, 0.09, noiseSample));
 
             landColor = mix(
@@ -420,8 +420,18 @@ export default function Shader709()
     const loader = new THREE.TextureLoader()
     const frog = loader.load('./Models/Textures/photos/frog.jpg')
 
-    const { color1 } = useControls({
+    const { color1, color2 } = useControls({
         color1: {
+            value: {
+                x: 0.5,
+                y: 0.94,
+                z: 0.3,
+            },
+                min: 0.0,
+                max: 1.0,
+                step: 0.01
+        },
+        color2: {
             value: {
                 x: 0.5,
                 y: 0.94,
@@ -442,8 +452,8 @@ export default function Shader709()
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
             u_mouse: { type: "v2", value: new Vector2() },
             u_texture: {value: frog},
-            u_color1: { value: new THREE.Vector3(color1.x, color1.y, color1.z)},
-            u_color2: { value: new THREE.Vector3(0.25, 0.25, 0.25)},
+            u_color1: { value: new THREE.Vector3()},
+            u_color2: { value: new THREE.Vector3()},
             u_planetVal: { value: 2.}
         },
     })
@@ -484,6 +494,8 @@ export default function Shader709()
         material.uniforms.u_time.value = clock.elapsedTime - currentTime
         material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         material.uniforms.u_resolution.value = new Vector2(sizes.width, sizes.height)
+        material.uniforms.u_color1.value = new THREE.Vector3(color1.x, color1.y, color1.z)
+        material.uniforms.u_color2.value = new THREE.Vector3(color2.x, color2.y, color2.z)
         // console.log(material.uniforms.u_color1.value)
     })
 
