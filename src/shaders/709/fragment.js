@@ -283,7 +283,7 @@ const fragmentShader = glsl`
             vec3 wsViewDir = planetRotation * vec3(0., 0., 1.);
 
             vec3 noiseCoord = wsPosition * 2.;
-            float noiseSample = fbm(noiseCoord, 6, 0.5, 2., 4.5);
+            float noiseSample = fbm(noiseCoord, 6, 0.5, 2., u_planetVal);
             float moistureMap = fbm(noiseCoord * 0.5 + vec3(120.), 2, 0.5, 2., 1.);
 
             // planetColor = vec3(noiseSample);
@@ -299,7 +299,7 @@ const fragmentShader = glsl`
             landColor = mix(
                 vec3(1., 1., 0.5),
                 landColor,
-                smoothstep(0.4, 0.45, moistureMap));
+                smoothstep(0.04, 0.045, moistureMap));
 
             landColor = mix(
                 landColor, vec3(0.5), smoothstep(0.1, 0.4, noiseSample));
@@ -420,26 +420,14 @@ export default function Shader709()
     const loader = new THREE.TextureLoader()
     const frog = loader.load('./Models/Textures/photos/frog.jpg')
 
-    const { color1, color2 } = useControls({
-        color1: {
-            value: {
-                x: 0.5,
-                y: 0.94,
-                z: 0.3,
-            },
-                min: 0.0,
-                max: 1.0,
-                step: 0.01
-        },
-        color2: {
-            value: {
-                x: 0.5,
-                y: 0.94,
-                z: 0.3,
-            },
-                min: 0.0,
-                max: 1.0,
-                step: 0.01
+    const planetUniforms = useControls("colors",{
+        color1: '#FF0000',
+        color2: '#0000FF',
+        planetVal: {
+            value: 4.5,
+            min: 2.0,
+            max: 5.0,
+            step: 0.01
         }
     })
     
@@ -452,9 +440,9 @@ export default function Shader709()
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
             u_mouse: { type: "v2", value: new Vector2() },
             u_texture: {value: frog},
-            u_color1: { value: new THREE.Vector3()},
-            u_color2: { value: new THREE.Vector3()},
-            u_planetVal: { value: 2.}
+            u_color1: { value: new THREE.Color(planetUniforms.color1)},
+            u_color2: { value: new THREE.Color(planetUniforms.color2)},
+            u_planetVal: { value: planetUniforms.planetVal}
         },
     })
 
@@ -494,8 +482,8 @@ export default function Shader709()
         material.uniforms.u_time.value = clock.elapsedTime - currentTime
         material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         material.uniforms.u_resolution.value = new Vector2(sizes.width, sizes.height)
-        material.uniforms.u_color1.value = new THREE.Vector3(color1.x, color1.y, color1.z)
-        material.uniforms.u_color2.value = new THREE.Vector3(color2.x, color2.y, color2.z)
+        material.uniforms.u_color1.value = new THREE.Color(planetUniforms.color1)
+        material.uniforms.u_color2.value = new THREE.Color(planetUniforms.color2)
         // console.log(material.uniforms.u_color1.value)
     })
 
