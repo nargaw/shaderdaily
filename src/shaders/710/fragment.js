@@ -24,60 +24,14 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
 
-    //inverseLerp 
-    float inverseLerp(float v, float minVal, float maxVal){
-        return (v - minVal) / (maxVal - minVal);
-    }
-
-    //remap
-    float remap(float v, float minIn, float maxIn, float minOut, float maxOut){
-        float t = inverseLerp(v, minIn, maxIn);
-        return mix(minOut, maxOut, t);
-    }
-
-    //linear to sRGB
-    vec3 linearTosRGB(vec3 value){
-        vec3 lt = vec3(lessThanEqual(value.rgb, vec3(0.0031308)));
-        vec3 v1 = value * 12.92;
-        vec3 v2 = pow(value.xyz, vec3(0.41666)) * 1.055 - vec3(0.055);
-        return mix(v2, v1, lt);
-    }
-
-
     void main()
     {
         vec2 vUv = vec2(vUv.x, vUv.y);
         vec2 uv2 = vUv;
-        vec3 color = vec3(0.);
-        // uv2 -= 0.5;
-
-        // vec3 normal = normalize(vNormal);
-        vec3 normal = normalize(
-            cross(
-                dFdx(vPosition.xyz),
-                dFdy(vPosition.xyz)
-            )
-        );
+        vec3 color = vec3(0.5);
+        vec3 normal = normalize(vNormal);
         vec3 viewDir = normalize(u_cameraPosition - vPosition);
-        
-
-
-        vec3 baseColor = vColor.xyz;
-
-        // vec3 baseColor = vec3(0.5);
-
         vec3 lighting = vec3(0.);
-
-        
-
-        //ambient
-        vec3 ambientLight = vec3(0.5);
-
-        //hemiLighting
-        vec3 skyColor = vec3(0., 0.3, 0.6);
-        vec3 groundColor = vec3(0.6, 0.3, 0.1);
-        float hemiMix = remap(normal.y, -1., 1., 0., 1.);
-        vec3 hemi = mix(groundColor, skyColor, hemiMix);
 
         //Lambertian lighting
         vec3 lightDirection = normalize(vec3(1.));
@@ -85,49 +39,26 @@ const fragmentShader = glsl`
         float dp = max(0., dot(lightDirection, normal));
         vec3 diffuse = dp * lightColor;
 
-        //toon shading
-        float toon = dp * (smoothstep(0.5, 0.501, dp));
-        float partialToon = (smoothstep(0.66, 0.661, dp) * 0.5 + 0.5);
-        toon = min(partialToon, toon);
+        lighting = diffuse * 0.8;
 
-        vec3 toonDiffuse = toon * lightColor;
-
-        //phong specular
         vec3 r = normalize(reflect(-lightDirection, normal));
         float phongValue = max(0.0, dot(viewDir, r));
         phongValue = pow(phongValue, 128.0);
         vec3 specular = vec3(phongValue);
 
-        //IBL Specular
         vec3 iblCoord = normalize(reflect(-viewDir, normal));
         vec3 iblSample = textureCube(u_background, iblCoord).xyz;
 
-        //fresnel
-        float fresnel = 1.0 - max(0.0, dot(viewDir, normal));
-        fresnel = pow(fresnel, 2.0);
-        // specular *= fresnel;
+        float fresnel = 1. - max(0., dot(viewDir, normal));
+        fresnel = pow(fresnel, 2.);
         fresnel *= step(0.7, fresnel);
 
-        specular += iblSample * 0.5;
-        // specular += phongValue;
-        // specular = smoothstep(0.5, 0.51, specular);
-
-
-        lighting = ambientLight * 0. + hemi * 0.0 + diffuse * 0.8;
-
-        // lighting = diffuse * 0.8;
-
-        // color = baseColor;
-        color = baseColor * lighting + specular * 0.1 ;
-
-        // color = normal;
-
-        // color = linearTosRGB(color);
+        color = color * lighting + specular * 0.5;
         color = pow(color, vec3(1./2.2));
-        
-        // float numLabel = label(vUv);
-        // color = mix(color, vec3(1.), numLabel) ;
-        gl_FragColor = vec4(color, 1.);
+
+        // color = normal * 0.5 + 0.5;
+
+        gl_FragColor = vec4(color, 1.0);
     }
 `
 
@@ -136,6 +67,10 @@ varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying vec4 vColor;
+
+uniform float u_frequency;
+uniform float u_amplitude;
+uniform float u_speed;
 
 //inverseLerp 
 float inverseLerp(float v, float minVal, float maxVal){
@@ -294,28 +229,40 @@ float cnoise(vec3 P){
 
 
 
+float displace(vec3 point) {
+    return cnoise(point * u_frequency + vec3(u_time * u_speed)) * u_amplitude;
+  }
+
+vec3 orthogonal(vec3 v){
+    return normalize(abs(v.x) > abs(v.z) ? vec3(-v.y, v.x, 0.0) : vec3(0.0, -v.z, v.y));
+}
+
 void main()
 {
-    
-    vec3 localSpacePosition = position;
-    float n = cnoise(localSpacePosition) * sin(u_time);
-    n = remap(n, -1., 1., 0.0, 0.5);
-    float t = sin(localSpacePosition.z * 20. + sin(u_time) * 10. * n);
-    // t = sin(localSpacePosition.z * 20. + u_time * 10.);
-    t = remap(t, -1., 1., 0.0, 0.1);
-    
-    // localSpacePosition += normal * n;
-    localSpacePosition += normal * t ;
+    vec3 displacedPosition = position + normal * displace(position);
+    vec4 modelPosition = modelMatrix * vec4(displacedPosition, 1.0);
+    vec4 viewPosition = viewMatrix * modelPosition;
+    vec4 projectedPosition = projectionMatrix * viewPosition;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(localSpacePosition, 1.);
-    vNormal = (modelMatrix * vec4(normal, 0.)).xyz;
-    vUv = uv;
-    vPosition = (modelMatrix * vec4(localSpacePosition, 1.)).xyz;
-    vColor.xyz = mix(
-        vec3(0., 0., 0.5),
-        vec3(0.1, 0.5, 0.8),
-        smoothstep(0.0, 0.2, t)
-    );
+    gl_Position = projectedPosition;
+
+    
+
+    float offset = 4.0/256.0;
+    vec3 tangent = orthogonal(normal);
+    vec3 bitangent = normalize(cross(normal, tangent));
+    vec3 neighbour1 = position + tangent * offset;
+    vec3 neighbour2 = position + bitangent * offset;
+    vec3 displacedNeighbour1 = neighbour1 + normal * displace(neighbour1);
+    vec3 displacedNeighbour2 = neighbour2 + normal * displace(neighbour2);
+
+    vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
+    vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
+
+    vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+
+    vPosition = (modelMatrix * vec4(displacedPosition, 1.)).xyz;
+    vNormal = displacedNormal * normalMatrix;
 }`
 
 import { Vector2, ShaderMaterial } from 'three'
@@ -347,6 +294,27 @@ export default function Shader710()
 
     const suz = useGLTF('./Models/suzanne/suz.glb')
     const testMaterial = new THREE.MeshNormalMaterial()
+
+    const {frequency, amplitude, speed } = useControls({
+        frequency: {
+            value: 0.75,
+            min: 0.25,
+            max: 1.0,
+            step: 0.01
+        },
+        amplitude: {
+            value: 0.25,
+            min: 0.25,
+            max: 1.0,
+            step: 0.01
+        },
+        speed: {
+            value: 1.,
+            min: 0.25,
+            max: 1.0,
+            step: 0.01
+        }
+    })
     
     const material = new THREE.ShaderMaterial({
         vertexShader: vertexShader ,
@@ -357,7 +325,10 @@ export default function Shader710()
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.inner) },
             u_mouse: { type: "v2", value: new Vector2() },
             u_texture: {value: tvTexture},
-            u_background: {value: textureCube}
+            u_background: {value: textureCube},
+            u_frequency: {value: frequency},
+            u_amplitude: {value: amplitude},
+            u_speed: { value: speed}
         },
     })
 
