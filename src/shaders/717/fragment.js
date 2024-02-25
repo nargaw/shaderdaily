@@ -60,6 +60,7 @@ varying vec2 vUv;
 uniform float u_time;
 uniform float u_waveFactor1;
 uniform float u_noiseFactor;
+uniform vec2 u_mouse;
 
 //	Classic Perlin 3D Noise 
 //	by Stefan Gustavson
@@ -142,9 +143,12 @@ void main()
     vUv = uv;
     vec3 localSpacePosition = position;
     float noise = cnoise(localSpacePosition);
-    float wave = sin(localSpacePosition.y * u_waveFactor1 + u_time) * (noise * u_noiseFactor);
+    // u_waveFactor1 = u_waveFactor1 * u_mouse.y;
+    float wave = sin(localSpacePosition.y * u_waveFactor1);
+    wave *= abs(u_mouse.x);
     // gl_Position = vec4(localSpacePosition, 1.);
-    localSpacePosition.z += wave;
+    localSpacePosition.z += wave * noise;
+    localSpacePosition.y += wave * u_mouse.y;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(localSpacePosition, 1.);
 }`
 
