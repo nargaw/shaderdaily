@@ -89,6 +89,7 @@ export default function Shader646()
     const analyserTexture = useRef()
     const sound = useRef()
     sound.current = new THREE.Audio(listener)
+    sound.current.hasPlaybackControl = true
     if(camera) {
         camera.add(listener)
     }
@@ -102,20 +103,25 @@ export default function Shader646()
             sound.current.play()
             analyser.current = new THREE.AudioAnalyser(sound.current, fftSize)
             analyserTexture.current = new THREE.DataTexture(analyser.current.data, 64, 1, format)  
-            if(sound.current.isPlaying){
+            if(sound.current.isPlaying && currentShader === 646){
                 console.log('playing')
                 setMusic(true)
                 setSongOn()
                 startSong() 
             }
-            
+            if(currentShader !== 646){
+                sound.current.stop()
+            }
             if(!sound.current.isPlaying){
                 console.log('ended')
                 setMusic(false)
                 turnOffSong()
             }
+            
         })
     }
+
+    
     
     const material = new ShaderMaterial({
         vertexShader: vertexShader,
@@ -173,6 +179,9 @@ export default function Shader646()
             {!music && <Html>
                 <div className='play'><button onClick={playMusic} style={playStyle}>Play</button></div>
             </Html>}
+            {/* {music && <Html>
+                <div className='stop'><button onClick={stopMusic} style={playStyle}>Stop</button></div>
+                </Html>} */}
             <mesh dispose={null} ref={meshRef} material={material} >
                 <boxGeometry args={[2, 2, 0.1]} />
             </mesh>
