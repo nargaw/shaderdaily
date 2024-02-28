@@ -47,10 +47,10 @@ const fragmentShader = glsl`
         vec2 coords = vUv;
         vec3 color;
 
-        vec2 newCoords = coords * 2. - 0.5 ;
+        vec2 newCoords = coords ;
         vec2 m = u_mouse.xy;
 
-        vec2 offset = vec2(m) - 0.5 ;
+        vec2 offset = vec2(m) - 0.5  ;
 
         color = texture2D(u_texture, coords).rgb;
 
@@ -166,6 +166,7 @@ export default function Shader720()
             window.innerWidth * DPR,
             window.innerHeight * DPR
         )
+        // console.log(meshRef.current.material.uniforms.u_resolution.value)
     })
 
 
