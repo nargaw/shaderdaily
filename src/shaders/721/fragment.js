@@ -153,17 +153,78 @@ export default function Shader721()
         sizes.width = window.innerWidth
         sizes.height = window.innerHeight
     })
-    
+    let camera
     useThree((state) => {
         currentTime = state.clock.elapsedTime
+        camera = state.camera
     })
     let boundingBox
+    const meshSizes = {
+        width: 0,
+        height: 0,
+        leftPixel: 0,
+        rightPixel: 0,
+        topPixel: 0,
+        bottomPixel: 0
+    }
+
     useEffect(() => {
         if(meshRef.current)
         {
-            // console.log(meshRef.current.geometry)
             boundingBox = new THREE.Box3().setFromObject(meshRef.current)
-            console.log(boundingBox)
+
+            const topLeft = new THREE.Vector3(
+                meshRef.current.position.x - 2 / 2,
+                meshRef.current.position.y + 2 / 2,
+                meshRef.current.position.z,
+            )
+
+            const bottomLeft = new THREE.Vector3(
+                meshRef.current.position.x - 2 / 2,
+                meshRef.current.position.y - 2 / 2,
+                meshRef.current.position.z,
+            )
+
+            const topRight = new THREE.Vector3(
+                meshRef.current.position.x + 2 / 2,
+                meshRef.current.position.y + 2 / 2,
+                meshRef.current.position.z,
+            )
+
+            const bottomRight = new THREE.Vector3(
+                meshRef.current.position.x + 2 / 2,
+                meshRef.current.position.y - 2 / 2,
+                meshRef.current.position.z,
+            )
+            
+            topLeft.project(camera)
+            bottomLeft.project(camera)
+            topRight.project(camera)
+            bottomRight.project(camera)
+
+            //461 208 - check
+            const topLeftX = (1 + topLeft.x) / 2 * window.innerWidth
+            const topLeftY = (1 - topLeft.y) / 2 * window.innerHeight
+
+            const bottomLeftX = (1 + bottomLeft.x) / 2 * window.innerWidth
+            const bottomLeftY = (1 - bottomLeft.y) / 2 * window.innerHeight
+
+            const topRightX = (1 + topRight.x) / 2 * window.innerWidth
+            const topRightY = (1 - topRight.y) / 2 * window.innerHeight
+
+            const bottomRightX = (1 + bottomRight.x) / 2 * window.innerWidth
+            const bottomRightY = (1 - bottomRight.y) / 2 * window.innerHeight
+
+            const shaderWidth = topRightX - topLeftX
+            const shaderHeight = bottomRightY - topRightY
+
+            meshSizes.width = shaderWidth
+            meshSizes.height = shaderHeight
+            meshSizes.leftPixel = topLeftX
+            meshSizes.rightPixel = topRightX
+            meshSizes.topPixel = topLeftY
+            meshSizes.bottomPixel = bottomRightY
+            
         }
     }, [])
     
@@ -177,10 +238,15 @@ export default function Shader721()
         )
     })
 
+    const remap = (value, low1, high1, low2, high2 ) => {
+        return low2 + (high2 - low2) * (value - low1) / (high1 - low1)
+    }
 
     addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX / window.innerWidth);
-        mouseY = -(e.clientY / window.innerHeight) + 1;
+        mouseX = (e.clientX / (window.innerWidth - (meshSizes.width))) * 2. - 1.;
+        mouseX = remap(mouseX, 0., 0.85, 0., 1.)
+        mouseY = (-(e.clientY / (window.innerHeight - meshSizes.height)) + 1) + 0.5;
+        mouseY = remap(mouseY, 0.25, 1., 0., 1.)
     })
 
     addEventListener('contextmenu', e => e.preventDefault())
