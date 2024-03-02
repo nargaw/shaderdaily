@@ -42,6 +42,107 @@ const fragmentShader = glsl`
         return clamp(x, 0., 1.);
     }
 
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+    
+    //
+    // Description : GLSL 2D simplex noise function
+    //      Author : Ian McEwan, Ashima Arts
+    //  Maintainer : ijm
+    //     Lastmod : 20110822 (ijm)
+    //     License :
+    //  Copyright (C) 2011 Ashima Arts. All rights reserved.
+    //  Distributed under the MIT License. See LICENSE file.
+    //  https://github.com/ashima/webgl-noise
+    //
+    float snoise(vec2 v) {
+    
+        // Precompute values for skewed triangular grid
+        const vec4 C = vec4(0.211324865405187,
+                            // (3.0-sqrt(3.0))/6.0
+                            0.366025403784439,
+                            // 0.5*(sqrt(3.0)-1.0)
+                            -0.577350269189626,
+                            // -1.0 + 2.0 * C.x
+                            0.024390243902439);
+                            // 1.0 / 41.0
+    
+        // First corner (x0)
+        vec2 i  = floor(v + dot(v, C.yy));
+        vec2 x0 = v - i + dot(i, C.xx);
+    
+        // Other two corners (x1, x2)
+        vec2 i1 = vec2(0.0);
+        i1 = (x0.x > x0.y)? vec2(1.0, 0.0):vec2(0.0, 1.0);
+        vec2 x1 = x0.xy + C.xx - i1;
+        vec2 x2 = x0.xy + C.zz;
+    
+        // Do some permutations to avoid
+        // truncation effects in permutation
+        i = mod289(i);
+        vec3 p = permute(
+                permute( i.y + vec3(0.0, i1.y, 1.0))
+                    + i.x + vec3(0.0, i1.x, 1.0 ));
+    
+        vec3 m = max(0.5 - vec3(
+                            dot(x0,x0),
+                            dot(x1,x1),
+                            dot(x2,x2)
+                            ), 0.0);
+    
+        m = m*m ;
+        m = m*m ;
+    
+        // Gradients:
+        //  41 pts uniformly over a line, mapped onto a diamond
+        //  The ring size 17*17 = 289 is close to a multiple
+        //      of 41 (41*7 = 287)
+    
+        vec3 x = 2.0 * fract(p * C.www) - 1.0;
+        vec3 h = abs(x) - 0.5;
+        vec3 ox = floor(x + 0.5);
+        vec3 a0 = x - ox;
+    
+        // Normalise gradients implicitly by scaling m
+        // Approximation of: m *= inversesqrt(a0*a0 + h*h);
+        m *= 1.79284291400159 - 0.85373472095314 * (a0*a0+h*h);
+    
+        // Compute final noise value at P
+        vec3 g = vec3(0.0);
+        g.x  = a0.x  * x0.x  + h.x  * x0.y;
+        g.yz = a0.yz * vec2(x1.x,x2.x) + h.yz * vec2(x1.y,x2.y);
+        return 130.0 * dot(m, g);
+    }
+    
+    #define OCTAVES 6
+    
+    float ridge(float h, float offset) {
+        h = abs(h);     // create creases
+        h = offset - h; // invert so creases are at top
+        h = h * h;      // sharpen creases
+        return h;
+    }
+    
+    float fbm(vec2 vUv){
+        float lacunarity = 2.0;
+        float gain = 0.15;
+        float offset = 0.9;
+        float amp = 0.5;
+        float sum = 0.0;
+        float freq = 1.0; 
+        float prev = 1.0;
+        for( int i = 0; i < OCTAVES; i++){
+            float v = ridge(snoise(vUv * freq), offset * sin(snoise(vUv + u_time * 0.25)));
+            sum += v *amp;
+            sum += v * amp * prev;
+            prev = v;
+            freq *= lacunarity;
+            amp *= gain;
+        }
+        return sum;
+    }
+
     void main()
     {
         vec2 coords = vUv;
@@ -50,13 +151,17 @@ const fragmentShader = glsl`
         vec2 newCoords = coords ;
         vec2 m = u_mouse.xy;
 
-        vec2 offset = vec2(m) - 0.5  ;
+        vec2 offset = vec2(m) - 1.0 ;
+
 
         color = texture2D(u_texture, coords).rgb;
 
-        float circle = sdCircle(newCoords - offset, 0.5);
-        vec3 zoom = texture2D(u_texture, newCoords).rgb;
-        color = mix(color, vec3(zoom.r, zoom.g * 0.1, zoom.b * 0.1), circle);
+        float f = fbm(newCoords - offset) ;
+
+        float circle = sdCircle(newCoords - offset * f , 0.5);
+        // circle = smoothstep(0.1, 0.5, circle);
+        vec3 zoom = texture2D(u_texture, newCoords).rgb * f;
+        color = mix(color, vec3(zoom), circle );
         
        
         float numLabel = label(vUv);
@@ -202,9 +307,9 @@ export default function Shader721()
             topRight.project(camera)
             bottomRight.project(camera)
 
-            //461 208 - check
             const topLeftX = (1 + topLeft.x) / 2 * window.innerWidth
             const topLeftY = (1 - topLeft.y) / 2 * window.innerHeight
+            console.log(topLeftX, topLeftY)
 
             const bottomLeftX = (1 + bottomLeft.x) / 2 * window.innerWidth
             const bottomLeftY = (1 - bottomLeft.y) / 2 * window.innerHeight
@@ -221,6 +326,7 @@ export default function Shader721()
             meshSizes.width = shaderWidth
             meshSizes.height = shaderHeight
             meshSizes.leftPixel = topLeftX
+
             meshSizes.rightPixel = topRightX
             meshSizes.topPixel = topLeftY
             meshSizes.bottomPixel = bottomRightY
@@ -233,8 +339,8 @@ export default function Shader721()
         material.uniforms.u_time.value = clock.elapsedTime - currentTime
         material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         meshRef.current.material.uniforms.u_resolution.value = new THREE.Vector2(
-            window.innerWidth * DPR,
-            window.innerHeight * DPR
+            meshSizes.width * DPR,
+            meshSizes.height * DPR
         )
     })
 
@@ -243,17 +349,26 @@ export default function Shader721()
     }
 
     addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX / (window.innerWidth - (meshSizes.width))) * 2. - 1.;
-        mouseX = remap(mouseX, 0., 0.85, 0., 1.)
-        mouseY = (-(e.clientY / (window.innerHeight - meshSizes.height)) + 1) + 0.5;
-        mouseY = remap(mouseY, 0.25, 1., 0., 1.)
+        // mouseX = ((e.clientX - meshSizes.leftPixel)/ window.innerWidth);
+        // const ratio1 = (meshSizes.leftPixel/window.innerWidth)
+        // mouseX = remap(mouseX, 0., ratio1, 0., 1.)
+        // mouseY = -((e.clientY - meshSizes.topPixel) / window.innerHeight) + 0.5 ;
+        // const ratio2 = ((window.innerHeight - meshSizes.topPixel)/window.innerHeight)
+        // //mouseY = remap(mouseY, 0., ratio2, 0., 1.)
+        // console.log(ratio1)
+        mouseX = (e.clientX / window.innerWidth) * 2;
+        mouseY = (-(e.clientY / window.innerHeight) + 1) * 2.;
     })
 
     addEventListener('contextmenu', e => e.preventDefault())
 
     addEventListener('touchmove', (e) => {
-        mouseX = (e.changedTouches[0].clientX / window.innerWidth);
-        mouseY = -(e.changedTouches[0].clientY / window.innerHeight) + 1;
+        // mouseX = ((e.changedTouches[0].clientX - meshSizes.leftPixel) / window.innerWidth);
+        // // mouseX = remap(mouseX, 0., 0.25, 0., 1.)
+        // mouseY = -((e.changedTouches[0].clientY - meshSizes.topPixel) / window.innerHeight) + 0.5;
+        // // mouseY = remap(mouseY, 0., 0.5, 0., 1.)
+        mouseX = (e.changedTouches[0].clientX / window.innerWidth) * 2;
+        mouseY = (-(e.changedTouches[0].clientY / window.innerHeight) + 1) * 2;
     }, {passive: false})
 
     return (
