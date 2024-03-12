@@ -22,6 +22,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "three": "^0.146.0",
+    "three-msdf-text-utils": "github:leochocolat/three-msdf-text",
     "zustand": "^4.4.1"
   },
   "browserslist": {
