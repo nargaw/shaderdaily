@@ -14,7 +14,7 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
-    const total = 725
+    const total = 726
     // console.log(total)
     
     const goNext = () => {
@@ -121,7 +121,7 @@ export default function Interface()
                     <div className="close" onClick={closeInfo}><i className="fa-solid fa-x"></i></div>
                     <h1 className="header">Welcome to Shader Daily!</h1>
                     <p className="text">
-                        This website is a result of my personal journey towards learning the magic of Shaders. A shader is a computer program that uses a variety of specialized functions and algorithms to calculate the color value of each pixel in a rendered result using the graphics processing unit (GPU). Shaders are used in a variety of industries ranging from cinema to video games. The programming language used in shaders depends on the target environment. This target environment uses GLSL (Graphics Library Shader Language). This shader program requires a vertex shader and a fragment shader. The rendering result and experience is achieved using Three.js and React-Three-Fiber. <br /> <br/> Thank you for visiting!<br/> <br/>Nate Argaw <p className="copyright">©Shader Daily</p>
+                        This website is a result of my personal journey towards learning the magic of Shaders. A shader is a computer program that uses a variety of specialized functions and algorithms to calculate the color value of each pixel in a rendered result using the graphics processing unit (GPU). Shaders are used in a variety of industries ranging from cinema to video games. The programming language used in shaders depends on the target environment. This target environment uses GLSL (Graphics Library Shader Language). This shader program requires a vertex shader and a fragment shader. The rendering result and experience is achieved using Three.js and React-Three-Fiber. <br /> <br/> Thank you for visiting!<br/><br/>Nate Argaw <p className="copyright">Shader Daily</p>
                     </p>
                     <div className="contact">
                         <div className="mail" onClick={handleEmail}>
@@ -141,6 +141,11 @@ export default function Interface()
                         <div className="instagram">
                             <a href="https://www.instagram.com/shaderdaily/">
                                 <i className="fa-brands fa-instagram"></i>
+                            </a>
+                        </div>
+                        <div className="github">
+                            <a href="https://github.com/nargaw/shaderdaily">
+                                <i class="fa-brands fa-github"></i>
                             </a>
                         </div>
                     </div>

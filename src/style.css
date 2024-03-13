@@ -250,6 +250,7 @@ input::-webkit-inner-spin-button {
     align-items:stretch;
     margin-top: 60px; 
     margin-bottom: 20px;
+    padding: 10px;
 }
 
 .close{
