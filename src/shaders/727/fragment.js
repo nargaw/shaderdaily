@@ -188,10 +188,10 @@ const fragmentShader = glsl`
         color = texture2D(u_texture, coords).rgb;
         
 
-        float f = fbm(newCoords * 1.) * 3.5;
+        float f = fbm(newCoords * 1.) * 1.5;
         // f = remap(f, 0., 1., 0.25, 0.75);
         // vec3 circleColor = texture2D(u_texture, coords + f * 0.01).rgb * 2.;
-        vec3 circleColor = 1. - texture2D(u_texture, coords + f * 0.01).rgb;
+        vec3 circleColor = texture2D(u_texture, coords + f * 0.01).rgb;
 
         //saturation
         float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
@@ -216,12 +216,12 @@ const fragmentShader = glsl`
         // color = mix(vec3(luminance), color, colorWeight);
 
         float circle = distance(newCoords - offset, vec2(0.5));
-        circle = 1. - smoothstep(0.2, 0.21, circle);
+        circle = 1. - smoothstep(0.2, 0.41, circle);
 
-        float d = 1. - softMin(color.x, circle, 0.0005);
+        float d = 1. - softMin(color.x, circle, 0.15);
         // color = vec3(d);
         
-        color = 1. - mix(color, circleColor, d * circle);
+        color = mix(color, circleColor, d * circle);
          
         float numLabel = label(vUv);
         color = mix(color, vec3(0.), numLabel) ;
@@ -253,7 +253,7 @@ import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
 
-export default function Shader726()
+export default function Shader727()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
@@ -267,7 +267,7 @@ export default function Shader726()
     const textureCube = new THREE.CubeTextureLoader().load(urls)
 
     const loader = new THREE.TextureLoader()
-    const threeLogo = loader.load('./Models/Textures/photos/threejs.png')
+    const forest = loader.load('./Models/Textures/photos/forest.jpg')
     // threeLogo.wrapS = THREE.MirroredRepeatWrapping
     // threeLogo.wrapT = THREE.MirroredRepeatWrapping
 
@@ -281,7 +281,7 @@ export default function Shader726()
             u_time: { type: "f", value: 1.0 },
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
             u_mouse: { type: "v2", value: new Vector2() },
-            u_texture: {value: threeLogo},
+            u_texture: {value: forest},
         },
     })
 
