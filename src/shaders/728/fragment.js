@@ -21,7 +21,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numSeven(vec2(p.x + 0.35, p.y));
         float center = numTwo(vec2(p.x -0.03, p.y));
-        float right = numSeven(vec2(p.x - 0.42, p.y));
+        float right = numEight(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -215,13 +215,13 @@ const fragmentShader = glsl`
         // colorWeight = smoothstep(0.5, 1., colorWeight);
         // color = mix(vec3(luminance), color, colorWeight);
 
-        float circle = distance(newCoords - offset, vec2(0.5));
-        circle = 1. - smoothstep(0.2, 0.41, circle);
+        float circle = 1. - distance(newCoords - offset, vec2(0.5));
+        circle = smoothstep(0.2, 0.41, circle);
 
-        float d = 1. - softMin(color.x, circle, 0.15);
+        float d = softMin(color.x, circle, 0.15);
         // color = vec3(d);
         
-        color = mix(color, circleColor, d * circle);
+        color = mix(color, circleColor, circle);
          
         float numLabel = label(vUv);
         color = mix(color, vec3(0.), numLabel) ;
@@ -253,7 +253,7 @@ import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
 
-export default function Shader727()
+export default function Shader728()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
@@ -267,7 +267,7 @@ export default function Shader727()
     const textureCube = new THREE.CubeTextureLoader().load(urls)
 
     const loader = new THREE.TextureLoader()
-    const forest = loader.load('./Models/Textures/photos/forest.jpg')
+    const banksy = loader.load('./Models/Textures/photos/banksy.jpg')
     // threeLogo.wrapS = THREE.MirroredRepeatWrapping
     // threeLogo.wrapT = THREE.MirroredRepeatWrapping
 
@@ -281,7 +281,7 @@ export default function Shader727()
             u_time: { type: "f", value: 1.0 },
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
             u_mouse: { type: "v2", value: new Vector2() },
-            u_texture: {value: forest},
+            u_texture: {value: banksy},
         },
     })
 
