@@ -179,14 +179,7 @@ const fragmentShader = glsl`
 
         vec3 color = vec3(0.);
         
-
-        vec2 newCoords = coords ;
-        vec2 m = u_mouse.xy;
-
-        vec2 offset = vec2(m) - 0.5  ;
-
-        
-        
+        vec2 newCoords = coords ;      
 
         float f = fbm(newCoords * 1.) * .005;
         // f = remap(f, 0., 1., 0.25, 0.75);
