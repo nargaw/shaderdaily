@@ -11,19 +11,19 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@react-three/drei": "^9.40.0",
-    "@react-three/fiber": "^8.9.1",
-    "@react-three/postprocessing": "^2.14.13",
+    "@react-three/drei": "^9.105.3",
+    "@react-three/fiber": "^8.16.1",
+    "@react-three/postprocessing": "^2.16.2",
     "babel-plugin-glsl": "^1.0.0",
     "glslify": "^7.1.1",
     "leva": "^0.9.35",
-    "postprocessing": "^6.32.2",
+    "postprocessing": "^6.35.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "three": "^0.163.0",
     "three-msdf-text-utils": "github:leochocolat/three-msdf-text",
-    "zustand": "^4.4.1"
+    "zustand": "^4.5.2"
   },
   "browserslist": {
     "production": [
@@ -38,6 +38,6 @@
     ]
   },
   "devDependencies": {
-    "react-router-dom": "^6.14.1"
+    "react-router-dom": "^6.22.3"
   }
 }
