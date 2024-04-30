@@ -30,7 +30,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numSeven(vec2(p.x + 0.35, p.y));
         float center = numThree(vec2(p.x -0.03, p.y));
-        float right = numFour(vec2(p.x - 0.42, p.y));
+        float right = numFive(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -360,13 +360,13 @@ import preload from '../preload/preload.js'
 import usefulFunctions from '../usefulFunctions/usefulFunctions.js'
 import * as THREE from 'three'
 import { useControls } from 'leva'
-import { Text } from '@react-three/drei'
+import { Center, Text } from '@react-three/drei'
 import { MSDFTextGeometry, MSDFTextMaterial, uniforms } from 'three-msdf-text-utils/src/index.js'
 import { FontLoader } from 'three/examples/jsm/Addons.js'
 // import fnt from './Font/TitanOne-msdf.json'
 // import png from './Font/TitanOne.png'
 
-export default function Shader734()
+export default function Shader735()
 {
     
     const meshRef = useRef()
@@ -407,21 +407,23 @@ export default function Shader734()
         },
     })
 
+    const textSize = 0
 
     const fontImage = loader.load(png)
     const fontJson = fontLoader.load(fnt, (font) => {
         const f = font
         const fontGeometry = new MSDFTextGeometry({
-            text: "CONTRAST",
+            text: "TEXT",
             font: f.data
         })
-        // console.log(fontImage)
+        
         material.uniforms.uMap.value = fontImage
         if(meshRef.current){
             meshRef.current.geometry = fontGeometry
             meshRef.current.scale.set(0.015, -0.015, 0.015)
-            meshRef.current.position.x = -1.5
+            meshRef.current.position.x = -1.0
         }
+        // console.log(fontGeometry.computeBoundingBox())
     })
 
 
@@ -443,30 +445,10 @@ export default function Shader734()
 
     const DPR = Math.min(window.devicePixelRatio, 1.);
 
-
-    
-    
-
-    // Promise.all([
-    //     loadFontAtlas(png),
-    // ]).then(([atlas]) => {
-    //     const geometry = new MSDFTextGeometry({
-    //         text: "GLSL",
-    //         font: fnt,
-    //     });
-    //     console.log(geometry.computeBoundingBox())
-    //     material.uniforms.uMap.value = atlas;
-    
-    //     // const mesh = new THREE.Mesh(geometry, msdfMaterial);
-    //     // scene.add(mesh)
-    //     // mesh.scale.set(0.1, -0.1, 0.1)
-    //     // mesh.position.x = -6.5
-    // });
-
     const meshSize = 2
 
-    const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
-
+    // const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
+    // console.log(geometry)
     let mouseX;
     let mouseY;
 
@@ -536,7 +518,6 @@ export default function Shader734()
             const topLeftX = (1 + topLeft.x) / 2 * dimensions.width
             const topLeftY = (1 - topLeft.y) / 2 * dimensions.height
             
-
             const bottomLeftX = (1 + bottomLeft.x) / 2 * dimensions.width
             const bottomLeftY = (1 - bottomLeft.y) / 2 * dimensions.height
 
@@ -598,11 +579,14 @@ export default function Shader734()
 
     return (
         <>
-            <mesh 
-                ref={meshRef} 
-                geometry={geometry}
-                material={material}    
-            />
+            <Center>
+                <mesh 
+                    ref={meshRef} 
+                    // geometry={geometry}
+                    material={material}    
+                />
+            </Center>
+            
         </>
     )
 }
