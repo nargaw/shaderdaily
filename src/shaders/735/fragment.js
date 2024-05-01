@@ -87,7 +87,7 @@ const fragmentShader = glsl`
         // gl_FragColor = vec4(color, 1.);
         // Common
         // Texture sample
-        vec3 s = texture2D(uMap, vec2(vUv.x, vUv.y + f) ).rgb;
+        vec3 s = texture2D(uMap, vec2(vUv) ).rgb;
 
         // Signed distance
         float sigDist = median(s.r, s.g, s.b) - 0.5;
@@ -139,13 +139,13 @@ const fragmentShader = glsl`
 
         float width = 1.0;
 
-        float p0 = (1. );
+        float p0 = m.x;
         p0 = map(p0, 0., 1., -width, 1.);
         p0 = smoothstep(p0, p0 + width, vLayoutUv.x);
         float mix0 = 2. * p0 - pattern; 
         mix0 = clamp(mix0, 0., 1.);
 
-        float p2 = (1. );
+        float p2 = (1. - m.x);
         p2 = map(p2, 0., 1., -width, 1.);
         p2 = smoothstep(p2, p2 + width, vLayoutUv.x);
         float mix2 = 2. * p2 - pattern; 
@@ -168,14 +168,14 @@ const fragmentShader = glsl`
         vec4 layer3 = mix(layer2, l3, 1. - mix3);
         vec4 layer4 = mix(layer3, l4, 1. - mix4);
 
-        float circle = distance(vLayoutUv - offset, vec2(0.5));
+        float circle = distance(vLayoutUv - offset, vec2(0.25, 0.25));
         circle = smoothstep(0.2, 0.21, circle);
 
-        color = 1. - mix(vec3(1.), vec3(0.), circle);
+        // color = 1. - mix(vec3(1.), vec3(0.), circle);
 
         vec4 finalLayer = vec4(color, uOpacity * alpha);
 
-        gl_FragColor = finalLayer;
+        gl_FragColor = layer1;
         // gl_FragColor = vec4(uStrokeColor, 1.);
     }
 `
@@ -293,8 +293,6 @@ float cnoise(vec3 P){
     return 2.2 * n_xyz;
 }
 
-
-
 float displace(vec3 point) {
     return cnoise(point * 2.0 + vec3(u_time * 0.25)) * 1.0;
   }
@@ -307,10 +305,10 @@ void main() {
     vec3 displacedPosition = position + normal * displace(position);
     // Output
     vec3 localSpacePosition = position;
-    float noise = cnoise(localSpacePosition);
+    // float noise = cnoise(localSpacePosition);
     float wave = sin(localSpacePosition.y * 0.5 + u_time);
 
-    localSpacePosition.z += wave * noise;
+    // localSpacePosition.z += wave * noise;
     vec4 mvPosition = modelMatrix * vec4(displacedPosition, 1.0);
     mvPosition = viewMatrix * mvPosition;
     // gl_Position = projectionMatrix * mvPosition;
@@ -334,18 +332,7 @@ void main() {
 
     vLetterIndex = letterIndex;
 
-    float offset = 4.0/256.0;
-    vec3 tangent = orthogonal(normal);
-    vec3 bitangent = normalize(cross(normal, tangent));
-    vec3 neighbour1 = position + tangent * offset;
-    vec3 neighbour2 = position + bitangent * offset;
-    vec3 displacedNeighbour1 = neighbour1 + normal * displace(neighbour1);
-    vec3 displacedNeighbour2 = neighbour2 + normal * displace(neighbour2);
-
-    vec3 displacedTangent = displacedNeighbour1 - displacedPosition;
-    vec3 displacedBitangent = displacedNeighbour2 - displacedPosition;
-
-    vec3 displacedNormal = normalize(cross(displacedTangent, displacedBitangent));
+    
 
     // vPosition = (modelMatrix * vec4(displacedPosition, 1.)).xyz;
     // vNormal = displacedNormal * normalMatrix;
@@ -413,7 +400,7 @@ export default function Shader735()
     const fontJson = fontLoader.load(fnt, (font) => {
         const f = font
         const fontGeometry = new MSDFTextGeometry({
-            text: "TEXT",
+            text: "HIDDEN",
             font: f.data
         })
         
@@ -421,7 +408,7 @@ export default function Shader735()
         if(meshRef.current){
             meshRef.current.geometry = fontGeometry
             meshRef.current.scale.set(0.015, -0.015, 0.015)
-            meshRef.current.position.x = -1.0
+            meshRef.current.position.x = -1.25
         }
         // console.log(fontGeometry.computeBoundingBox())
     })
