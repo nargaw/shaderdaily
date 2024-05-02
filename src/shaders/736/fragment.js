@@ -20,8 +20,8 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         // p = p +  vec2(7., 3.5);
         float left = numSeven(vec2(p.x + 0.35, p.y));
-        float center = numTwo(vec2(p.x -0.03, p.y));
-        float right = numNine(vec2(p.x - 0.42, p.y));
+        float center = numThree(vec2(p.x -0.03, p.y));
+        float right = numSix(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
 
@@ -173,6 +173,10 @@ const fragmentShader = glsl`
         return h;
     }
 
+    float sdfCircle(vec2 p, float r){
+        return length(p) - r;
+    }
+
     void main()
     {
         vec2 coords = vUv;
@@ -182,47 +186,31 @@ const fragmentShader = glsl`
         vec2 newCoords = coords ;  
         vec2 m = u_mouse.xy;
 
-        vec2 offset = vec2(m) - 0.5  ;    
+        vec2 offset = vec2(m)   ;    
 
-        float f = fbm(newCoords * 1.) * .005;
-        // f = remap(f, 0., 1., 0.25, 0.75);
-        // vec3 circleColor = texture2D(u_texture, coords + f * 0.01).rgb * 2.;
+        float f = fbm(newCoords * 1.) * .05;
 
-        color = texture2D(u_texture, coords).rgb * 0.4;
-        vec3 circleColor = texture2D(u_texture, coords  + f).rgb;
-
-        //saturation
-        float luminance = dot(circleColor, vec3(0.25126, 0.7152, 0.0722));
-        float saturationAmount = 2.1;
-        circleColor = mix(vec3(luminance), circleColor, saturationAmount);
-
-        //contrast
-        // float contrastAmount = 2.;
-        // float midpoint = 0.5;
-        // color = saturate3((color - midpoint) * contrastAmount + midpoint);
-        // vec3 sg = sign(color - midpoint);
-        // color = sg * pow(abs(color - midpoint) * 2.0, vec3(1./contrastAmount)) * 0.5 + midpoint;
-
-
-        //matrixeffect
-        // circleColor = pow(circleColor, vec3(1.5, 0.8, 1.5));
-
-        //colorBoost
-        vec3 refColor = vec3(0.72, 0.25, 0.25);
-        float colorWeight = distance(circleColor, refColor);
-        colorWeight = smoothstep(0.5, 0., colorWeight);
-        color = mix(vec3(luminance), color, colorWeight);
-
-        float circle = distance(newCoords - offset + f * 2., vec2(0.5));
-        circle = 1. - smoothstep(0.2, 0.41, circle);
-
-        float circle2 = distance(newCoords - offset, vec2(0.5));
-        circle2 = 1. - smoothstep(0.21, 0.32, circle2);
+        float d = sdfCircle(coords - offset + f, 0.25);
         
-        // circleColor = mix(vec3(luminance), circleColor, colorWeight);
-        color = mix(color, circleColor, circle);
-        
-        // color = mix(color, vec3(1., 0., 0.), circle2);
+        vec3 sample1 = texture2D(u_texture, coords).rgb;
+        vec3 sample2 = texture2D(u_texture, coords).rgb;
+
+        color = sample1;
+
+        float burnAmount = 1.0 - exp(-d * d * 0.001);
+        color = mix(vec3(0.), color, burnAmount);
+
+        vec3 fireColor = vec3(1., 0.5, 0.2);
+        float orangeAmount = smoothstep(0., 0.5, d);
+        orangeAmount = pow(orangeAmount, 0.25);
+        color = mix(fireColor, color, orangeAmount);
+
+        color = mix(sample2, color, smoothstep(0., 1., d));
+
+        //firey glow
+        float glowAmount = smoothstep(0., 0.4, abs(d));
+        glowAmount = 1. - pow(glowAmount, 0.125);
+        color += glowAmount * vec3(1., 0.2, 0.05);
          
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
@@ -254,7 +242,7 @@ import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
 
-export default function Shader729()
+export default function Shader736()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
@@ -268,9 +256,9 @@ export default function Shader729()
     const textureCube = new THREE.CubeTextureLoader().load(urls)
 
     const loader = new THREE.TextureLoader()
-    const monalisa = loader.load('./Models/Textures/photos/monalisa.jpg')
-    // threeLogo.wrapS = THREE.MirroredRepeatWrapping
-    // threeLogo.wrapT = THREE.MirroredRepeatWrapping
+    const forest = loader.load('./Models/Textures/photos/forest.jpg')
+    forest.wrapS = THREE.MirroredRepeatWrapping
+    forest.wrapT = THREE.MirroredRepeatWrapping
 
     const DPR = Math.min(window.devicePixelRatio, 1.);
 
@@ -282,7 +270,7 @@ export default function Shader729()
             u_time: { type: "f", value: 1.0 },
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
             u_mouse: { type: "v2", value: new Vector2() },
-            u_texture: {value: monalisa},
+            u_texture: {value: forest},
         },
     })
 
