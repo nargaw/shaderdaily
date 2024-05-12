@@ -14,7 +14,7 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
-    const total = 740
+    const total = 741
     // console.log(total)
     
     const goNext = () => {
@@ -97,7 +97,6 @@ export default function Interface()
                 {!informationStatus && <button className="next" onClick={goNext}>next</button>}
                 <h1 className="current">{currentShader}</h1>
             </div>
-            
             
             <form id='myForm' className="form" onSubmit={handleSubmit}>
                 {!informationStatus && <input type="number" name="shader" placeholder="Enter Shader Number" className="input" />}
