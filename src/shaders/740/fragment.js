@@ -233,9 +233,9 @@ const fragmentShader = glsl`
 
         vec2 offset = vec2(m)   ;    
 
-        float f = fbm(newCoords * 5.) * .05;
+        float f = fbm(newCoords * 2.) * .025;
 
-        float d = sdfCircle(coords - offset + f, 0.125);
+        float d = sdfCircle(coords - offset + f, 0.125 + f);
         coords*=10.;
         vec3 sample1 = texture2D(u_texture, coords).rgb ;
         // sample1 = vec3(0.);
@@ -266,7 +266,7 @@ const fragmentShader = glsl`
         //firey glow
         float glowAmount = smoothstep(0., 1., abs(d));
         glowAmount = 1. - pow(glowAmount, 0.1125);
-        color += glowAmount * vec3(0.85, 0.5, 0.51);
+        color += glowAmount * vec3(0.85 * sin(u_time), 0.5, 0.51 * cos(u_time));
 
         //color = vec3(dd + c.x);
         float numLabel = label(vUv);
