@@ -92,11 +92,11 @@ export default function Interface()
 
     return(
         <>
-            {/* <div className="nav">
+            <div className="nav">
                 {!informationStatus && <button className="back" onClick={goBack}>back</button>}
                 {!informationStatus && <button className="next" onClick={goNext}>next</button>}
                 <h1 className="current">{currentShader}</h1>
-            </div> */}
+            </div>
             
             <form id='myForm' className="form" onSubmit={handleSubmit}>
                 {!informationStatus && <input type="number" name="shader" placeholder="Enter Shader Number" className="input" />}

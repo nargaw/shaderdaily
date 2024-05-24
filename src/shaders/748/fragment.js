@@ -105,7 +105,7 @@ float snoise(vec2 v) {
     float ridge(float h, float offset) {
         h = abs(h);     // create creases
         h = offset - h; // invert so creases are at top
-        h = h * h * h;      // sharpen creases
+        h = h * h * h * h * h;      // sharpen creases
         return h;
     }
 
@@ -115,7 +115,7 @@ float snoise(vec2 v) {
         float offset = .19 ;
         float amp = .5 ;
         float sum = 0. ;
-        float freq = 1.35 * (snoise(vUv)); 
+        float freq = 10.35 * (snoise(vUv )); 
         float prev = .5;
         for( int i = 0; i < OCTAVES; i++){
             float v = ridge(snoise(vUv), offset * (snoise(vUv)) );
@@ -133,12 +133,14 @@ float snoise(vec2 v) {
         vec2 coords = vUv;
         vec2 m = u_mouse.xy;
 
+        coords = Rot(coords, u_time * 0.25);
+
         vec2 newvUv = vUv;
         newvUv *= 10.;
         vec2 offset = vec2(m - 0.5);        
         vec3 color = vec3(0.);
 
-        coords = coords - offset;
+        // coords = coords - offset;
         // coords.y +=  sin(u_time) / 5.;
         // coords.x +=  cos(u_time) / 5.;
         // coords -= 0.5;
@@ -152,10 +154,10 @@ float snoise(vec2 v) {
         r1 = abs(r1 );
         float a = -atan(coords.x, coords.y) * PI;
         a = abs(a * .5);
-        coords = vec2(0.0075/r1 + 2.95 + ((u_time * 2.6) * 0.5 + r1), a);
+        coords = vec2(1.075/r1 + 20.95 + ((u_time * 1.5) * 0.5 + r1), a);
 
         vec2 newUv = coords;
-        float y = fbm(newUv) * fbm(newUv);
+        float y = fbm(newUv + fbm(newUv + fbm(newUv + fbm(newUv)))) + fbm(newUv) ;
         color.br += y  ;
         color.gr += y * y;
         
