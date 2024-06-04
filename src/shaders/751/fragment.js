@@ -135,7 +135,7 @@ float snoise(vec2 v) {
 
         
 
-        coords = Rot(coords, u_time * 0.5);
+        coords = Rot(coords, PI * 0.5);
 
         vec2 newvUv = vUv;
         newvUv *= 1.;
@@ -151,39 +151,28 @@ float snoise(vec2 v) {
 
         
 
-        coords = coords *2. - 1.;
-        float x = length(coords) - 0.175;
-        x = smoothstep(0.05, 0.9, x);
-        // coords += snoise(coords) * 0.05;
+        // coords = coords *2. - 1.;
+        vec2 newCoords = coords;
+        newCoords = newCoords - 0.5;
+        // newCoords.x += 1.;
 
         float an = -u_time * 0.5;
-        float r1 = length(coords) ;
+        float r1 = length(newCoords) ;
         // r1 = abs(r1 );
-        float a = -atan(coords.x, coords.y) * PI;
+        float a = -atan(newCoords.x, newCoords.y) * PI;
         a = abs(a * .2);
-        coords = vec2(.05/r1 + 2.95 + ((u_time * sin(12.5) * 2.5) * 0.5 + r1), a);
+        newCoords = vec2(.05/r1 + ((-u_time * .15) * 0.5 + r1), a);
 
-        
-
-        // color = sample1;
+        float x = length(coords * 2. - 1.);
+        x = smoothstep(0.05, 0.5, x);
 
         vec2 newUv = coords;
         float y = fbm(newUv + fbm(newUv + fbm(newUv + fbm(newUv)))) + fbm(newUv) ;
         vec3 sample1 = texture2D(u_texture, vec2(coords.y, coords.x)).rgb ;
-        vec3 sample2 = texture2D(u_texture, vec2(coords.y, coords.x) *0.5).rgb ;
-        // color.br += y  ;
-        color.rgb += sample1.rgb;
-        
-        // newUv *= 5.;
-        // vec2 ipos = floor(newUv);
-        // vec2 fpos = fract(newUv);
-        // vec2 tile = tPattern(fpos, rand2(ipos));
-        // float y = step(tile.x, tile.y);
-        // float z = smoothstep(tile.x - 0.1, tile.x, tile.y) - 
-        //         smoothstep(tile.x, tile.x + 0.1, tile.y);
-        // color = vec3(z);
+        vec3 sample2 = texture2D(u_texture, vec2(newCoords)).rgb ;
+        color.rgb += sample2.rgb;
 
-        color = mix(vec3(0.), color, x);
+        color = mix(vec3(1.), color, x);
 
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
