@@ -131,33 +131,33 @@ const fragmentShader = glsl`
         float y = floor(vLayoutUv.y * 10.);
         float pattern = noise(vec2(x, y));
 
-        vec3 blue = vec3(0.634, 0.966, 0.788);
-        vec4 l1 = vec4(vec3(0.12, .7987, 0.234), border);
-        vec4 l2 = vec4(vec3(.502, 0.278, 0.369), border);
-        vec4 l3 = vec4(blue, outset);
-        vec4 l4 = vec4(vec3(0.204, .204, .29), outset);
+        vec3 blue = vec3(0.034, 0.966, 0.988);
+        vec4 l1 = vec4(vec3(0.912, .0987, 0.234), border);
+        vec4 l2 = vec4(vec3(.902, 0.278, 0.369), border);
+        vec4 l3 = vec4(vec3(0.924, 0.43, 0.01), outset);
+        vec4 l4 = vec4(vec3(0.7204, .604, .929), outset);
 
         float width = 1.0;
 
-        float p0 = m.x;
+        float p0 = sin(u_time) + 0.25;
         p0 = map(p0, 0., 1., -width, 1.);
         p0 = smoothstep(p0, p0 + width, vLayoutUv.x);
         float mix0 = 2. * p0 - pattern; 
         mix0 = clamp(mix0, 0., 1.);
 
-        float p2 = (1. - m.x);
+        float p2 = (cos(u_time)) + 0.5;
         p2 = map(p2, 0., 1., -width, 1.);
         p2 = smoothstep(p2, p2 + width, vLayoutUv.x);
         float mix2 = 2. * p2 - pattern; 
         mix2 = clamp(mix2, 0., 1.);
 
-        float p3 = (1.);
+        float p3 = (sin(u_time)) + 0.75;
         p3 = map(p3, 0., 1., -width, 1.);
         p3 = smoothstep(p3, p3 + width, vLayoutUv.x);
         float mix3 = 2. * p3 - pattern; 
         mix3 = clamp(mix3, 0., 1.);
 
-        float p4 = (cos(u_time * 0.99) );
+        float p4 = cos(u_time) + 1.;
         p4 = map(p4, 0., 1., -width, 1.);
         p4 = smoothstep(p4, p4 + width, vLayoutUv.x);
         float mix4 = 2. * p4 - pattern; 
@@ -171,18 +171,9 @@ const fragmentShader = glsl`
         float circle = distance(vLayoutUv - offset, vec2(0.25, 0.25));
         circle = smoothstep(0.2, 0.21, circle);
 
-        color = vec3(0., 1., 0.);
-
-        // color = 1. - mix(vec3(1.), vec3(0.), circle);
-        float glowAmount = smoothstep(0.0, 0.01, (border));
-        glowAmount = 1. - pow(glowAmount, 1.15);
-        color += glowAmount * vec3(0.2, 1.0, 0.05);
-
-        //color = vec3(border);
-
-        vec4 finalLayer = layer2;
+        vec4 finalLayer = layer2 + layer4;
         gl_FragColor = finalLayer;
-        //gl_FragColor = vec4(uStrokeColor, 1.);
+        // gl_FragColor = vec4(color, outset);
     }
 `
 
