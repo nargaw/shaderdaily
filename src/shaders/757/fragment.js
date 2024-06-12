@@ -2,6 +2,8 @@ import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = glsl`
 
+    uniform sampler2D u_texture;
+
     //varying
     varying vec2 vLayoutUv;
 
@@ -171,8 +173,15 @@ const fragmentShader = glsl`
         float circle = distance(vLayoutUv - offset, vec2(0.25, 0.25));
         circle = smoothstep(0.2, 0.21, circle);
 
+        vec2 newUv = vUv;
+        newUv *= 2.;
+        newUv.x += sin(u_time * 0.25);
+        vec3 sample1 = texture2D(u_texture, vec2(newUv)).rgb ;
+
         vec4 finalLayer = layer1 + layer3;
-        gl_FragColor = finalLayer;
+        // gl_FragColor = finalLayer;
+        // gl_FragColor = vec4(vec2(vLayoutUv), 0., outset);
+        gl_FragColor = vec4(sample1, outset);
         // gl_FragColor = vec4(vLayoutUv, 0., outset * inset);
         // gl_FragColor = vec4(color, outset);
     }
@@ -298,9 +307,12 @@ export default function Shader757()
     const fontLoader = new FontLoader()
     // const fnt = './Font/TitanOne-msdf.json'
     // const png = './Font/TitanOne.png'
+    const forest = loader.load('./Models/Textures/photos/forest.jpg')
     const fnt = './Font/MrsSheppards-msdf.json'
     const png = './Font/MrsSheppards.png'
     console.log(fnt)
+    forest.wrapS = THREE.MirroredRepeatWrapping
+    forest.wrapT = THREE.MirroredRepeatWrapping
 
     const material = new THREE.ShaderMaterial({
         side: THREE.DoubleSide,
@@ -329,6 +341,7 @@ export default function Shader757()
             u_time: { type: "f", value: 1.0 },
             u_resolution: { type: "v2", value: new Vector2(window.innerWidth, window.innerHeight) },
             u_mouse: { type: "v2", value: new Vector2() },
+            u_texture: {value: forest},
             // uMap: {value: new THREE.Vector2()},
         },
     })
