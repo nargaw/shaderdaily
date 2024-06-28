@@ -177,51 +177,7 @@ const fragmentShader = glsl`
         return length(p) - r;
     }
 
-    vec2 random2(vec2 p){
-        return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
-    }
-
-    vec3 voronoi(vec2 x){
-        vec2 n=floor(x);
-        vec2 f=fract(x);
-        
-        vec2 mg,mr;
-        float md=5.;
-        
-        for(int i=-1;i<=1;i++){
-            for(int j=-1;j<=1;j++){
-                vec2 g=vec2(float(j),float(i));
-                vec2 o=random2(n+g);
-                o=.5+.5*sin((u_time * 0.5)+TWO_PI*o);
-                
-                vec2 r=g+o-f;
-                float d=dot(r,r);
-                
-                if(d<md){
-                    md=d;
-                    mr=r;
-                    mg=g;
-                }
-                
-            }
-        }
-        md=0.1;
-        for(int i=-5;i<=5;i++){
-            for(int j=-5;j<=5;j++){
-                vec2 g=vec2(float(j),float(i));
-                vec2 o=random2(n+g);
-                o=.5+.5*sin((u_time * 0.5)+TWO_PI*o);
-                
-                vec2 r=g+o-f;
-                if(dot(mr-r,mr-r)>.00001){
-                    md=min(md,dot(.5*(mr+r),normalize(r-mr)));
-                    
-                }
-            }
-        }
-        return vec3(md, mr);
-    }
-
+   
     void main()
     {
         vec2 coords = vUv;
@@ -233,27 +189,15 @@ const fragmentShader = glsl`
 
         vec2 offset = vec2(m)   ;    
 
-        float f = fbm(newCoords) * 0.25;
-
-        float d = sdfCircle(coords - offset + f, 0.125);
-        coords*=5.;
-        vec3 sample1 = texture2D(u_texture, coords).rgb ;
-        // sample1 = vec3(0.);
-        vec3 sample2 = texture2D(u_texture, coords).rgb;
+        float f = fbm(coords) * 0.025;
+        coords += f;
+        coords = fbm(coords) * 0.025 + coords;
+        
+        float d = sdfCircle(coords - offset, 0.125);
 
         color = vec3(0.);
 
-        
-        coords.x += u_time * 0.125;
-        vec3 c=voronoi((coords));
-        float dd=length(c.yz);
-        //dd = smoothstep(0.1, 0.11, dd * d);
-
-        //color=mix(vec3(1.),color,smoothstep(1.5,1.51,dd));
-        
-        //dd +=c.x;
-
-        float burnAmount = 1.0 - exp(-d * d * c.x * 0.001);
+        float burnAmount = 1.0 - exp(-d * d * 0.001);
         color = mix(vec3(0.), color, burnAmount);
 
         vec3 fireColor = vec3(1., .85, 0.2);
@@ -266,9 +210,8 @@ const fragmentShader = glsl`
         //firey glow
         float glowAmount = smoothstep(0., 1., abs(d));
         glowAmount = 1. - pow(glowAmount, 0.1125);
-        color += glowAmount * vec3(0.85, 0.75, 0.51);
+        color += glowAmount * vec3(0.35, 0.75, 0.51);
 
-        //color = vec3(dd + c.x);
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
         gl_FragColor = vec4(color, 1.);
