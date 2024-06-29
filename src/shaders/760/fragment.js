@@ -198,18 +198,22 @@ const fragmentShader = glsl`
         coords += f;
         coords = fbm(coords) * 0.025 + coords;
         
-        float d = sdfCircle(coords - offset, 0.125);
-        float d2 = sdfCircle(coords - offset2, 0.15);
-        float d3 = sdfCircle(coords - offset3, 0.175);
+        float d = sdfCircle(coords - offset, 0.15);
+        float d2 = sdfCircle(coords - offset2, 0.25);
+        float d3 = sdfCircle(coords - offset3, 0.35);
         color = vec3(0.);
 
         float burnAmount = 1.0 - exp(-d * d * 0.001);
         color = mix(vec3(0.), color, burnAmount);
+        float burnAmount2 = 1.0 - exp(-d2 * d2 * 0.001);
+        color = mix(vec3(0.), color, burnAmount);
+        float burnAmount3 = 1.0 - exp(-d3 * d3 * 0.001);
+        color = mix(vec3(0.), color, burnAmount);
 
         vec3 fireColor = vec3(1., .85, 0.2);
         float orangeAmount = smoothstep(0., 0.25, d);
-        float orangeAmount2 = smoothstep(0., 0.25, d2);
-        float orangeAmount3 = smoothstep(0., 0.25, d3);
+        float orangeAmount2 = smoothstep(0., 0.35, d2);
+        float orangeAmount3 = smoothstep(0., 0.45, d3);
         orangeAmount = pow(orangeAmount, 0.25);
         orangeAmount2 = pow(orangeAmount2, 0.125);
         orangeAmount3 = pow(orangeAmount3, 0.025);
@@ -217,6 +221,8 @@ const fragmentShader = glsl`
         color = mix(fireColor, color, orangeAmount2);
         color = mix(fireColor, color, orangeAmount3);
         color = mix(vec3(0.), color, smoothstep(0., 1., d));
+        color = mix(vec3(0.), color, smoothstep(0., 1., d2));
+        color = mix(vec3(0.), color, smoothstep(0., 1., d3));
 
         //firey glow
         float glowAmount = smoothstep(0., 1., abs(d));
@@ -296,7 +302,7 @@ export default function Shader760()
         },
     })
 
-    const meshSize = 2
+    const meshSize = 4
 
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     const meshRef = useRef()
@@ -419,14 +425,14 @@ export default function Shader760()
             dimensions.height * DPR
         )
 
-        mouseX = lerp(mouseX, tempValX, 0.1)
-        mouseY = lerp(mouseY, tempValY, 0.1)
+        mouseX = lerp(mouseX, tempValX, 0.05)
+        mouseY = lerp(mouseY, tempValY, 0.05)
 
-        mouseX2 = lerp(mouseX2, tempValX, 0.15)
-        mouseY2 = lerp(mouseY2, tempValY, 0.15)
+        mouseX2 = lerp(mouseX2, tempValX, 0.1)
+        mouseY2 = lerp(mouseY2, tempValY, 0.1)
 
-        mouseX3 = lerp(mouseX3, tempValX, 0.2)
-        mouseY3 = lerp(mouseY3, tempValY, 0.2)
+        mouseX3 = lerp(mouseX3, tempValX, 0.25)
+        mouseY3 = lerp(mouseY3, tempValY, 0.25)
     })
 
     const remap = (value, low1, high1, low2, high2 ) => {
