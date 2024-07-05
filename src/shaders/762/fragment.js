@@ -221,43 +221,51 @@ const fragmentShader = glsl`
         float d9 = sdfCircle(coords - offset9, 0.095);
         color = vec3(0.);
 
-        
+        float val1 = opUnion(d, d2);
+        float val2 = opUnion(val1, d3);
+        float val3 = opUnion(val2, d4);
+        float val4 = opUnion(val3, d5);
+        float val5 = opUnion(val4, d6);
+        float val6 = opUnion(val5, d7);
+        float val7 = opUnion(val6, d8);
+        float val8 = opUnion(val7, d9);
+
         //glow
-        float glowAmount = smoothstep(0., 1., abs(d));
+        float glowAmount = smoothstep(0., 1., abs(val8));
         glowAmount = 1. - pow(glowAmount, 0.1125 * 0.25);
         color += glowAmount * vec3(0.35, 0.75, 0.51);
 
-        // float glowAmount2 = smoothstep(0., 1., abs(d2));
-        // glowAmount2 = 1. - pow(glowAmount2, 0.1125 * 0.25);
-        // color += glowAmount2 * vec3(0.35, 0.75, 0.51);
+        // // float glowAmount2 = smoothstep(0., 1., abs(d2));
+        // // glowAmount2 = 1. - pow(glowAmount2, 0.1125 * 0.25);
+        // // color += glowAmount2 * vec3(0.35, 0.75, 0.51);
 
-        float glowAmount3 = smoothstep(0., 1., abs(d3));
-        glowAmount3 = 1. - pow(glowAmount3, 0.1125 * 0.25);
-        color += glowAmount3 * vec3(0.35, 0.75, 0.51);
+        // float glowAmount3 = smoothstep(0., 1., abs(d3));
+        // glowAmount3 = 1. - pow(glowAmount3, 0.1125 * 0.25);
+        // color += glowAmount3 * vec3(0.35, 0.75, 0.51);
 
-        // float glowAmount4 = smoothstep(0., 1., abs(d4));
-        // glowAmount4 = 1. - pow(glowAmount4, 0.1125 * 0.25);
-        // color += glowAmount4 * vec3(0.35, 0.75, 0.51);
+        // // float glowAmount4 = smoothstep(0., 1., abs(d4));
+        // // glowAmount4 = 1. - pow(glowAmount4, 0.1125 * 0.25);
+        // // color += glowAmount4 * vec3(0.35, 0.75, 0.51);
 
-        float glowAmount5 = smoothstep(0., 1., abs(d5));
-        glowAmount5 = 1. - pow(glowAmount5, 0.1125 * 0.25);
-        color += glowAmount5 * vec3(0.35, 0.75, 0.51);
+        // float glowAmount5 = smoothstep(0., 1., abs(d5));
+        // glowAmount5 = 1. - pow(glowAmount5, 0.1125 * 0.25);
+        // color += glowAmount5 * vec3(0.35, 0.75, 0.51);
 
-        // float glowAmount6 = smoothstep(0., 1., abs(d6));
-        // glowAmount6 = 1. - pow(glowAmount6, 0.1125 * 0.25);
-        // color += glowAmount6 * vec3(0.35, 0.75, 0.51);
+        // // float glowAmount6 = smoothstep(0., 1., abs(d6));
+        // // glowAmount6 = 1. - pow(glowAmount6, 0.1125 * 0.25);
+        // // color += glowAmount6 * vec3(0.35, 0.75, 0.51);
 
-        float glowAmount7 = smoothstep(0., 1., abs(d7));
-        glowAmount7 = 1. - pow(glowAmount7, 0.1125 * 0.25);
-        color += glowAmount7 * vec3(0.35, 0.75, 0.51);
+        // float glowAmount7 = smoothstep(0., 1., abs(d7));
+        // glowAmount7 = 1. - pow(glowAmount7, 0.1125 * 0.25);
+        // color += glowAmount7 * vec3(0.35, 0.75, 0.51);
 
-        // float glowAmount8 = smoothstep(0., 1., abs(d8));
-        // glowAmount8 = 1. - pow(glowAmount8, 0.1125 * 0.25);
-        // color += glowAmount8 * vec3(0.35, 0.75, 0.51);
+        // // float glowAmount8 = smoothstep(0., 1., abs(d8));
+        // // glowAmount8 = 1. - pow(glowAmount8, 0.1125 * 0.25);
+        // // color += glowAmount8 * vec3(0.35, 0.75, 0.51);
 
-        float glowAmount9 = smoothstep(0., 1., abs(d9));
-        glowAmount9 = 1. - pow(glowAmount9, 0.1125 * 0.25);
-        color += glowAmount9 * vec3(0.35, 0.75, 0.51);
+        // float glowAmount9 = smoothstep(0., 1., abs(d9));
+        // glowAmount9 = 1. - pow(glowAmount9, 0.1125 * 0.25);
+        // color += glowAmount9 * vec3(0.35, 0.75, 0.51);
 
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
