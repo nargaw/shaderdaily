@@ -231,7 +231,7 @@ const fragmentShader = glsl`
         float val8 = opUnion(val7, d9);
 
         //glow
-        float glowAmount = smoothstep(0., 1., abs(val8));
+        float glowAmount = smoothstep(0., 1., abs(val5));
         glowAmount = 1. - pow(glowAmount, 0.1125 * 0.25);
         color += glowAmount * vec3(0.35, 0.75, 0.51);
 
