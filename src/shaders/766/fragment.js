@@ -11,12 +11,6 @@ const fragmentShader = glsl`
 
     uniform vec2 u_mouse2;
     uniform vec2 u_mouse3;
-    uniform vec2 u_mouse4;
-    uniform vec2 u_mouse5;
-    uniform vec2 u_mouse6;
-    uniform vec2 u_mouse7;
-    uniform vec2 u_mouse8;
-    uniform vec2 u_mouse9;
 
     // uniform float u_factor2;
     // uniform float u_speed;
@@ -198,74 +192,22 @@ const fragmentShader = glsl`
 
         vec2 offset =  vec2(u_mouse.xy);  
         vec2 offset2 = vec2(u_mouse2.xy); 
-        vec2 offset3 = vec2(u_mouse3.xy);
-        vec2 offset4 = vec2(u_mouse4.xy); 
-        vec2 offset5 = vec2(u_mouse5.xy); 
-        vec2 offset6 = vec2(u_mouse6.xy); 
-        vec2 offset7 = vec2(u_mouse7.xy); 
-        vec2 offset8 = vec2(u_mouse8.xy); 
-        vec2 offset9 = vec2(u_mouse9.xy);    
+        vec2 offset3 = vec2(u_mouse3.xy);   
 
         float f = fbm(coords) * 0.025;
-        coords += f;
+        //coords += f;
         // coords = fbm(coords) * 0.025 + coords;
         
         float d =  1. - sdPolygonOutline(coords - offset,  3, (0.95 * 0.25 ));
-        float d2 = 1. - sdPolygonOutline(coords - offset2, 3, (0.85 * 0.25 ));
-        float d3 = 1. - sdPolygonOutline(coords - offset3,  3, (0.75 * 0.25 ));
-        float d4 = 1. - sdPolygonOutline(coords - offset4, 3, (0.65 * 0.25 ));
-        float d5 = 1. - sdPolygonOutline(coords - offset5, 3, (0.55 * 0.25 ));
-        float d6 = 1. - sdPolygonOutline(coords - offset6, 3, (0.45 * 0.25 ));
-        float d7 = 1. - sdPolygonOutline(coords - offset7, 3, (0.35 * 0.25 ));
-        float d8 = 1. - sdPolygonOutline(coords - offset8, 3, (0.25 * 0.25 ));
-        float d9 = 1. - sdPolygonOutline(coords - offset9, 3, (0.15 * 0.25 ));
-        color = vec3(0.);
+        float d2 = 1. - sdPolygon(coords - offset2, 6, (0.5 + sin(u_time) * 0.25 ));
 
-        float val1 = opUnion(d, d2);
-        float val2 = opUnion(val1, d3);
-        float val3 = opUnion(val2, d4);
-        float val4 = opUnion(val3, d5);
-        float val5 = opUnion(val4, d6);
-        float val6 = opUnion(val5, d7);
-        float val7 = opUnion(val6, d8);
-        float val8 = opUnion(val7, d9);
+        float val1 = opIntersection(d, d2);
 
         //glow
-        float glowAmount = smoothstep(0., 1., abs(val8));
+        float glowAmount = smoothstep(0., 1., abs(val1));
         glowAmount = 1. - pow(glowAmount, 0.1125 * 0.25);
         color += glowAmount * vec3(0.35, 0.75, 0.51);
 
-        // // float glowAmount2 = smoothstep(0., 1., abs(d2));
-        // // glowAmount2 = 1. - pow(glowAmount2, 0.1125 * 0.25);
-        // // color += glowAmount2 * vec3(0.35, 0.75, 0.51);
-
-        // float glowAmount3 = smoothstep(0., 1., abs(d3));
-        // glowAmount3 = 1. - pow(glowAmount3, 0.1125 * 0.25);
-        // color += glowAmount3 * vec3(0.35, 0.75, 0.51);
-
-        // // float glowAmount4 = smoothstep(0., 1., abs(d4));
-        // // glowAmount4 = 1. - pow(glowAmount4, 0.1125 * 0.25);
-        // // color += glowAmount4 * vec3(0.35, 0.75, 0.51);
-
-        // float glowAmount5 = smoothstep(0., 1., abs(d5));
-        // glowAmount5 = 1. - pow(glowAmount5, 0.1125 * 0.25);
-        // color += glowAmount5 * vec3(0.35, 0.75, 0.51);
-
-        // // float glowAmount6 = smoothstep(0., 1., abs(d6));
-        // // glowAmount6 = 1. - pow(glowAmount6, 0.1125 * 0.25);
-        // // color += glowAmount6 * vec3(0.35, 0.75, 0.51);
-
-        // float glowAmount7 = smoothstep(0., 1., abs(d7));
-        // glowAmount7 = 1. - pow(glowAmount7, 0.1125 * 0.25);
-        // color += glowAmount7 * vec3(0.35, 0.75, 0.51);
-
-        // // float glowAmount8 = smoothstep(0., 1., abs(d8));
-        // // glowAmount8 = 1. - pow(glowAmount8, 0.1125 * 0.25);
-        // // color += glowAmount8 * vec3(0.35, 0.75, 0.51);
-
-        // float glowAmount9 = smoothstep(0., 1., abs(d9));
-        // glowAmount9 = 1. - pow(glowAmount9, 0.1125 * 0.25);
-        // color += glowAmount9 * vec3(0.35, 0.75, 0.51);
 
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
@@ -480,12 +422,7 @@ export default function Shader766()
         material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         material.uniforms.u_mouse2.value = new THREE.Vector2(mouseX2, mouseY2)
         material.uniforms.u_mouse3.value = new THREE.Vector2(mouseX3, mouseY3)
-        material.uniforms.u_mouse4.value = new THREE.Vector2(mouseX4, mouseY4)
-        material.uniforms.u_mouse5.value = new THREE.Vector2(mouseX5, mouseY5)
-        material.uniforms.u_mouse6.value = new THREE.Vector2(mouseX6, mouseY6)
-        material.uniforms.u_mouse7.value = new THREE.Vector2(mouseX7, mouseY7)
-        material.uniforms.u_mouse8.value = new THREE.Vector2(mouseX8, mouseY8)
-        material.uniforms.u_mouse9.value = new THREE.Vector2(mouseX9, mouseY9)
+       
         meshRef.current.material.uniforms.u_resolution.value = new THREE.Vector2(
             dimensions.width * DPR,
             dimensions.height * DPR
@@ -500,23 +437,6 @@ export default function Shader766()
         mouseX3 = lerp(mouseX3, tempValX, 0.07)
         mouseY3 = lerp(mouseY3, tempValY, 0.07)
 
-        mouseX4 = lerp(mouseX4, tempValX, 0.06)
-        mouseY4 = lerp(mouseY4, tempValY, 0.06)
-
-        mouseX5 = lerp(mouseX5, tempValX, 0.05)
-        mouseY5 = lerp(mouseY5, tempValY, 0.05)
-
-        mouseX6 = lerp(mouseX6, tempValX, 0.04)
-        mouseY6 = lerp(mouseY6, tempValY, 0.04)
-
-        mouseX7 = lerp(mouseX7, tempValX, 0.03)
-        mouseY7 = lerp(mouseY7, tempValY, 0.03)
-
-        mouseX8 = lerp(mouseX8, tempValX, 0.02)
-        mouseY8 = lerp(mouseY8, tempValY, 0.02)
-
-        mouseX9 = lerp(mouseX9, tempValX, 0.015)
-        mouseY9 = lerp(mouseY9, tempValY, 0.015)
     })
 
     const remap = (value, low1, high1, low2, high2 ) => {

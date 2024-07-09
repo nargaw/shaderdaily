@@ -339,7 +339,7 @@ export default function Shader764()
     })
 
     const meshSize = 2
-
+    
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     const meshRef = useRef()
 
