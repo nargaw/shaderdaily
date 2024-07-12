@@ -136,7 +136,7 @@ const fragmentShader = glsl`
         float freq = 1.0; 
         float prev = 1.0;
         for( int i = 0; i < OCTAVES; i++){
-            float v = ridge(snoise(vUv * freq + u_time), offset);
+            float v = ridge(snoise(vUv * freq), offset);
             sum += v *amp;
             sum += v * amp * prev;
             prev = v;
@@ -187,7 +187,7 @@ const fragmentShader = glsl`
         // coords -= 0.5;
         vec3 color = vec3(0.);
         
-        vec2 newCoords = coords * 12.5 ;  
+        vec2 newCoords = coords * .5 ;  
         vec2 m = u_mouse.xy;
 
         vec2 offset =  vec2(u_mouse.xy);  
@@ -196,13 +196,16 @@ const fragmentShader = glsl`
         
         coords -= offset;
 
-        float y = fbm(coords + fbm(coords));
-        float cir = sdfCircle(coords, 0.015);
+        float y = fbm(coords + fbm(coords) + sin(u_time ) + 20. /8.);
+        float cir = sdfCircle(coords, 0.15);
+        cir = smoothstep(0.015, 0.1245, cir);
         // color += y;
         // color += 1.-cir;
 
-        // cir = smoothstep(0.125, 1.125, cir);
-        color = mix(vec3(0.), vec3(vec3(y)), cir);
+        float x = y - cir;
+        color = vec3(x);
+        // // cir = smoothstep(0.125, 1.125, cir);
+        // color = mix(vec3(0.), vec3(y), cir);
 
         // color += vec3(cir);
 
