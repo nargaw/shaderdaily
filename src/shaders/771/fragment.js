@@ -198,22 +198,21 @@ const fragmentShader = glsl`
         //coords += f;
         // coords = fbm(coords) * 0.025 + coords;
         
-        float d =  1. - sdPolygon(vec2(coords.x - 0.25 + sin(u_time)/4., coords.y),  4, (0.25 ));
-        float d2 = 1. - sdPolygon(vec2(coords.x, coords.y  - 0.25 + sin(u_time)/4.), 4, (0.25 ));
-        float d3 =  1. - sdPolygon(vec2(coords.x + 0.25 + sin(u_time)/4., coords.y),  4, (0.25 ));
-        float d4 = 1. - sdPolygon(vec2(coords.x, coords.y  + 0.25 + sin(u_time)/4.), 4, (0.25 ));
-        float d5 = 1. - sdPolygon(vec2(coords.x + 0.25 + (sin(u_time)/4.), coords.y  + 0.25 + sin(u_time)/4.), 4, (0.25 ));
-        float d6 = 1. - sdPolygon(vec2(coords.x - 0.25 + (sin(u_time)/4.), coords.y  - 0.25 + sin(u_time)/4.), 4, (0.25 ));
+        float d =  1. - sdPolygon(coords + 0.5 - offset,  4, (0.25 ));
+        float d2 = 1. - sdPolygon(vec2(coords.x - 0.25, coords.y - 0.25), 4, (0.25 ));
+        float d3 =  1. - sdPolygon(vec2(coords.x + 0.25, coords.y - 0.25),  4, (0.25 ));
+        float d4 = 1. - sdPolygon(vec2(coords.x - 0.25, coords.y + 0.25), 4, (0.25 ));
+        float d5 = 1. - sdPolygon(vec2(coords.x + 0.25, coords.y + 0.25), 4, (0.25 ));
 
 
         float val1 = softMin(d2, d, 12.5);
         float val2 = softMin(val1, d3, 12.5);
         float val3 = softMin(val2, d4, 12.5);
         float val4 = softMin(val3, d5, 12.5);
-        float val5 = softMin(val4, d6, 12.5);
+      
 
         //glow
-        float glowAmount = smoothstep(0., 1., abs(val5));
+        float glowAmount = smoothstep(0., 1., abs(val4));
         glowAmount = 1. - pow(glowAmount, 0.1125 * 0.25);
         color += glowAmount * vec3(0.35, 0.75, 0.51);
 
