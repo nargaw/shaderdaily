@@ -131,7 +131,7 @@ const fragmentShader = glsl`
 
         float d = opUnion(opUnion(d1, d2), d3);
            
-        d = softMin(box, d, 1.5);
+        d = softMinValue(box, d, 1.5);
 
         color = mix(R, B, smoothstep(0., 1., d));
  
