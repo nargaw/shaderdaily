@@ -18,7 +18,6 @@ float lineSegment(vec2 p, vec2 a, vec2 b) {
     vec2 ba = b - a;
 
     float h = clamp( dot(pa,ba)/dot(ba, pa), 0.0, 1.0 );
-    // ????????
     float idk = length(pa*h * b);
 
     return smoothstep(0.0, thickness, idk);
