@@ -11,15 +11,15 @@ const fragmentShader = glsl`
 
     uniform vec2 u_mouse2;
     uniform vec2 u_mouse3;
+    uniform vec2 u_mouse4;
+    uniform vec2 u_mouse5;
+    uniform vec2 u_mouse6;
+    uniform vec2 u_mouse7;
+    uniform vec2 u_mouse8;
+    uniform vec2 u_mouse9;
 
     // uniform float u_factor2;
     // uniform float u_speed;
-
-    vec3 Y = vec3(1., 1., 0.5);
-    vec3 B = vec3(0.25, 0.25, 1.);
-    vec3 R = vec3(1., 0.25, 0.25);
-    vec3 G = vec3(0.25, 1., 0.25);
-    vec3 P = vec3(1., 0.25, 1.);
 
     float label(vec2 p)
     {
@@ -34,7 +34,23 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
 
-    // Some useful functions
+    float inverseLerp(float v, float minValue, float maxValue) {
+        return (v - minValue) / (maxValue - minValue);
+    }
+        
+    float remap(float v, float inMin, float inMax, float outMin, float outMax) {
+        float t = inverseLerp(v, inMin, inMax);
+        return mix(outMin, outMax, t);
+    }
+
+    vec3 saturate3(vec3 x){
+        return clamp(x, vec3(0.0), vec3(1.0));
+    }
+
+    float saturate1(float x){
+        return clamp(x, 0., 1.);
+    }
+
     vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
     vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
     vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -118,38 +134,106 @@ const fragmentShader = glsl`
     }
     
     float fbm(vec2 vUv){
-        float lacunarity = 1.1;
-        float gain = 0.95125;
-        float offset = 1.95;
-        float amp = .50;
-        float sum = 0.;
-        float freq = 1.75; 
-        float prev = .25;
+        float lacunarity = 2.0;
+        float gain = 0.15;
+        float offset = 0.9;
+        float amp = 0.5;
+        float sum = 0.0;
+        float freq = 1.0; 
+        float prev = 1.0;
         for( int i = 0; i < OCTAVES; i++){
-            float v = ridge(snoise(vUv * freq ), offset * (snoise(vUv + (u_time * 0.125))) );
-            sum += v *amp ;
-            sum += v * amp * prev  ;
-            prev = v ;
-            freq *= lacunarity ;
-            amp *= gain ;
+            float v = ridge(snoise(vUv * freq), offset * sin(snoise(vUv + (u_time * 0.25))));
+            sum += v *amp;
+            sum += v * amp * prev;
+            prev = v;
+            freq *= lacunarity;
+            amp *= gain;
         }
-        return sum ;
+        return sum;
     }
+
+    float opUnion(float d1, float d2)
+    {
+        return min(d1, d2);
+    }
+
+    float opSubtraction(float d1, float d2){
+        return max(-d1, d2);
+    }
+
+    float opIntersection(float d1, float d2){
+        return max(d1, d2);
+    }
+
+    float softMax(float a, float b, float k)
+    {
+        return log(exp(k * a) + exp(k * b)) / k;
+    }
+
+    float softMin(float a, float b, float k)
+    {
+        return -softMax(-a, -b, k);
+    }
+
+    float softMinValue(float a, float b, float k)
+    {
+        float h = exp(-b * k) / (exp(-a * k) + exp(-b * k));
+        // float h = remap(a - b, -1.0/ k, 1.0 / k, 0., 1.);
+        return h;
+    }
+
+    float sdfCircle(vec2 p, float r){
+        return length(p) - r;
+    }
+
    
     void main()
     {
         vec2 coords = vUv;
 
         vec3 color = vec3(0.);
-    
-        coords *= 1.5;
-      
-        float y = fbm(coords);
-        y = smoothstep(0.0, 0.5, y);
-        float x = fbm(coords);
-        x = smoothstep(0., 1., x);
-        color = mix(color, vec3(1.), y - x);
+        
+        vec2 newCoords = coords ;  
+        vec2 m = u_mouse.xy;
 
+        vec2 offset =  vec2(u_mouse.xy);  
+        vec2 offset2 = vec2(u_mouse2.xy); 
+        vec2 offset3 = vec2(u_mouse3.xy);
+        vec2 offset4 = vec2(u_mouse4.xy); 
+        vec2 offset5 = vec2(u_mouse5.xy); 
+        vec2 offset6 = vec2(u_mouse6.xy); 
+        vec2 offset7 = vec2(u_mouse7.xy); 
+        vec2 offset8 = vec2(u_mouse8.xy); 
+        vec2 offset9 = vec2(u_mouse9.xy);    
+
+        float f = fbm(coords) * 0.025;
+        coords += f;
+        // coords = fbm(coords) * 0.025 + coords;
+        
+        float d = sdfCircle(coords - offset,   0.015 * 5.);
+        float d2 = sdfCircle(coords - offset2, 0.015 * 5.);
+        float d3 = sdfCircle(coords - offset3 ,0.015 * 5.);
+        float d4 = sdfCircle(coords - offset4, 0.015 * 5.);
+        float d5 = sdfCircle(coords - offset5, 0.015 * 5.);
+        float d6 = sdfCircle(coords - offset6, 0.015 * 5.);
+        float d7 = sdfCircle(coords - offset7, 0.015 * 5.);
+        float d8 = sdfCircle(coords - offset8, 0.015 * 5.);
+        float d9 = sdfCircle(coords - offset9, 0.015 * 5.);
+        color = vec3(0.);
+
+        float val1 = opUnion(d, d2);
+        float val2 = opUnion(val1, d3);
+        float val3 = opUnion(val2, d4);
+        float val4 = opUnion(val3, d5);
+        float val5 = opUnion(val4, d6);
+        float val6 = opUnion(val5, d7);
+        float val7 = opUnion(val6, d8);
+        float val8 = opUnion(val7, d9);
+
+        //glow
+        float glowAmount = smoothstep(0., 1., abs(val8));
+        glowAmount = 1. - pow(glowAmount, 0.1125 * 0.25);
+        color += glowAmount * vec3(0.85, 0.75, 0.51);
 
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
@@ -181,6 +265,7 @@ import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 import { lerp } from 'three/src/math/MathUtils.js'
 
+
 export default function Shader778()
 {
     const r = './Models/EnvMaps/0/';
@@ -211,12 +296,18 @@ export default function Shader778()
             u_mouse: { type: "v2", value: new Vector2() },
             u_mouse2: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_mouse3: { value: new THREE.Uniform(new THREE.Vector2()) },
+            u_mouse4: { value: new THREE.Uniform(new THREE.Vector2()) },
+            u_mouse5: { value: new THREE.Uniform(new THREE.Vector2()) },
+            u_mouse6: { value: new THREE.Uniform(new THREE.Vector2()) },
+            u_mouse7: { value: new THREE.Uniform(new THREE.Vector2()) },
+            u_mouse8: { value: new THREE.Uniform(new THREE.Vector2()) },
+            u_mouse9: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_texture: {value: frog},
         },
     })
 
     const meshSize = 2
-
+    
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     const meshRef = useRef()
 
@@ -231,6 +322,30 @@ export default function Shader778()
      //mouse value 3
      let mouseX3 = 0;
      let mouseY3 = 0;
+
+     //mouse value 4
+     let mouseX4 = 0;
+     let mouseY4 = 0;
+
+     //mouse value 5
+     let mouseX5 = 0;
+     let mouseY5 = 0;
+
+     //mouse value 6
+     let mouseX6 = 0;
+     let mouseY6 = 0;
+
+     //mouse value 7
+     let mouseX7 = 0;
+     let mouseY7 = 0;
+
+     //mouse value 8
+     let mouseX8 = 0;
+     let mouseY8 = 0;
+
+     //mouse value 9
+     let mouseX9 = 0;
+     let mouseY9 = 0;
 
     let tempValX = 0;
     let tempValY = 0;
@@ -333,7 +448,12 @@ export default function Shader778()
         material.uniforms.u_mouse.value = new Vector2(mouseX, mouseY)
         material.uniforms.u_mouse2.value = new THREE.Vector2(mouseX2, mouseY2)
         material.uniforms.u_mouse3.value = new THREE.Vector2(mouseX3, mouseY3)
-       
+        material.uniforms.u_mouse4.value = new THREE.Vector2(mouseX4, mouseY4)
+        material.uniforms.u_mouse5.value = new THREE.Vector2(mouseX5, mouseY5)
+        material.uniforms.u_mouse6.value = new THREE.Vector2(mouseX6, mouseY6)
+        material.uniforms.u_mouse7.value = new THREE.Vector2(mouseX7, mouseY7)
+        material.uniforms.u_mouse8.value = new THREE.Vector2(mouseX8, mouseY8)
+        material.uniforms.u_mouse9.value = new THREE.Vector2(mouseX9, mouseY9)
         meshRef.current.material.uniforms.u_resolution.value = new THREE.Vector2(
             dimensions.width * DPR,
             dimensions.height * DPR
@@ -348,6 +468,23 @@ export default function Shader778()
         mouseX3 = lerp(mouseX3, tempValX, 0.07)
         mouseY3 = lerp(mouseY3, tempValY, 0.07)
 
+        mouseX4 = lerp(mouseX4, tempValX, 0.06)
+        mouseY4 = lerp(mouseY4, tempValY, 0.06)
+
+        mouseX5 = lerp(mouseX5, tempValX, 0.05)
+        mouseY5 = lerp(mouseY5, tempValY, 0.05)
+
+        mouseX6 = lerp(mouseX6, tempValX, 0.04)
+        mouseY6 = lerp(mouseY6, tempValY, 0.04)
+
+        mouseX7 = lerp(mouseX7, tempValX, 0.03)
+        mouseY7 = lerp(mouseY7, tempValY, 0.03)
+
+        mouseX8 = lerp(mouseX8, tempValX, 0.02)
+        mouseY8 = lerp(mouseY8, tempValY, 0.02)
+
+        mouseX9 = lerp(mouseX9, tempValX, 0.015)
+        mouseY9 = lerp(mouseY9, tempValY, 0.015)
     })
 
     const remap = (value, low1, high1, low2, high2 ) => {
