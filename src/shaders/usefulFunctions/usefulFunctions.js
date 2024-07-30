@@ -295,7 +295,7 @@ float sdPolygon(vec2 p, int sides, float scale)
 float sdPolygonOutline(vec2 p, int sides, float scale)
 {
     float x = sdPolygon(p, sides, scale);
-    float y = sdPolygon(p, sides, scale + 0.05);
+    float y = sdPolygon(p, sides, scale + 0.015);
     return y - x;
 }
 

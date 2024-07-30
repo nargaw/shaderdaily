@@ -193,11 +193,8 @@ const fragmentShader = glsl`
         vec2 coords = vUv;
 
         vec3 color = vec3(0.);
-        
-        vec2 newCoords = coords ;  
         vec2 m = u_mouse.xy;
-
-        vec2 offset =  vec2(u_mouse.xy);  
+        vec2 offset  =  vec2(u_mouse.xy);  
         vec2 offset2 = vec2(u_mouse2.xy); 
         vec2 offset3 = vec2(u_mouse3.xy);
         vec2 offset4 = vec2(u_mouse4.xy); 
@@ -205,21 +202,31 @@ const fragmentShader = glsl`
         vec2 offset6 = vec2(u_mouse6.xy); 
         vec2 offset7 = vec2(u_mouse7.xy); 
         vec2 offset8 = vec2(u_mouse8.xy); 
-        vec2 offset9 = vec2(u_mouse9.xy);    
+        vec2 offset9 = vec2(u_mouse9.xy); 
 
+        vec2 newCoords =  Rot(coords - offset +  0.5, u_time + 0.9) ; 
+        vec2 newCoords2 = Rot(coords - offset2 + 0.5, u_time + 0.8) ; 
+        vec2 newCoords3 = Rot(coords - offset3 + 0.5, u_time + 0.7) ; 
+        vec2 newCoords4 = Rot(coords - offset4 + 0.5, u_time + 0.6) ; 
+        vec2 newCoords5 = Rot(coords - offset5 + 0.5, u_time + 0.5) ; 
+        vec2 newCoords6 = Rot(coords - offset6 + 0.5, u_time + 0.4) ; 
+        vec2 newCoords7 = Rot(coords - offset7 + 0.5, u_time + 0.3) ; 
+        vec2 newCoords8 = Rot(coords - offset8 + 0.5, u_time + 0.2) ; 
+        vec2 newCoords9 = Rot(coords - offset9 + 0.5, u_time + 0.1) ;  
+        
         float f = fbm(coords) * 0.025;
         // coords += f;
         // coords = fbm(coords) * 0.025 + coords;
         
-        float d =  1. - rectOutline(coords - offset  + .5, 0.015 * 9., 0.015 * 9.);
-        float d2 = 1. - rectOutline(coords - offset2 + .5, 0.015 * 8., 0.015 * 8.);
-        float d3 = 1. - rectOutline(coords - offset3 + .5, 0.015 * 7., 0.015 * 7.);
-        float d4 = 1. - rectOutline(coords - offset4 + .5, 0.015 * 6., 0.015 * 6.);
-        float d5 = 1. - rectOutline(coords - offset5 + .5, 0.015 * 5., 0.015 * 5.);
-        float d6 = 1. - rectOutline(coords - offset6 + .5, 0.015 * 4., 0.015 * 4.);
-        float d7 = 1. - rectOutline(coords - offset7 + .5, 0.015 * 3., 0.015 * 3.);
-        float d8 = 1. - rectOutline(coords - offset8 + .5, 0.015 * 2., 0.015 * 2.);
-        float d9 = 1. - rectOutline(coords - offset9 + .5, 0.015 * 1., 0.015 * 1.);
+        float d =  1. - sdPolygonOutline(newCoords,  6,   0.05 * 9.);
+        float d2 = 1. - sdPolygonOutline(newCoords2, 6,  0.05 * 8.);
+        float d3 = 1. - sdPolygonOutline(newCoords3, 6,  0.05 * 7.);
+        float d4 = 1. - sdPolygonOutline(newCoords4, 6,  0.05 * 6.);
+        float d5 = 1. - sdPolygonOutline(newCoords5, 6,  0.05 * 5.);
+        float d6 = 1. - sdPolygonOutline(newCoords6, 6,  0.05 * 4.);
+        float d7 = 1. - sdPolygonOutline(newCoords7, 6,  0.05 * 3.);
+        float d8 = 1. - sdPolygonOutline(newCoords8, 6,  0.05 * 2.);
+        float d9 = 1. - sdPolygonOutline(newCoords9, 6,  0.05 * 1.);
         color = vec3(0.);
 
         float val1 = opUnion(d, d2);
@@ -233,8 +240,8 @@ const fragmentShader = glsl`
 
         //glow
         float glowAmount = smoothstep(0., 1., abs(val8));
-        glowAmount = 1. - pow(glowAmount, 0.1125 * 0.45);
-        color += glowAmount * vec3(0.85, 0.75 + sin(u_time), 0.51);
+        glowAmount = 1. - pow(glowAmount, 0.05);
+        color += glowAmount * vec3(0.85, 0.75, 0.51);
 
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
