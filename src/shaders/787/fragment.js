@@ -5,12 +5,10 @@ const fragmentShader = glsl`
     #define S(a, b, t) smoothstep(a, b, t)
     #define time u_time
 
-    varying vec3 vPosition;
-    varying vec3 vNormal;
-    uniform sampler2D u_texture;
-    uniform sampler2D u_texture2;
     uniform vec2 u_mouse2;
     uniform vec2 u_mouse3;
+    uniform sampler2D u_texture;
+    uniform vec3 u_color;
 
     float label(vec2 p)
     {
@@ -29,18 +27,19 @@ const fragmentShader = glsl`
     void main()
     {
         vec2 coords = vUv;
-        vec3 normal = normalize(vNormal);
+     
         vec3 color = vec3(1., 0., 1.);
         vec2 m = u_mouse.xy;
         vec2 offset  =  vec2(u_mouse.xy);  
         vec2 offset2 = vec2(u_mouse2.xy); 
         vec2 offset3 = vec2(u_mouse3.xy);
 
+        float textureAlpha = texture(u_texture, gl_PointCoord).r;
 
+        // float numLabel = label(vUv);
+        // color = mix(color, vec3(1.), numLabel) ;
 
-        float numLabel = label(vUv);
-        color = mix(color, vec3(1.), numLabel) ;
-        gl_FragColor = vec4(color, 1.);
+        gl_FragColor = vec4(u_color, textureAlpha);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
     }
@@ -54,21 +53,58 @@ uniform float u_time;
 uniform vec2 u_mouse;
 uniform float u_size;
 uniform vec2 u_resolution;
+uniform float u_progress;
+
+attribute float aSize;
+attribute float aTimeMultiplier;
+
+float remap(float value, float originMin, float originMax, float destinationMin, float destinationMax)
+{
+    return destinationMin + (value - originMin) * (destinationMax - destinationMin) / (originMax - originMin);
+}
 
 void main()
 {
-    //the model position is given the new displaced position
-    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+    float progress = u_progress * aTimeMultiplier;
+    vec3 newPosition = position;
 
-    //the new projected position is calucated for the vertices based on the displacement
+    //exploding
+    float explodingProgress = remap(progress, 0.0, 0.1, 0.0, 1.0);
+    explodingProgress = clamp(explodingProgress, 0., 1.);
+    explodingProgress = 1. - pow(1.0 - explodingProgress, 3.);
+    newPosition *= explodingProgress;
+
+    //falling
+    float fallingProgress = remap(progress, 0.1, 1., 0., 1.);
+    fallingProgress = clamp(fallingProgress, 0., 1.);
+    fallingProgress = 1.0 - pow(1.0 - fallingProgress, 3.);
+    newPosition.y -= fallingProgress * 0.2;
+
+    //scaling
+    float sizeOpeningProgress = remap(progress, 0., 0.125, 0., 1.);
+    float sizeclosingProgress = remap(progress, 0.125, 1.0, 1.0, 0.0);
+    float sizeProgress = min(sizeOpeningProgress, sizeclosingProgress);
+    sizeProgress = clamp(sizeProgress, 0., 1.);
+
+    //twinkling
+    float twinklingProgress = remap(progress, 0.2, 0.8, 0.0, 1.0);
+    twinklingProgress = clamp(twinklingProgress, 0.0, 1.0);
+    float sizeTwinkling = sin(progress * 30.) * 0.5 + 0.5;
+    sizeTwinkling = 1. - sizeTwinkling * twinklingProgress;
+
+    //final position
+    vec4 modelPosition = modelMatrix * vec4(newPosition, 1.0);
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
+    gl_Position = projectedPosition;
 
-    gl_PointSize = u_size * u_resolution.y;
+    //final size
+    gl_PointSize = u_size * u_resolution.y * aSize * sizeProgress * sizeTwinkling;
     gl_PointSize *= 1.0 / - viewPosition.z;
 
-    //this value is passed to the fragment shader
-    gl_Position = projectedPosition;
+    if(gl_PointSize < 1.){
+        gl_Position = vec4(9999.9);
+    } 
 }
 `
 
@@ -83,15 +119,16 @@ import { useControls } from 'leva'
 import { OrbitControls, Text } from '@react-three/drei'
 import { lerp } from 'three/src/math/MathUtils.js'
 import { texture } from 'three/examples/jsm/nodes/Nodes.js'
+import gsap from 'gsap'
 
 
 export default function Shader787()
 {
-    const {size, count} = useControls({
+    const {size, count, radius, color} = useControls({
         size: {
-            value: 0.5,
-            min: 0.01,
-            max: 0.1,
+            value: 0.1,
+            min: 0.05,
+            max: 1.0,
             step: 0.001
         },
         count: {
@@ -99,7 +136,14 @@ export default function Shader787()
             min: 10,
             max: 100,
             step: 1
-        }
+        },
+        radius: {
+            value: 0.25,
+            min: 0.1,
+            max: 1,
+            step: 0.01
+        },
+        color:'#8affff'
     })
 
     const loader = new THREE.TextureLoader()
@@ -117,6 +161,7 @@ export default function Shader787()
         loader.load('./Models/Textures/fireworks/8.png')
     ]
     const texture = textures[7]
+    texture.flipY = false
     const material = new THREE.ShaderMaterial({
         // wireframe: true,
         vertexShader: vertexShader ,
@@ -129,27 +174,53 @@ export default function Shader787()
             u_mouse2: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_mouse3: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_size: {value: size},
-            u_texture: new THREE.Uniform(texture)
+            u_texture: {value: texture},
+            u_color: {value: new THREE.Color(color)},
+            u_progress: { value: 0}
         },
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
     })
+
+    
 
     const meshSize = 2
     
     // const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     // const geometry = new THREE.OctahedronGeometry(0.5, 128)
     //fireworks geometry
+    const createFirework = (count, size, texture, radius, color) => {
+
+    }
     const positionsArray = new Float32Array(count * 3)
+    const sizesArray = new Float32Array(count)
+    const timeMultipliersArray = new Float32Array(count)
     for(let i = 0; i < count; i++){
         const i3 = i * 3
-        positionsArray[i3] = Math.random() - 0.5
-        positionsArray[i3 + 1] = Math.random() - 0.5
-        positionsArray[i3 + 2] = Math.random() - 0.5
+
+        const spherical = new THREE.Spherical(
+            radius * (0.75 + Math.random() + 0.25),
+            Math.random() * Math.PI,
+            Math.random() * Math.PI * 2
+        )
+
+        const position = new THREE.Vector3()
+        position.setFromSpherical(spherical)
+
+        positionsArray[i3] = position.x
+        positionsArray[i3 + 1] = position.y
+        positionsArray[i3 + 2] = position.z
+
+        sizesArray[i] = Math.random()
+
+        timeMultipliersArray[i] = 1 + Math.random()
     }
+    const meshRef = useRef()
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3)) 
-    const meshRef = useRef()
-
-    const pointsMaterial = new THREE.PointsMaterial()
+    geometry.setAttribute('aSize', new THREE.Float32BufferAttribute(sizesArray, 1))
+    geometry.setAttribute('aTimeMultiplier', new THREE.Float32BufferAttribute(timeMultipliersArray, 1))
 
 
      //mouse value 1
@@ -304,6 +375,24 @@ export default function Shader787()
             tempValY = remap(e.clientY, meshSizes.topPixel, meshSizes.bottomPixel, 1, 0)
         }
     }, {passive: false})
+
+    const{ scene } = useThree()
+
+    const destroy = () => {
+        scene.remove(meshRef.current)
+        geometry.dispose()
+        material.dispose()
+        console.log(scene)
+    }
+
+    gsap.to(
+        material.uniforms.u_progress,
+        {value: 1, duration: 3, ease: 'linear', onComplete: destroy}
+    )
+
+    window.addEventListener('click', () => {
+
+    })
 
     return (
         <>
