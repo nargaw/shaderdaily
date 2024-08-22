@@ -126,7 +126,7 @@ export default function Shader787()
 {
     const {size, count, radius, color} = useControls({
         size: {
-            value: 0.1,
+            value: 0.45,
             min: 0.05,
             max: 1.0,
             step: 0.001
@@ -138,7 +138,7 @@ export default function Shader787()
             step: 1
         },
         radius: {
-            value: 0.25,
+            value: 0.5,
             min: 0.1,
             max: 1,
             step: 0.01
