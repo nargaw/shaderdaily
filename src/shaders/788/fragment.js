@@ -134,28 +134,6 @@ export default function Shader788()
     }
     sizes.resolution = new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)
 
-    const {size, count, radius, color} = useControls({
-        size: {
-            value: 0.45,
-            min: 0.05,
-            max: 1.0,
-            step: 0.001
-        },
-        count: {
-            value: 50,
-            min: 10,
-            max: 100,
-            step: 1
-        },
-        radius: {
-            value: 0.5,
-            min: 0.1,
-            max: 1,
-            step: 0.01
-        },
-        color:'#8affff'
-    })
-
     const loader = new THREE.TextureLoader()
 
     const DPR = Math.min(window.devicePixelRatio, 2.);
@@ -170,9 +148,22 @@ export default function Shader788()
         loader.load('./Models/Textures/fireworks/7.png'),
         loader.load('./Models/Textures/fireworks/8.png')
     ]
-    const texture = textures[7]
     
-    const createFirework = (count, position, size, texture, radius, color) => {
+    const createFirework = () => {
+        
+        const count = Math.round(400 + Math.random() * 1000)
+        const position = new THREE.Vector3(
+            (Math.random() - 0.5) * 2,
+            Math.random(),
+            (Math.random() - 0.5) * 2
+        )
+        const size = 0.1 + Math.random() * 0.1
+        const texture = textures[Math.floor(Math.random() * textures.length)]
+        texture.flipY = false
+        const radius = 0.5 + Math.random()
+        const color = new THREE.Color()
+        color.setHSL(Math.random(), 1, 0.7)
+
         //geometry
         const positionsArray = new Float32Array(count * 3)
         const sizesArray = new Float32Array(count)
@@ -204,17 +195,17 @@ export default function Shader788()
         geometry.setAttribute('aTimeMultiplier', new THREE.Float32BufferAttribute(timeMultipliersArray, 1))
 
         // Material
-        texture.flipY = false
+        
         const material = new THREE.ShaderMaterial({
             vertexShader: vertexShader,
             fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
             uniforms:
             {
-                uSize: new THREE.Uniform(size),
-                uResolution: new THREE.Uniform(sizes.resolution),
-                uTexture: new THREE.Uniform(texture),
-                uColor: new THREE.Uniform(color),
-                uProgress: new THREE.Uniform(0)
+                u_size: new THREE.Uniform(size),
+                u_resolution: new THREE.Uniform(sizes.resolution),
+                u_texture: new THREE.Uniform(texture),
+                u_color: new THREE.Uniform(color),
+                u_progress: new THREE.Uniform(0)
             },
             transparent: true,
             depthWrite: false,
@@ -222,44 +213,27 @@ export default function Shader788()
         })
 
         const{ scene } = useThree()
-        console.log(scene)
-
         const firework = new THREE.Points(geometry, material)
         firework.position.copy(position)
         scene.add(firework)
-
+        console.log(scene)
         // Destroy
         const destroy = () =>
         {
             scene.remove(firework)
             geometry.dispose()
             material.dispose()
+            console.log(scene)
         }
     
         // Animate
         gsap.to(
-            material.uniforms.uProgress,
+            material.uniforms.u_progress,
             { value: 1, ease: 'linear', duration: 3, onComplete: destroy },
         )
     }
 
-    const createRandomFirework = () =>
-    {
-        const count = Math.round(400 + Math.random() * 1000)
-        const position = new THREE.Vector3(
-            (Math.random() - 0.5) * 2,
-            Math.random(),
-            (Math.random() - 0.5) * 2
-        )
-        const size = 0.1 + Math.random() * 0.1
-        const texture = textures[Math.floor(Math.random() * textures.length)]
-        const radius = 0.5 + Math.random()
-        const color = new THREE.Color()
-        color.setHSL(Math.random(), 1, 0.7)
-        createFirework(count, position, size, texture, radius, color)
-    }
-
-    createRandomFirework()
+    createFirework()
 
     return (
         <>
