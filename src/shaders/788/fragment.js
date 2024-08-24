@@ -216,14 +216,13 @@ export default function Shader788()
         const firework = new THREE.Points(geometry, material)
         firework.position.copy(position)
         scene.add(firework)
-        console.log(scene)
+        
         // Destroy
         const destroy = () =>
         {
             scene.remove(firework)
             geometry.dispose()
             material.dispose()
-            console.log(scene)
         }
     
         // Animate
