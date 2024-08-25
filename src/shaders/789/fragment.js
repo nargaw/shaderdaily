@@ -32,17 +32,23 @@ const fragmentShader = glsl`
         return lightColor * lightIntensity;
     }
 
+    //directional light
+    vec3 directionalLight(vec3 lightColor, float lightIntensity)
+    {
+        return lightColor * lightIntensity;
+    }
+
    
     void main()
     {
         vec2 coords = vUv;
         vec3 normal = normalize(vNormal);
         vec3 viewDir = normalize(u_cameraPosition - vPosition);
-        vec3 color = vec3(0.5);
+        vec3 color = vec3(0.);
 
         //ambient light
         vec3 light = vec3(0.);
-        light += ambientLight(vec3(1., 0., 0.), 0.5);
+        light += ambientLight(vec3(1.), 0.03);
         color *= light;
 
         
@@ -58,7 +64,7 @@ const fragmentShader = glsl`
 
         float numLabel = label(vUv);
         // color = mix(color, vec3(1.), numLabel) ;
-        gl_FragColor = vec4(color, 1.);
+        gl_FragColor = vec4(normalize(vNormal), 1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
     }
