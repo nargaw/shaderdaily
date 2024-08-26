@@ -64,7 +64,7 @@ const fragmentShader = glsl`
 
         float numLabel = label(vUv);
         // color = mix(color, vec3(1.), numLabel) ;
-        gl_FragColor = vec4((vNormal), 1.);
+        gl_FragColor = vec4((vNormal * 0.5 + 0.5), 1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
     }
@@ -166,7 +166,7 @@ float cnoise(vec3 P){
 
 //function that deforms the model based on the frequency, speed and amplitude inputs
 float displace(vec3 point) {
-    return cnoise(point * (((u_mouse.x * 5.)+ 0.5 ) ) + vec3(u_time * 0.5) ) * 0.5 ;
+    return cnoise(point * (((abs(u_mouse.x - 0.5) * 15.)+ 0.5 ) ) + vec3(u_time * 0.5) ) * (abs(u_mouse.y - 0.5)) ;
 }
 
 //function that help in recalculation of the vertex for proper shading
