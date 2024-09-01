@@ -42,14 +42,25 @@ const fragmentShader = glsl`
         vec2 offset = vec2(m) - 0.5;   
         vec2 offset2 = vec2(m2) - 0.5;  
         vec2 offset3 = vec2(m3) - 0.5;  
+
+        float cir = length(coords - 0.5 - offset) - 0.35;
+        cir = smoothstep(0.01, 0.09, cir);
+
+        vec3 sample4 = texture2D(u_texture2, coords).rgb;
         
         vec3 sample1 = texture2D(u_texture2, coords - offset).rgb ;
         vec3 sample2 = texture2D(u_texture2, coords - offset2).rgb;
         vec3 sample3 = texture2D(u_texture2, coords - offset3).rgb;
+        
 
-        color += vec3(sample1.r, 0., 0.);
-        color += vec3(0., sample2.g, 0.);
-        color += vec3(0., 0., sample3.b);
+        // color += vec3(sample1.r, 0., 0.);
+        color += sample1;
+
+        // color += vec3(0., sample2.g, 0.);
+        // color += vec3(0., 0., sample3.b);
+
+        // color *= sample4;
+        color = mix(vec3(sample1.r, sample2.g, sample3.b), color, cir);
 
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
