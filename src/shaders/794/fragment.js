@@ -62,7 +62,6 @@ const fragmentShader = glsl`
         // color *= sample4;
         color = mix(vec3(sample1.r, sample2.g, sample3.b), vec3(0.), cir);
         // color += sample4;
-
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
         gl_FragColor = vec4(color, 1.);
