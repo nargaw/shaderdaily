@@ -43,7 +43,7 @@ const fragmentShader = glsl`
         vec2 offset2 = vec2(m2) - 0.5;  
         vec2 offset3 = vec2(m3) - 0.5;  
 
-        float cir = length(coords - 0.5 - offset) - 0.25;
+        float cir = length(coords - 0.5 - offset) - 0.225;
         cir = smoothstep(0.01, 0.4, cir);
 
         vec3 sample4 = texture2D(u_texture2, coords).rgb;
@@ -52,7 +52,6 @@ const fragmentShader = glsl`
         vec3 sample2 = texture2D(u_texture2, coords - offset2).rgb;
         vec3 sample3 = texture2D(u_texture2, coords - offset3).rgb;
         
-
         // color += vec3(sample1.r, 0., 0.);
         color += sample1;
 
@@ -126,7 +125,7 @@ export default function Shader794()
             u_mouse2: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_mouse3: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_texture: {value: night},
-            u_texture2: {value: monalisa},
+            u_texture2: {value: forest},
         },
     })
 
