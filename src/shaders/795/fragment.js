@@ -90,8 +90,10 @@ const fragmentShader = glsl`
         // color *= sample4;
         color = mix(sample4, vec3(0.), s);
         // color += sample4;
+        // color = pow(color, vec3(1./2.2));
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
+        
         gl_FragColor = vec4(color, 1.);
     }
 `
