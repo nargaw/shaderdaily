@@ -1,7 +1,7 @@
 import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = glsl`
-
+    // https://www.shadertoy.com/view/4dSfDK
     #define S(a, b, t) smoothstep(a, b, t)
     #define time u_time
 
@@ -14,7 +14,6 @@ const fragmentShader = glsl`
 
     float label(vec2 p)
     {
-
         p *= 10.;
         // p *= 0.01;
         p.x -= 0.25;
@@ -25,7 +24,31 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
 
+    float random(vec2 n) {
+        return fract(sin(dot(n, vec2(12.9898,12.1414))) * 83758.5453);
+    }
     
+    float noise(vec2 n) {
+        const vec2 d = vec2(0.0, 1.0);
+        vec2 b = floor(n);
+        vec2 f = smoothstep(vec2(0.0), vec2(1.0), fract(n));
+        return mix(mix(random(b), random(b + d.yx), f.x), mix(random(b + d.xy), random(b + d.yy), f.x), f.y);
+    }
+
+    float fire(vec2 n) {
+        return noise(n) + noise(n * 2.1) * .6 + noise(n * 5.4) * .42;
+    }
+
+    float shade(vec2 uv, float t) {
+        uv.x += uv.y < .5 ? 23.0 + t * .035 : -11.0 + t * .03;    
+        uv.y = abs(uv.y - .5);
+        uv.x *= 35.0;
+        
+        float q = fire(uv - t * .013) / 2.0;
+        vec2 r = vec2(fire(uv + q / 2.0 + t - uv.x - uv.y), fire(uv + q - t));
+        
+        return pow((r.y + r.y) * max(.0, uv.y) + .1, 4.0);
+    }
 
     void main()
     {
@@ -41,10 +64,16 @@ const fragmentShader = glsl`
 
         vec2 offset = vec2(m) - 0.5;   
         vec2 offset2 = vec2(m2) - 0.5;  
-        vec2 offset3 = vec2(m3) - 0.5;  
+        vec2 offset3 = vec2(m3) - 0.5; 
+        
+        float s = shade(coords - vec2(offset.x, 0.), u_time);
 
         float cir = length(coords - 0.5 - offset) - 0.225;
         cir = smoothstep(0.01, 0.4, cir);
+        float cir2 = length(coords - 0.5 - offset) - 0.225;
+        cir2 = smoothstep(0.01, 0.4, cir);
+        float cir3 = length(coords - 0.5 - offset) - 0.225;
+        cir3 = smoothstep(0.01, 0.4, cir);
 
         vec3 sample4 = texture2D(u_texture2, coords).rgb;
         
@@ -59,7 +88,7 @@ const fragmentShader = glsl`
         // color += vec3(0., 0., sample3.b);
 
         // color *= sample4;
-        color = mix(vec3(sample1.r, sample2.g, sample3.b), vec3(0.), cir);
+        color = mix(sample4, vec3(0.), s);
         // color += sample4;
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
@@ -125,7 +154,7 @@ export default function Shader795()
             u_mouse2: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_mouse3: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_texture: {value: night},
-            u_texture2: {value: forest},
+            u_texture2: {value: night},
         },
     })
 
