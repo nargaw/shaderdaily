@@ -33,23 +33,23 @@ const fragmentShader = glsl`
     }
 
     vec3 matrix(vec2 newCoords){
-        float rows = 15.0;
+        float rows = 10.0;
         vec2 a = floor(newCoords * rows);
         a += vec2(1., floor(u_time * 6. * randFloat(a.x)));
         vec2 b = fract(newCoords * rows);
-        vec2 newUv = 0.5 - b;
+        vec2 newUv =  b;
         float str = randVec2(a);
         float shape;
-        float zero = numZero(newCoords);
-        float one = numOne(newCoords);
-        float two = numTwo(newCoords);
-        float three = numThree(newCoords);
-        float four = numFour(newCoords);
-        float five = numFive(newCoords);
-        float six = numSix(newCoords);
-        float seven = numSeven(newCoords);
-        float eight = numEight(newCoords);
-        float nine = numNine(newCoords);
+        float zero = numZero(newUv);
+        float one = numOne(newUv);
+        float two = numTwo(newUv);
+        float three = numThree(newUv);
+        float four = numFour(newUv);
+        float five = numFive(newUv);
+        float six = numSix(newUv);
+        float seven = numSeven(newUv);
+        float eight = numEight(newUv);
+        float nine = numNine(newUv);
          if(str >= 0.0 && str < 0.1 ){
             shape = zero;
         }if(str >= 0.1 && str < 0.2 ) {
@@ -82,6 +82,8 @@ const fragmentShader = glsl`
         
         vec2 newCoords = coords - 0.5 ;  
 
+        float cir = length(coords - 0.5) - 0.125;
+        cir = smoothstep(0.01, 0.25, cir);
         vec2 m = u_mouse.xy;
         vec2 m2 = u_mouse2.xy;
         vec2 m3 = u_mouse3.xy;
@@ -100,11 +102,12 @@ const fragmentShader = glsl`
         a = abs(a * 0.75);
         newCoords = vec2(0.015/r1 + .95 + u_time * 0.125 + r1, a );
         
-        vec3 grid = matrix(coords);
+        vec3 grid = matrix(newCoords);
 
         vec3 sample4 = texture2D(u_texture2, coords).rgb;
         
         color += grid;
+        color = mix(vec3(0.), color, cir);
         
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
