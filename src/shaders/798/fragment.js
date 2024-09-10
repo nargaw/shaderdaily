@@ -84,7 +84,7 @@ const fragmentShader = glsl`
 
         vec3 color = vec3(0.);
         vec2 newCoords = coords;
-        // newCoords = Rot(newCoords, u_time);
+        newCoords = Rot(newCoords, u_time);
         newCoords = newCoords - 0.5 ;  
 
         float cir = length(coords - 0.5) - 0.125;
@@ -97,33 +97,33 @@ const fragmentShader = glsl`
         vec2 offset2 = vec2(m2) - 0.5;  
         vec2 offset3 = vec2(m3) - 0.5; 
 
-        newCoords = newCoords * 15. - 7.5;
+        // newCoords = newCoords * 15. - 7.5;
         
 
         float an = -u_time * 0.5;
         float r1 = length(newCoords * 0.25) ;
         // r1 = abs(r1 );
         float a = -atan(newCoords.x, newCoords.y) * 0.425;
-        a = abs(a * 0.75);
-        // newCoords = vec2(0.015/r1 + .95 + u_time * 0.125 + r1, a );
+        a = abs(a * 0.735);
+        newCoords = vec2(0.05/r1 + .95 + u_time * 0.25 + r1, a );
 
         
-        // vec3 grid = matrix(newCoords);
-        float shape1;
-        for (int i=1; i<=20; i++)
-            { for(int j=1; j<=20; j++)
-                {
-                    vec2 newUv = newCoords;
-                    newUv = Rot(vec2(newUv.x + float(i) * 1.5, newUv.y + float(j) * 1.5), sin(u_time + 0.075 * float(j * i)/4.)*4.);
-                    float line = sdSegment(vec2(newUv.x , newUv.y ), vec2(0.0), vec2(0.5 + sin(u_time * 0.125)/5.));
-                    shape1 += line;
-                }
-                // uv2 = uv2 * 1.1 - 0.1;
-            }
+        vec3 grid = matrix(newCoords);
+        // float shape1;
+        // for (int i=1; i<=20; i++)
+        //     { for(int j=1; j<=20; j++)
+        //         {
+        //             vec2 newUv = newCoords;
+        //             newUv = Rot(vec2(newUv.x + float(i) * 1.5, newUv.y + float(j) * 1.5), sin(u_time + 0.075 * float(j * i)/4.)*4.);
+        //             float line = sdSegment(vec2(newUv.x , newUv.y ), vec2(0.0), vec2(0.5 + sin(u_time * 0.125)/5.));
+        //             shape1 += line;
+        //         }
+        //         // uv2 = uv2 * 1.1 - 0.1;
+        //     }
 
         vec3 sample4 = texture2D(u_texture2, coords).rgb;
         
-        color += shape1;
+        color += grid;
         color = mix(vec3(0.), color, cir);
         
         float numLabel = label(vUv);
