@@ -24,6 +24,26 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
 
+    vec2 random2(vec2 st){
+        st=vec2(dot(st,vec2(127.1,311.7)),
+        dot(st,vec2(269.5,183.3)));
+        return-1.+2.*fract(sin(st)*43758.5453123);
+    }
+    
+    // Gradient Noise by Inigo Quilez - iq/2013
+    // https://www.shadertoy.com/view/XdXGW8
+    float noise2(vec2 st){
+        vec2 i=floor(st);
+        vec2 f=fract(st);
+        
+        vec2 u=f*f*(3.-2.*f);
+        
+        return mix(mix(dot(random2(i+vec2(0.,0.)),f-vec2(0.,0.)),
+        dot(random2(i+vec2(1.,0.)),f-vec2(1.,0.)),u.x),
+        mix(dot(random2(i+vec2(0.,1.)),f-vec2(0.,1.)),
+        dot(random2(i+vec2(1.,1.)),f-vec2(1.,1.)),u.x),u.y);
+    }
+
        // Some useful functions
         vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
         vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -126,12 +146,25 @@ const fragmentShader = glsl`
             return sum ;
         }
 
+        float plot(vec2 vUv,float pct){
+            return smoothstep(pct-0.01-abs(sin(u_time*.75 )+7.5),pct,(vUv.y*(noise2(vUv+u_time + 2.0))))-
+            smoothstep(pct,pct+0.01+abs(sin(u_time*.75 )+2.0),(vUv.y*(noise2(vUv+u_time + 2.0))));
+        }
+
     void main()
     {
         vec2 coords = vUv;
         vec2 effectOneCoords = vUv;
         effectOneCoords *= 1.25;
         effectOneCoords.x += 5.;
+
+        vec2 effectTwoCoords = vUv;
+        // effectTwoCoords.y += -0.25;
+        effectTwoCoords *= 15. - 7.5;
+        effectTwoCoords.y -= 0.;
+        effectTwoCoords.x=noise2(effectTwoCoords)+effectTwoCoords.x;
+        effectTwoCoords.y=noise2(effectTwoCoords)+effectTwoCoords.y;
+
         vec3 color = vec3(0.);
 
         vec2 newCoords = coords;
@@ -148,16 +181,25 @@ const fragmentShader = glsl`
         vec3 effectOneColor; 
         effectOneColor.br += effectOne;
         effectOneColor.gr += effectOne * effectOne;
+
+
+        float effectTwo = plot(effectTwoCoords, noise2(effectTwoCoords)+effectTwoCoords.y);
+        float effectTwoGradient = pow(effectOneCoords.y+0.5, 2 .0);
+        effectTwo = effectTwo * effectTwoGradient;
+        vec3 effectTwoColor = effectTwo * vec3(effectTwoGradient, effectTwoGradient *effectTwoGradient, effectTwoGradient *effectTwoGradient *effectTwoGradient *effectTwoGradient * effectTwoGradient);
+        
+
         vec2 offset = vec2(m) - 0.5;   
         
         float eight = numEight(newCoords);
         float zeroL = numZero(vec2(newCoords.x - 0.325, newCoords.y));
         float zeroR = numZero(vec2(newCoords.x - 0.65, newCoords.y));
-        color += eight;
+        // color += eight;
         color = mix(vec3(0.), effectOneColor, eight);
-        color += zeroL;
-        color += zeroR;
-
+        // color += zeroL;
+        color = mix(color, effectTwoColor, zeroL);
+        // color += zeroR;
+        // color = effectTwoColor;
         // color = mix(vec3(0.), color, cir);
         
         float numLabel = label(vUv);
