@@ -184,7 +184,7 @@ const fragmentShader = glsl`
 
 
         float effectTwo = plot(effectTwoCoords, noise2(effectTwoCoords)+effectTwoCoords.y);
-        float effectTwoGradient = pow(effectOneCoords.y+0.5, 2 .0);
+        float effectTwoGradient = pow(effectOneCoords.y+0.5, 2.0);
         effectTwo = effectTwo * effectTwoGradient;
         vec3 effectTwoColor = effectTwo * vec3(effectTwoGradient, effectTwoGradient *effectTwoGradient, effectTwoGradient *effectTwoGradient *effectTwoGradient *effectTwoGradient * effectTwoGradient);
         
