@@ -151,19 +151,39 @@ const fragmentShader = glsl`
             smoothstep(pct,pct+0.01+abs(sin(u_time*.75 )+2.0),(vUv.y*(noise2(vUv+u_time + 2.0))));
         }
 
+        vec3 hsb2rgb( in vec3 c ){
+            vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                                     6.0)-3.0)-1.0,
+                             0.0,
+                             1.0 );
+            rgb = rgb*rgb*(3.0-2.0*rgb);
+            return c.z * mix(vec3(1.0), rgb, c.y);
+        }
+        
+        mat2 Rot(float a){
+            float s = sin(a);
+            float c = cos(a);
+            return mat2(c, -s, s, c);
+        }
+
     void main()
     {
         vec2 coords = vUv;
         vec2 effectOneCoords = vUv;
         effectOneCoords *= 1.25;
-        effectOneCoords.x += 5.;
+        effectOneCoords.x += 10.;
 
         vec2 effectTwoCoords = vUv;
         // effectTwoCoords.y += -0.25;
-        effectTwoCoords *= 15. - 7.5;
-        effectTwoCoords.y -= 0.;
-        effectTwoCoords.x=noise2(effectTwoCoords)+effectTwoCoords.x;
-        effectTwoCoords.y=noise2(effectTwoCoords)+effectTwoCoords.y;
+        effectTwoCoords *= 5. - 2.5;
+        effectTwoCoords.y -= 2.;
+        effectTwoCoords.x=noise2(effectTwoCoords + u_time)+effectTwoCoords.x;
+        effectTwoCoords.y=noise2(effectTwoCoords + u_time)+effectTwoCoords.y;
+
+        vec2 effectThreeCoords = vUv-0.5;
+        effectThreeCoords *= 15.0;
+        
+
 
         vec3 color = vec3(0.);
 
@@ -184,9 +204,15 @@ const fragmentShader = glsl`
 
 
         float effectTwo = plot(effectTwoCoords, noise2(effectTwoCoords)+effectTwoCoords.y);
-        float effectTwoGradient = pow(effectOneCoords.y+0.5, 2.0);
+        float effectTwoGradient = pow(effectTwoCoords.y-0.5, 4.0);
         effectTwo = effectTwo * effectTwoGradient;
         vec3 effectTwoColor = effectTwo * vec3(effectTwoGradient, effectTwoGradient *effectTwoGradient, effectTwoGradient *effectTwoGradient *effectTwoGradient *effectTwoGradient * effectTwoGradient);
+
+        float t = u_time * 0.05;
+        effectThreeCoords *= Rot(t * 10.0);
+        float angle = dot(cos(effectThreeCoords.y + sin(u_time * 0.25)), cos(effectThreeCoords.x + sin(u_time * 0.25)));
+        float radius = length(effectThreeCoords);
+        vec3 effectThreeColor = hsb2rgb(vec3((angle * abs(tan(sin(u_time * 0.5)))) * radius, abs(tan(angle + u_time)) , radius * angle * u_time - 0.5));
         
 
         vec2 offset = vec2(m) - 0.5;   
@@ -199,6 +225,7 @@ const fragmentShader = glsl`
         // color += zeroL;
         color = mix(color, effectTwoColor, zeroL);
         // color += zeroR;
+        color = mix(color, effectThreeColor, zeroR);
         // color = effectTwoColor;
         // color = mix(vec3(0.), color, cir);
         

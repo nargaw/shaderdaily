@@ -631,7 +631,7 @@ glsl`
 
         float shapevertical4 = sdNumVertical(vec2(p2.x, p2.y - 0.07));
         
-        float shapeZero = shapehorizontal + shapehorizontal2 + shapehorizontal3 + shapevertical + shapevertical2 + shapevertical3 + shapevertical4 + triR + triL;
+        float shapeZero = shapehorizontal + shapehorizontal3 + shapevertical + shapevertical2 + shapevertical3 + shapevertical4 + triR + triL;
 
         return shapeZero;
     }
