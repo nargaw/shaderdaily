@@ -44,9 +44,9 @@ const fragmentShader = glsl`
         vec2 coords = vUv;
         vec3 color;
 
-        float glowAmount = smoothstep(1.0, 0.0, coords.x);
-        glowAmount = 1.-pow(glowAmount, 100.75);
-        vec3 glowColor = vec3((glowAmount * vec3(0.2, 0.5, 1.)));
+        float glowAmount = smoothstep(0.0, 1.0, coords.x);
+        glowAmount = 1.-pow(glowAmount, 1.75);
+        vec3 glowColor = vec3((glowAmount * vec3(0.2, 0.5, 1.)) * 3.);
 
         color = mix(color, glowColor, 1.-coords.x);
         
