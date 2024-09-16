@@ -42,13 +42,19 @@ const fragmentShader = glsl`
     void main()
     {
         vec2 coords = vUv;
+        vec2 glowCoords = vUv;
+        glowCoords = Rot(glowCoords, u_time);
         vec3 color;
 
-        float glowAmount = smoothstep(0.0, 1.0, coords.x);
-        glowAmount = 1.-pow(glowAmount, 1.75);
-        vec3 glowColor = vec3((glowAmount * vec3(0.2, 0.5, 1.)) * 3.);
+        float glowAmount = smoothstep(0.0, 0.75, glowCoords.x);
+        glowAmount = 1.-pow(glowAmount, 1.5);
+        vec3 glowColor = vec3((glowAmount * vec3(0.2, 0.5, 1.)) * 5.);
 
-        color = mix(color, glowColor, 1.-coords.x);
+        float box = rectOutline(coords, 0.25, 0.75);
+        color += box;
+
+        color *= mix(color, glowColor, 1.-coords.x);
+        color *= mix(color, glowColor, coords.y);
         
         float numLabel = label(vUv);
         color = mix(color, vec3(1.), numLabel) ;
