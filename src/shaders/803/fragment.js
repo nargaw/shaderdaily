@@ -59,9 +59,7 @@ const fragmentShader = glsl`
 
         float box;
         for(int i = 0; i < 32; i++){
-            box += rectOutline2(glowCoords,(float(i) / 5.) - mod(u_time * 0.135, 1.0) + 0.25, (float(i) / 5.) - mod(u_time * 0.135, 1.0) + 0.25);
-            
-           
+            box += rectOutline2(vUv,(float(i) / 5.) - mod(u_time * 0.135, 1.0) + 0.25, (float(i) / 5.) - mod(u_time * 0.135, 1.0) + 0.25);
         }
         color += box;
         color *= mix(color, glowColor, 1.-coords.x);
