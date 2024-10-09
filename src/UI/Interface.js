@@ -14,7 +14,7 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
-    const total = 809
+    const total = 810
     // console.log(total)
     
     const goNext = () => {
