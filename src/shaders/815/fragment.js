@@ -52,12 +52,10 @@ const fragmentShader = glsl`
         for (int i=1; i < 60; i++){
 
             objs += rectOutline2(
-                vec2(objsCoords.x , 
+                vec2(objsCoords.x + mod((u_time * 0.25) + (float(i)/1.), 2.) - 1., 
                 objsCoords.y  ),  
-                mod(float(i)/10. * (-u_time * 0.25),.025), 
-                mod( float(i)/10. * (-u_time * 0.25), 2.));
-
-
+               0.5 * float(i)/10.,
+                0.5 * float(i)/10.);
             color += objs * 120.;
         }
          
