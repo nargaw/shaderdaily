@@ -60,7 +60,7 @@ const fragmentShader = glsl`
         }
          
         float numLabel = label(numCoords);
-        color = mix(color, vec3(1.), numLabel) ;
+        color += mix(color, vec3(1.), numLabel) ;
         
         gl_FragColor = vec4(color, 1.);
     }
