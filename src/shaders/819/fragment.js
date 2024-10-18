@@ -35,7 +35,7 @@ const fragmentShader = glsl`
         vec2 ba = b-a;
         vec2 pa = p-a;
         float h =clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
-        return 1. - smoothstep(0.0, 0.001, length(pa-h*ba) - thickness);
+        return 1. - smoothstep(0.0, 0.01, length(pa-h*ba) - thickness);
     }
 
    
@@ -43,27 +43,27 @@ const fragmentShader = glsl`
     void main()
     {
         vec2 coords = vUv;
+        coords = coords * 27. - 22.5;
         vec2 numCoords = coords;
-        vec2 objsCoords = coords;
+        
         // objsCoords *= 2. - 1.;
-        objsCoords = Rot(objsCoords, u_time * 0.1);
+        // objsCoords = Rot(objsCoords, u_time * 0.1);
         vec3 color;
 
         float objs;
         float scaleValue = 4.;
-        for (int i=1; i < 30; i++){
-            for(int j=1; j <30; j++){
-                objs += line(
-                    coords,
-                    vec2(0.0, 0.0), 
-                    vec2(0.0, 0.1), 
-                    0.0005
+        for (int i=1; i < 15; i++){
+            for(int j=1; j <15; j++){
+                vec2 objsCoords = coords;
+                objsCoords = Rot(
+                    vec2(objsCoords.x + float(i) * 1.5,
+                    vec2(objsCoords.y + float(j) * 1.5)),
+                    cos(u_time + .25 * float(j * i)/5.) + 0.53*10.9
                 );
-                color += objs;
-            }
-            
+                objs += line(objsCoords, vec2(0.5, 5.5), vec2(0.5, 0.0), 0.05);
+            } 
         }
-         
+        color += objs;
         float numLabel = label(numCoords);
         color += mix(color, vec3(1.), numLabel) ;
         
