@@ -43,11 +43,8 @@ const fragmentShader = glsl`
     void main()
     {
         vec2 coords = vUv;
-        coords = coords * 27. - 22.5;
         vec2 numCoords = coords;
-        
-        // objsCoords *= 2. - 1.;
-        // objsCoords = Rot(objsCoords, u_time * 0.1);
+        coords = coords * 27. - 22.5;
         vec3 color;
 
         float objs;
@@ -61,9 +58,10 @@ const fragmentShader = glsl`
                     cos(u_time + .25 * float(j * i)/5.) + 0.53*10.9
                 );
                 objs += line(objsCoords, vec2(0.5, 5.5), vec2(0.5, 0.0), 0.05);
+                color += objs;
             } 
         }
-        color += objs;
+        
         float numLabel = label(numCoords);
         color += mix(color, vec3(1.), numLabel) ;
         
