@@ -73,22 +73,31 @@ const fragmentShader = glsl`
     {
         vec2 coords = vUv;
         vec2 numCoords = coords;
-        
-        vec3 tex = texture2D(u_texture, coords).rgb;
-        float box = rect(vec2(coords.x + 0.25, coords.y), 1.0, 0.5);
+        coords = coords * 2. - 2.;
+        coords.x += u_time * 0.25;
+        coords = fract(coords)-1.;
         vec3 color;
-        color += box;
-        coords = movingTiles(coords, 6., 0.5);
-        color *= vec3(circleSDF(coords, 0.3));
 
-        color += tex * 0.5 * tex;
-        mat4 cvalue = contrastMatrix(1.25);
+        float objs;
+        float scaleValue = 4.;
+        for (int i=1; i <= 10; i++){
+            for(int j=1; j <=10; j++){
+                vec2 objsCoords = coords;
+                objsCoords *= 20. - 5.;
+                objsCoords = Rot(
+                    vec2(objsCoords.x + float(i) * 1.5,
+                    vec2(objsCoords.y + float(j) * 1.5)),
+                    (u_time + float(j * i)/20.)
+                );
+                objs += mod(line(objsCoords, vec2(0.5, 4.), vec2(0.5, 0.0), 0.05), 1.5);
+                color += objs;
+            } 
+        }
+        
         float numLabel = label(numCoords);
         color += mix(color, vec3(1.), numLabel) ;
-
-        vec4 finalColor = vec4(color, 1.) * cvalue;
         
-        gl_FragColor = finalColor;
+        gl_FragColor = vec4(color, 1.);
     }
 `
 
