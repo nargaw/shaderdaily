@@ -36,44 +36,38 @@ const fragmentShader = glsl`
 
     vec2 movingTiles(vec2 _st, float _zoom, float _speed){
         _st *= _zoom;
-        float time = u_time * 0.25;
+        float time = u_time * 0.5;
 
         if( fract(time)<0.25){
-            if (fract( _st.y * 0.5) > 0.5){
-                _st.x += sin( fract(time)*2.0);
+            if (fract( _st.y * 0.25) > 0.5){
+                _st.x -= fract(time)*2.0;
             } else {
-                _st.x -= cos( fract(time)*2.0);
+                _st.x += fract(time)*2.0;
             }
             
         }
 
-        if( fract(time)>=0.25 ){
-            if(fract(time)< 0.5){
-                if (fract( _st.y * 0.5) > 0.5){
-                    _st.y -= fract(time)*2.0;
-                } else {
-                    _st.y += fract(time)*2.0;
-                }
+        else if(fract(time) >= 0.25 && fract(time) < 0.5){
+            if (fract( _st.y * 0.5) > 0.5){
+                _st.x -= fract(time)*2.0;
+            } else {
+                _st.x += fract(time)*2.0;
             } 
         }
 
-        if( fract(time)>0.5 ){
-            if(fract(time)< 0.75){
-                if (fract( _st.y * 0.5) > 0.5){
-                    _st.x += fract(time)*2.0;
-                } else {
-                    _st.x -= fract(time)*2.0;
-                }
+        else if(fract(time) >= 0.5 && fract(time) < 0.75){
+            if (fract( _st.y * 0.25) >0.5){
+                _st.x -= fract(time)*2.0;
+            } else {
+                _st.x += fract(time)*2.0;
             } 
         }
 
-        if( fract(time)>=0.75 ){
-            if(fract(time)< 1.0){
-                if (fract( _st.y * 0.5) > 0.5){
-                    _st.x -= fract(time)*2.0;
-                } else {
-                    _st.x += fract(time)*2.0;
-                }
+        else if(fract(time) >= 0.75 && fract(time) < 1.0){
+            if (fract( _st.y * 0.25) > 0.25){
+                _st.x -= fract(time)*2.0;
+            } else {
+                _st.x += fract(time)*2.0;
             } 
         }
      
