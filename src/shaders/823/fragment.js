@@ -36,20 +36,47 @@ const fragmentShader = glsl`
 
     vec2 movingTiles(vec2 _st, float _zoom, float _speed){
         _st *= _zoom;
-        float time = u_time*_speed;
-        if( fract(time)>0.5 ){
+        float time = u_time * 0.25;
+
+        if( fract(time)<0.25){
             if (fract( _st.y * 0.5) > 0.5){
-                _st.x += fract(time)*2.0;
+                _st.x += sin( fract(time)*2.0);
             } else {
-                _st.x -= fract(time)*2.0;
+                _st.x -= cos( fract(time)*2.0);
             }
-        } else {
-            if (fract( _st.x * 0.5) > 0.5){
-                _st.y += fract(time)*2.0;
-            } else {
-                _st.y -= fract(time)*2.0;
-            }
+            
         }
+
+        if( fract(time)>=0.25 ){
+            if(fract(time)< 0.5){
+                if (fract( _st.y * 0.5) > 0.5){
+                    _st.y -= fract(time)*2.0;
+                } else {
+                    _st.y += fract(time)*2.0;
+                }
+            } 
+        }
+
+        if( fract(time)>0.5 ){
+            if(fract(time)< 0.75){
+                if (fract( _st.y * 0.5) > 0.5){
+                    _st.x += fract(time)*2.0;
+                } else {
+                    _st.x -= fract(time)*2.0;
+                }
+            } 
+        }
+
+        if( fract(time)>=0.75 ){
+            if(fract(time)< 1.0){
+                if (fract( _st.y * 0.5) > 0.5){
+                    _st.x -= fract(time)*2.0;
+                } else {
+                    _st.x += fract(time)*2.0;
+                }
+            } 
+        }
+     
         return fract(_st);
     }
 
@@ -73,26 +100,10 @@ const fragmentShader = glsl`
     {
         vec2 coords = vUv;
         vec2 numCoords = coords;
-        coords = coords * 2. - 2.;
-        coords.x += u_time * 0.25;
-        coords = fract(coords)-1.;
         vec3 color;
 
-        float objs;
-        float scaleValue = 4.;
-        for (int i=1; i <= 10; i++){
-            for(int j=1; j <=10; j++){
-                vec2 objsCoords = coords;
-                objsCoords *= 20. - 5.;
-                objsCoords = Rot(
-                    vec2(objsCoords.x + float(i) * 1.5,
-                    vec2(objsCoords.y + float(j) * 1.5)),
-                    (u_time + float(j * i)/20.)
-                );
-                objs += mod(line(objsCoords, vec2(0.5, 4.), vec2(0.5, 0.0), 0.05), 1.5);
-                color += objs;
-            } 
-        }
+        coords = movingTiles(coords, 6., 0.5);
+        color += vec3(circleSDF(coords, 0.3));
         
         float numLabel = label(numCoords);
         color += mix(color, vec3(1.), numLabel) ;
