@@ -45,34 +45,21 @@ const fragmentShader = glsl`
     {
         vec2 coords = vUv;
         vec2 numCoords = coords;
+        vec2 rCoords = coords;
+        rCoords = Rot(rCoords, u_time);
         vec3 color;
-
-        vec2 sPCoords = coords;
-        vec2 sCoords = coords;
-        sCoords.x -= 0.0375;
-        sCoords.y -= 0.4;
-        sCoords = Rot(sCoords, PI *0.25);
-
-        float boxOne = sdRoundedBox(vec2(coords.x, coords.y-0.325), vec2(0.075, 0.13), vec4(0.1, 0.01, 0.1, 0.01));
-        float boxTwo = sdRoundedBox(vec2(sCoords), vec2(0.2, 0.075), vec4(0.1, 0.1, 0.1, 0.1));
-
-        color += boxOne * vec3(0.208,0.133,0.031);
-        // color += boxTwo * vec3(0.129,0.059,0.016);
-        color += boxOne * vec3(0.129,0.059,0.016);
-        
-        float circleOne = circleSDF(vec2(coords.x, coords.y), 0.25);
-        float circleTwo = circleSDF(vec2(coords.x-0.125, coords.y), 0.25);
-        float circleThree = circleSDF(vec2(coords.x + 0.125, coords.y), 0.25);
-
-        color += circleOne * vec3(1.,0.435,0.);
-        color += circleTwo * vec3(1.,0.459,0.094);
-        color += circleThree * vec3(0.91,0.478,0.184);
-
+        float c;
+        float d;
+        for (int i = -10; i <= 15; i++){
+            c = sdCircleOutline(coords, mod((u_time * 0.25), 0.8) + float(i)/10.) * 1.5;
+            // d = rectOutline(rCoords, mod((-u_time * 0.125), 0.8) + float(i)/10., mod((-u_time * 0.125), 0.8) + float(i)/10.); 
+            color += c;   
+        }
         
         
         
         float numLabel = label(numCoords);
-        color += mix(color, vec3(1.), numLabel) ;
+        color = mix(color, vec3(1.), numLabel) ;
         
         gl_FragColor = vec4(color, 1.);
     }
