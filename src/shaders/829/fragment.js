@@ -16,7 +16,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numEight(vec2(p.x + 0.35, p.y));
         float center = numTwo(vec2(p.x -0.03, p.y));
-        float right = numEight(vec2(p.x - 0.42, p.y));
+        float right = numNine(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -71,12 +71,18 @@ const fragmentShader = glsl`
         vec2 coords = vUv;
         vec2 numCoords = coords;
         vec2 rCoords = coords;
+        // rCoords = Rot(rCoords, u_time * 0.25);
         coords -= 0.5;
-        coords *= mod(1. * (-u_time), 10.5);
+        // coords -= 0.2;
+        // coords *= ;
         vec3 color;
         
-        float grid = pristineGrid(coords, vec2(0.2));
-        color += grid;
+        float grid = pristineGrid((coords) * mod((-u_time * 0.75), 15.), vec2(0.2));
+        float mGrid = pristineGrid((coords) * mod((-u_time * 0.5), 15.), vec2(0.2));
+        float nGrid = pristineGrid((coords) * mod((-u_time * 0.25), 15.), vec2(0.2));
+        color = grid * vec3(1., 0., 0.);
+        color *= mGrid * vec3(1., 0., 0.);
+        color *= nGrid * vec3(1., 0., 0.);
         // vec2 gridUV = 1.0 - abs(fract(coords) * 2. - 1.);
         // vec2 grid2 = smoothstep(drawWidth + lineAA, drawWidth - lineAA, gridUV );
         // float grid = lerp(grid2.x, 1.0, grid2.y);
@@ -118,7 +124,7 @@ import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
 
-export default function Shader828()
+export default function Shader829()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
