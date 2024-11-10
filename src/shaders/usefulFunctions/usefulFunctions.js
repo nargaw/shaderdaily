@@ -150,8 +150,8 @@ float sdCircleOutline(vec2 p, float r)
     p = p * 2.0 - 1.;
     float x = length(p) - r;
     float y = length(p) - r + 0.005;
-    float x1 = 1. - smoothstep(0.01, 0.03, x);
-    float y1 = 1. - smoothstep(0.01, 0.03, y);
+    float x1 = 1. - smoothstep(0.02, 0.1, x);
+    float y1 = 1. - smoothstep(0.01, 0.1, y);
     return x1 - y1;
 }
 
