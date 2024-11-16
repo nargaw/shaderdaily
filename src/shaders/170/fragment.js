@@ -14,17 +14,20 @@ const fragmentShader =
     void main(){
         vec2 vUv = vec2(vUv.x, vUv.y);
         vUv *= 10. - 5.;
-        vUv.y -= 2.;
+        vUv.y -= 1.;
         vUv.x += u_time;
         vec3 color = vec3(0.);
         float i = floor(vUv.x);
         float f = fract(vUv.x);
         float y = rand(i);
-        //y = mix(rand(i), rand(i + 1.0), f);
+        // y = mix(rand(i), rand(i + 1.0), f);
         y = mix(rand(i), rand(i + 1.0), smoothstep(0., 1., f));
-        float x = sin(u_time);
+        float x = rand(i + 10.);
+        x = mix(rand(i), rand(i + 4.0), smoothstep(0., 1., f));
         float pct = plot(vUv, y);
+        float pct2 = plot(vUv, x);
         color = vec3(pct);
+        color += pct2;
         gl_FragColor = vec4(color, 1.);
     }
     `
