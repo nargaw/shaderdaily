@@ -32,47 +32,33 @@ const fragmentShader = glsl`
     
     float plot(vec2 vUv, float pct){
         return smoothstep(pct - 0.01, pct, vUv.x) - 
-               smoothstep(pct, pct + 0.2, vUv.x);
+               smoothstep(pct, pct + 0.01, vUv.x);
     }
 
     void main()
     {
         vec2 coords = vUv;
-        vec2 numCoords = coords;
-        vec2 lineCoords = coords;
-        lineCoords *= 5. - 2.5;
-        lineCoords.x -= 1.;
-        lineCoords.x *= 1.;
-        lineCoords.y -= u_time;
-        // coords.y -= u_time;
         vec3 color;
-        float line;
-        float cir;
-        float box = rect(vec2(coords.x, coords.y - 0.4), 0.8, 1.2);
-        for(int k = 0; k <= 20; k ++){
-            float i = floor(lineCoords.y + float(k) * 25.);
-            float f = fract(lineCoords.y + float(k) * 50.);
-            float x = rand(i + (u_time * 0.00002));
-            x = pow(x, 4.);
-            float y = rand(i + (u_time * 0.00002) + 1.);
-            y = pow(y, 4.);
-            x = mix(x, y, smoothstep(0., 1., f));
-            line += plot(vec2(lineCoords.x, lineCoords.y + 0.5), x);
-            // color = line * vec3((float(k)/15.), 0.5, float(k)/10.);
-            cir = 1.0 / length(vec2((coords.x - 0.5), coords.y - 0.5));
-            cir *= 0.05;
-            cir = pow(cir, 0.8);
-        }
 
-        vec3 t = texture2D(u_texture, coords).rgb; 
+        vec2 mouse = u_mouse;
+
+        vec2 tCoords = coords;
+
+        vec3 t = texture2D(u_texture, tCoords).rgb;
+
         
-        
-        // cir = pow(cir, 200.);
-        // color += box * vec3(1., 0., 0.);
-        color = mix(color, vec3(0.), box);
-        color = mix(color, vec3(1., 0.5, 0.25), cir * line);
-        // color *= t;
-        color *= t * vec3(1., 0.5, 0.25);
+
+        vec2 cCoords = coords - mouse + 0.5;
+        float noise = noise2D(cCoords + u_time) * 0.05;
+        cCoords += noise;
+        float c = sdCircle(cCoords, 0.5);
+
+        color = t;
+        color = mix(color, t * 1.5 / 2., c);
+
+
+
+        vec2 numCoords = coords;
         float numLabel = label(numCoords);
 
         color = mix(color, vec3(1.), numLabel) ;
