@@ -35,6 +35,38 @@ const fragmentShader = glsl`
                smoothstep(pct, pct + 0.01, vUv.x);
     }
 
+    vec2 movingTiles(vec2 _st, float _zoom, float _speed){
+        _st *= _zoom;
+        float time = u_time * 0.5;
+
+        if( fract(time)>0.0 ){
+            if (fract( _st.y * 0.5) > 0.5){
+                _st.x += fract(time)*1.0;
+            } else {
+                _st.x -= fract(time)*1.0;
+            }
+        } else if (fract(time) > 0.25 && fract(time) <= 0.5) {
+            if (fract( _st.x * 0.5) > 0.5){
+                _st.y += fract(time)*1.0;
+            } else {
+                _st.y -= fract(time)*1.0;
+            }
+        } else if (fract(time) > 0.5 && fract(time) <= 0.75){
+            if (fract( _st.y * 0.5) > 0.5){
+                _st.x -= fract(time)*1.0;
+            } else {
+                _st.x += fract(time)*1.0;
+            }
+        } else if (fract(time) > 0.75 && fract(time) <= 1.0){
+            if (fract( _st.x * 0.5) > 0.5){
+                _st.y -= fract(time)*2.0;
+            } else {
+                _st.y += fract(time)*2.0;
+            }
+        }
+        return fract(_st);
+    }
+
     void main()
     {
         vec2 coords = vUv;
@@ -46,17 +78,18 @@ const fragmentShader = glsl`
 
         vec3 t = texture2D(u_texture, tCoords).rgb;
 
-        
+        vec2 cCoords = coords ;
+        cCoords = movingTiles(cCoords - mouse + 0.5, 5.0 , 2.0);
+        // float noise = noise2D((cCoords * 0.5) * u_time);
+        // cCoords += noise;
+        float c = sdCircle(cCoords, 0.95);
 
-        vec2 cCoords = coords - mouse + 0.5;
-        float noise = noise2D(cCoords + u_time) * 0.05;
-        cCoords += noise;
-        float c = sdCircle(cCoords, 0.5);
+        float mask = sdCircle(coords, 0.75);
 
-        color = t;
-        color = mix(color, t * 1.5 / 2., c);
+        // color = t;
+        color = mix(color, t , c);
 
-
+        color *= mask;
 
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
