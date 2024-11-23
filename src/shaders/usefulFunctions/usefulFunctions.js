@@ -289,7 +289,7 @@ float sdPolygon(vec2 p, int sides, float scale)
     float angle = atan(p.x, p.y) + PI;
     float radius = TWO_PI/float(sides);
     float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
-    return 1. - smoothstep(scale, scale + 0.1, d); 
+    return 1. - smoothstep(scale, scale + 0.005, d); 
 }
 
 float sdPolygonOutline(vec2 p, int sides, float scale)
