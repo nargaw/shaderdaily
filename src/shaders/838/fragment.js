@@ -39,6 +39,7 @@ const fragmentShader = glsl`
 
         return a + b*cos( 6.28318*(c*t+d) );
     }
+    
 
     void main()
     {
@@ -57,7 +58,7 @@ const fragmentShader = glsl`
         vec2 glowCoords = coords;
         glowCoords -= mouse5;
 
-        vec2 gCoords1 = coords;
+        vec2 gCoords1 = coords ;
         gCoords1 -= mouse;
         vec2 gCoords2 = coords;
         gCoords2 -= mouse2;
@@ -68,27 +69,33 @@ const fragmentShader = glsl`
         vec2 gCoords5 = coords;
         gCoords5 -= mouse5;
 
-        float d1 = length(gCoords1) * exp(-length(gCoords1));
+        // float 
+        float d1 = sdPolygonOutline(gCoords1 + 0.5, 3, 0.1);
+        d1 += length(gCoords1) * exp(-length(gCoords1));
         d1 = (d1 * 10.) / 5.;
         d1 = abs(d1);
         d1 = pow(0.01/d1, 1.);
 
-        float d2 = length(gCoords2) * exp(-length(gCoords2));
+        float d2 = sdPolygonOutline(gCoords2 + 0.5, 3, 0.1);
+        d2 += length(gCoords2) * exp(-length(gCoords2));
         d2 = (d2 * 10.) / 5.;
         d2 = abs(d2);
         d2 = pow(0.01/d2, 1.);
 
-        float d3 = length(gCoords3) * exp(-length(gCoords3));
+        float d3 = sdPolygonOutline(gCoords3 + 0.5, 3, 0.1);
+        d3 += length(gCoords3) * exp(-length(gCoords3));
         d3 = (d3 * 10.) / 5.;
         d3 = abs(d3);
         d3 = pow(0.01/d3, 1.);
 
-        float d4 = length(gCoords4) * exp(-length(gCoords4));
+        float d4 = sdPolygonOutline(gCoords4 + 0.5, 3, 0.1);
+        d4 += length(gCoords4) * exp(-length(gCoords4));
         d4 = (d4 * 10.) / 5.;
         d4 = abs(d4);
         d4 = pow(0.01/d4, 1.);
 
-        float d5 = length(gCoords5) * exp(-length(gCoords5));
+        float d5 = sdPolygonOutline(gCoords5 + 0.5, 3, 0.1);
+        d5 += length(gCoords5) * exp(-length(gCoords5));
         d5 = (d5* 10.) / 5.;
         d5 = abs(d5);
         d5 = pow(0.01/d5, 1.);
