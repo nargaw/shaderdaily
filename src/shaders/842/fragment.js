@@ -39,23 +39,39 @@ const fragmentShader = glsl`
         return a + b*cos( 6.28318*(c*t+d) );
     }
     
+    float randFloat(float x){
+        return fract(sin(x) * 4748393.7585);
+    }
+
+    float randVec2(vec2 vUv){
+        return fract(sin(dot(vUv.yx, vec2(48.48929, 76.83929))) * 727827.3738);
+    }
 
     void main()
     {
         vec2 coords = vUv;
-        vec3 color;
-
-        vec2 nCoords = coords;
-        nCoords.x -= 2.0 * mod(u_time, 1.);
-        float w = -(1./ (25. * nCoords.x));
-        vec3 l = vec3(w * 2.5, w, w * 1.);
-        nCoords.y *= 2.;
-        float x = abs(1./(20. * max(abs(nCoords.x), 0.3)));
-        nCoords.x *= 3.;
-        // nCoords.y -= x ;
-        color = mix(l, vec3(0.), smoothstep(0.02, 0.03, abs(nCoords.y)));
-
         vec2 numCoords = coords;
+
+        // float rand = randVec2(coords) * 0.2;
+        coords.x *= 10.;
+        coords = fract(vec2(coords.x, coords.y));
+        
+
+        vec3 color;
+        vec2 pCoords = coords;
+        vec2 nCoords = coords;
+        nCoords.x -= 0.5;
+        pCoords.y -= 2.0 * mod(u_time * 0.25, 1.);
+        nCoords.y -= step(0.0,nCoords.y) * 2.0;
+        float w = -(1./ (25. * pCoords.y));
+        vec3 l = vec3(w * 2.5, w, w * 1.);
+        nCoords.x *= 2.;
+        float x = abs(1./(20. * max(abs(nCoords.y), 0.3)));
+        nCoords.y *= 3.;
+        nCoords.y -=  x * (sin(nCoords.y)+3.0*sin(2.0*nCoords.y)+2.0*sin(3.0*nCoords.y)+sin(4.0*nCoords.y)) ;
+        color = mix(l, vec3(0.), smoothstep(0.02, 0.03, abs(nCoords.x)));
+
+        // color = vec3(coords - a, 0.);
         float numLabel = label(numCoords);
 
         color = mix(color, vec3(1.), numLabel) ;
