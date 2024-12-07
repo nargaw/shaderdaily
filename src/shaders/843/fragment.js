@@ -47,31 +47,75 @@ const fragmentShader = glsl`
         return fract(sin(dot(vUv.yx, vec2(48.48929, 76.83929))) * 727827.3738);
     }
 
+    float lineFunction(vec2 vUv){
+        vec2 p = vUv;
+        vec2 m = vUv;
+        // m.x -= 0.5;
+        p.y -= 2.0 * mod(u_time * 0.25, 1.);
+        p.y -= step(0., p.y) * 2.0;
+        float w = -(1./ (100. * p.y));        
+        // m.x = smoothstep(0.2, 0.6, m.x );
+        // m.x = 1. - smoothstep(1.0, 0.8, m.x);
+        // float x = abs(1./(100. * max(abs(m.y), 0.3)));
+        // m.y -=  x * (sin(m.y)+3.0*sin(2.0*m.y)+2.0*sin(3.0*m.y)+sin(4.0*m.y)) ;
+        return m.x * w;
+
+    }
+
+    float lineFunctio2(vec2 vUv){
+        vec2 p = vUv;
+        vec2 m = vUv;
+        // m.x -= 0.5;
+        p.x -= 2.0 * mod(u_time * 0.25, 1.);
+        p.x -= step(0., p.x) * 2.0;
+        float w = -(1./ (100. * p.x));        
+        // m.x = smoothstep(0.2, 0.6, m.x );
+        // m.x = 1. - smoothstep(1.0, 0.8, m.x);
+        // float x = abs(1./(100. * max(abs(m.x), 0.3)));
+        // m.y -=  x * (sin(m.y)+3.0*sin(2.0*m.x)+2.0*sin(3.0*m.y)+sin(4.0*m.y)) ;
+        return m.y * w;
+
+    }
+
     void main()
     {
         vec2 coords = vUv;
         vec3 color;
         vec2 numCoords = coords;
-
+        // coords *= 2.;
+        coords = Rot(coords, u_time);
+        vec2 coords1 = coords;
+        vec2 coords2 = coords;
         vec2 grid = vec2(10., 1.);
-        coords *= grid;
+        coords1 *= grid.xy;
+        coords2 *= grid.yx;
 
-        coords = fract(vec2(coords.x, coords.y));
+        coords1 = fract(vec2(coords1));
+        coords2 = fract(vec2(coords2));
         
+        float x = lineFunction(coords1);
+        float y = lineFunctio2(coords2);
+        float x2 = lineFunction(1. - coords1);
+        float y2 = lineFunctio2(1. - coords2);
 
-        
-        vec2 pCoords = coords;
-        vec2 nCoords = coords;
-        nCoords.x -= 0.5;
-        pCoords.y -= 2.0 * mod(u_time * 0.25, 1.);
-        nCoords.y -= step(0.0,nCoords.y) * 2.0;
-        float w = -(1./ (50. * pCoords.y));
-        vec3 l = vec3(w * 2.5, w, w * 1.);
-        nCoords.x *= 2.;
-        float x = abs(1./(20. * max(abs(nCoords.y), 0.3)));
-        nCoords.y *= 3.;
-        nCoords.y -=  x * (sin(nCoords.y)+3.0*sin(2.0*nCoords.y)+2.0*sin(3.0*nCoords.y)+sin(4.0*nCoords.y)) ;
-        color = mix(l, vec3(0.), smoothstep(0.02, 0.2, abs(nCoords.x)));
+        color += x;
+        color += y;
+        color += x2;
+        color += y2;
+        // color +=  x - 1.;
+        // color += y - 1.;
+        // vec2 pCoords = coords;
+        // vec2 nCoords = coords;
+        // nCoords.x -= 0.5;
+        // pCoords.y -= 2.0 * mod(u_time * 0.25, 1.);
+        // nCoords.y -= step(0.0,nCoords.y) * 2.0;
+        // float w = -(1./ (50. * pCoords.y));
+        // vec3 l = vec3(w * 2.5, w, w * 1.);
+        // nCoords.x *= 2.;
+        // float x = abs(1./(20. * max(abs(nCoords.y), 0.3)));
+        // nCoords.y *= 3.;
+        // nCoords.y -=  x * (sin(nCoords.y)+3.0*sin(2.0*nCoords.y)+2.0*sin(3.0*nCoords.y)+sin(4.0*nCoords.y)) ;
+        // color = mix(l, vec3(0.), smoothstep(0.02, 0.2, abs(nCoords.x)));
 
         // color *= step(0.5, fpos.x);
         // color = vec3(fpos, 0.);
