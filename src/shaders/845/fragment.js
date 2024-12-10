@@ -44,14 +44,14 @@ const fragmentShader = glsl`
     
 
     float sdC(vec2 p, float r)
-{
-    p = p * 2.0 - 1.;
-    float x = length(p) - r;
-    float y = length(p) - r + 0.0005;
-    float x1 = 1. - smoothstep(0.1, 0.52, x);
-    float y1 = 1. - smoothstep(0.085 * abs(sin(u_time * 0.25)), 0.1, y);
-    return x1 - y1;
-}
+    {
+        p = p * 2.0 - 1.;
+        float x = length(p) - r;
+        float y = length(p) - r + 0.0005;
+        float x1 = 1. - smoothstep(0.1, 0.52, x);
+        float y1 = 1. - smoothstep(0.085 * abs(sin(u_time * 0.25)), 0.1, y);
+        return x1 - y1;
+    }
 
     void main()
     {
