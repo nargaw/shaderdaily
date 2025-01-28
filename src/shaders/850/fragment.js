@@ -46,19 +46,20 @@ const fragmentShader = glsl`
         vec2 mouse2 = u_mouse2;
         vec2 mouse3 = u_mouse3;
 
-        float y1 = 1. - coords.x;
-        float line1 = plot(coords, y1);
+        vec2 coords2 = coords;
+        coords2 = Rot(coords2, PI * 0.5);
 
         float lines;
 
-        for(int i = 0; i <= 15; i++){
-            float y = mod(coords.x + (float(i)/10.) + u_time * 0.25, 1.);
-
+        for(int i = 0; i <= 10; i++){
+            float y = mod(coords.x * (float(i)/10. + sin(u_time)) , 1.);
+            float x = mod(coords2.x * (float(i)/10. + cos(u_time)) , 1.);
             lines += plot(coords, y);
+            lines += plot(coords2, x);
         }
 
 
-        color = lines*vec3(0.0,1.0,0.0);
+        color = lines*vec3(1.0);
      
         // color = vec3(coords - a, 0.);
         float numLabel = label(numCoords);
