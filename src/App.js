@@ -852,6 +852,7 @@ import Shader847 from './shaders/847/fragment.js'
 import Shader848 from './shaders/848/fragment.js'
 import Shader849 from './shaders/849/fragment.js'
 import Shader850 from './shaders/850/fragment.js'
+import Shader851 from './shaders/851/fragment.js'
 
 export default function App()
 {
@@ -1708,7 +1709,8 @@ export default function App()
         <Shader847 />,
         <Shader848 />,
         <Shader849 />,
-        <Shader850 />
+        <Shader850 />,
+        <Shader851 />
     ]
 
     return (

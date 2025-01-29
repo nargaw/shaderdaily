@@ -15,6 +15,7 @@
     "@react-three/fiber": "^8.16.1",
     "@react-three/postprocessing": "^2.16.2",
     "babel-plugin-glsl": "^1.0.0",
+    "babel-plugin-macros": "^3.1.0",
     "glslify": "^7.1.1",
     "gsap": "^3.12.5",
     "leva": "^0.9.35",
