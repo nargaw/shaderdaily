@@ -15,7 +15,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numEight(vec2(p.x + 0.35, p.y));
         float center = numFive(vec2(p.x -0.03, p.y));
-        float right = numFive(vec2(p.x - 0.42, p.y));
+        float right = numSix(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -25,71 +25,61 @@ const fragmentShader = glsl`
         return mat2(c, -s, s, c);
     }
 
-    float sdVesica(vec2 p, float w, float h)
-    {
-        float d = 0.5*(w*w-h*h)/h;
-        p = abs(p);
-        vec3 c = (w*p.y < d*(p.x-w)) ? vec3(0.0,w,0.0) : vec3(-d,0.0,d+h);
-        float s = length(p-c.yx) - c.z;
-        return 1. - smoothstep(0.01, 0.02, s);
+    float sdfBox(vec2 p, vec2 b){
+        vec2 d = abs(p) -b;
+        return length(max(d, 0.)) + min(max(d.x, d.y), 0.);
     }
 
-    // Polynomial smooth min (for copying and pasting into your shaders)
-    float smin(float a, float b, float k) {
-        float h = clamp(0.5 + 0.5*(a-b)/k, 0.0, 1.0);
-        return mix(a, b, h) - k*h*(1.0-h);
+     float sdfCircle(vec2 p, float r){
+        return length(p) - r;
     }
-    float b(vec2 p, vec2 b){
-        p = p * 2.0 - 1.; 
-        vec2 d = abs(p) - b;
-        float x = length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
-        float y = length(max(d, 0.0)) + min(max(d.x + 0.05, d.y + 0.05), 0.0);
-        return y/x;
+
+    float softMax(float a, float b, float k)
+    {
+        return log(exp(k * a) + exp(k * b)) / k;
+    }
+    
+    float softMin(float a, float b, float k)
+    {
+        return -softMax(-a, -b, k);
+    }
+
+    float opUnion(float d1, float d2)
+    {
+        return min(d1, d2);
     }
     
 
     void main()
     {
         vec2 coords = vUv;
-        vec2 lE = coords;
-        lE = lE * 3.0 - 1.0;
-        lE.x += 0.4;
-        // lE.y -= 0.25;
-        vec2 rE = coords;
-        rE = rE * 3.0 - 1.0;
-        rE.x -= 0.4;
-        // rE.y -= 0.25;
-        vec2 rectCoords1 = coords;
-        rectCoords1 = Rot(rectCoords1, PI * 0.0125);
-        vec2 rectCoords2 = coords;
-        rectCoords2 = Rot(rectCoords2, -PI * 0.0125);
         vec3 color;
 
-        float vesica1 = sdVesica(lE - 0.5, 0.25, 0.15);
-        float cir1 = circle(lE, 0.112);
-        color = vesica1 * vec3(1.);
-        color = mix(color, vec3(0.), cir1);
-        // color += cir1 * vec3(0., 1., 0.);
+        vec2 box1Coords = coords;
+        box1Coords -=0.5;
+        box1Coords.x += 0.25;
+        float box1 = sdfBox(box1Coords, vec2(0.1, 0.1));
+        // box1 = smoothstep(0.0, 0.01, box1);
+        // color = mix(vec3(0., 0., 1.), color, box1);
 
-        float vesica2 = sdVesica(rE - 0.5, 0.25, 0.15);
-        float cir2 = circle(rE, 0.112);
-        color = mix(color, vec3(1.), vesica2);
-        color = mix(color, vec3(0.), cir2 );
+        vec2 circleCoords = coords;
+        circleCoords -= 0.5;
+        circleCoords.x -= 0.25;
 
-        // float r1 = rect(vec2(rectCoords1.x-0.01, rectCoords1.y + 0.1), 0.45, 0.09);
-        float r1 = b(vec2(rectCoords1.x-0.0, rectCoords1.y + 0.2), vec2(0.45 + sin(u_time)/8., 0.09  ));
-        r1 = 1. - smoothstep(0.1, 0.2, r1);
-        // color = mix(color, vec3(1., 0., 0.), r1);
+        vec2 circleCoords2 = coords - 0.5;
+        circleCoords2.x += sin(u_time) / 4.;
 
-        // float r2 = rect(vec2(rectCoords2.x+0.01, rectCoords2.y + 0.1), 0.45, 0.09);
-        float r2 = b(vec2(rectCoords2.x+0.0, rectCoords2.y + 0.2), vec2(0.45 + sin(u_time)/8., 0.09 ));
-        r2 = 1. - smoothstep(0.1, 0.2, r2);
-        // color = mix(color, vec3(0., 0., 1.), r2);
+        float cir1 = sdfCircle(circleCoords, 0.1);
+        // cir1 = smoothstep(0.0, 0.01, cir1);
+        // color = mix(vec3(1., 0., 0.), color, cir1);
+        float cir2 = sdfCircle(circleCoords2, 0.1);
+        // cir2 = smoothstep(0.0, 0.01, cir2);
 
-        float r3 = smin(r2, r1, 0.01);
-        color = mix(color, vec3(1.), r3);
+        float d = opUnion(cir1, box1);
+        d = softMin(cir2, d, 20.);
+        color = mix(vec3(0., 0., 1.), color, smoothstep(0.0, 0.005, d));
 
-        
+
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
 
@@ -123,7 +113,7 @@ import { lerp } from 'three/src/math/MathUtils.js'
 import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
-export default function Shader855()
+export default function Shader856()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
