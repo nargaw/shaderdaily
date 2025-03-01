@@ -56,51 +56,72 @@ const fragmentShader = glsl`
         vec3 color;
 
         vec2 box1Coords = coords -0.5;
-        box1Coords.y -= 0.3;
+        box1Coords.y -= 0.5;
 
         vec2 box2Coords = coords - 0.5;
-        box2Coords.y += 0.3;
+        box2Coords.y += 0.5;
         
 
         //box1Coords.x += 0.25;
-        float box1 = sdfBox(box1Coords, vec2(0.4, 0.025));
-        float box2 = sdfBox(box2Coords, vec2(0.4, 0.025));
+        float box1 = sdfBox(box1Coords, vec2(0.5, 0.025));
+        float box2 = sdfBox(box2Coords, vec2(0.5, 0.025));
         // box1 = smoothstep(0.0, 0.01, box1);
         // color = mix(vec3(0., 0., 1.), color, box1);
         vec2 cirCoords = coords;
-        cirCoords = Rot(cirCoords, u_time);
+        // cirCoords = Rot(cirCoords, u_time);
         vec2 circleCoords = cirCoords - 0.5;
-        circleCoords.x -= 0.325;
+        circleCoords.x -= 0.25;
+        circleCoords.y -= mod(u_time * 0.125, 1.2) - 0.5;
 
         vec2 circleCoords2 = cirCoords - 0.5;
-        circleCoords2.x += 0.325;
+        circleCoords2.x += 0.5;
+        circleCoords2.y -= mod(u_time * 0.135, 1.2) - 0.5;
 
         vec2 circleCoords3 = cirCoords - 0.5;
-        circleCoords3.y -= 0.325;
+        circleCoords3.x -= 0.5;
+        circleCoords3.y -= mod(u_time * 0.145, 1.2) - 0.5;
 
         vec2 circleCoords4 = cirCoords - 0.5;
-        circleCoords4.y += 0.325;
-
-        vec2 cCoords = coords - 0.5;
-        // cCoords.x += 0.4;
-        float c;
-        float d;
-        for(int i = 0; i < 5; i++){
-            c += sdfCircle(vec2(cCoords.x + (float(i/25)), cCoords.y), 0.05);
-            color = mix(vec3(1.), color, smoothstep(0.0, 0.005, c));
-        }
-
-        // float cir1 = sdfCircle(circleCoords, 0.1);
-        // float cir2 = sdfCircle(circleCoords2, 0.08);
-        // float cir3 = sdfCircle(circleCoords3, 0.06);
-        // float cir4 = sdfCircle(circleCoords4, 0.04);
-
-        // float d = opUnion(cir1, opUnion(cir2, opUnion(cir3, cir4)));
-        // float d = softMin(c, box1, 25.);
-        // d = softMin(box2, d, 25.);
+        circleCoords4.x += 0.25;
+        circleCoords4.y -= mod(u_time * 0.155, 1.2) - 0.5;
 
         
+        // cCoords.x += 0.4;
+        
+        // float d;
+        // for(int i = 1; i < 10; i++){
+        //     vec2 cCoords = coords;
+        //     // cCoords.x += 0.4;
+        //     // cCoords.x += float(i)/10.;
+        //     float c = sdfCircle(vec2(cCoords.x - (float(i)/(15. * 0.5)), cCoords.y - 0.5 ), 0.05);
+        //     d += c;    
+            
+        // }
+        
+        
+        float shape1;
+        float c;
+        vec2 cCoords = coords - 0.5;
+        // for (int i=1; i<=5; i++)
+        // {
+            
+        //     // c = sdfCircle(vec2(cCoords.x - mod(u_time * 0.135, 1.0), cCoords.y - (float(i)/15.) * 2.5) + 0.5, 0.1);
+        //     c = sdfCircle(vec2(cCoords.x- (float(i)/25.)  + 0.5 , cCoords.y - mod(u_time * 0.135, 1.0) + 0.5), 0.1);
+        //     shape1 += c;
+        // }
+        // color += 1. - shape1;
+        
+        float cir1 = sdfCircle(circleCoords, 0.1);
+        float cir2 = sdfCircle(circleCoords2, 0.08);
+        float cir3 = sdfCircle(circleCoords3, 0.06);
+        float cir4 = sdfCircle(circleCoords4, 0.04);
 
+        float d = opUnion(cir1, opUnion(cir2, opUnion(cir3, cir4)));
+        d = softMin(d, box1, 25.);
+        d = softMin(box2, d, 25.);
+
+        
+        color = mix(vec3(1.), color, smoothstep(0.0, 0.005, d));
 
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
