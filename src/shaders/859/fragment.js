@@ -61,10 +61,13 @@ const fragmentShader = glsl`
         vec2 box2Coords = coords - 0.5;
         box2Coords.y += 0.5;
         
+        vec2 box3Coords = coords - 0.5;
+        // box3Coords.y += 0.5;
 
         //box1Coords.x += 0.25;
         float box1 = sdfBox(box1Coords, vec2(0.5, 0.025));
         float box2 = sdfBox(box2Coords, vec2(0.5, 0.025));
+        float box3 = sdfBox(box3Coords, vec2(0.5, 0.025));
         // box1 = smoothstep(0.0, 0.01, box1);
         // color = mix(vec3(0., 0., 1.), color, box1);
         vec2 cirCoords = coords;
@@ -74,17 +77,19 @@ const fragmentShader = glsl`
         circleCoords.y -= mod(u_time * 0.125, 1.2) - 0.5;
 
         vec2 circleCoords2 = cirCoords - 0.5;
-        circleCoords2.x += 0.5;
+        circleCoords2.x += 0.45;
         circleCoords2.y -= mod(u_time * 0.135, 1.2) - 0.5;
 
         vec2 circleCoords3 = cirCoords - 0.5;
-        circleCoords3.x -= 0.5;
+        circleCoords3.x -= 0.45;
         circleCoords3.y -= mod(u_time * 0.145, 1.2) - 0.5;
 
         vec2 circleCoords4 = cirCoords - 0.5;
         circleCoords4.x += 0.25;
         circleCoords4.y -= mod(u_time * 0.155, 1.2) - 0.5;
 
+        vec2 circleCoords5 = cirCoords - 0.5;
+        circleCoords5.y -= mod(u_time * 0.115, 1.2) - 0.5;
         
         // cCoords.x += 0.4;
         
@@ -115,10 +120,13 @@ const fragmentShader = glsl`
         float cir2 = sdfCircle(circleCoords2, 0.08);
         float cir3 = sdfCircle(circleCoords3, 0.06);
         float cir4 = sdfCircle(circleCoords4, 0.04);
+        float cir5 = sdfCircle(circleCoords5, 0.06);
 
-        float d = opUnion(cir1, opUnion(cir2, opUnion(cir3, cir4)));
+
+        float d = opUnion(cir1, opUnion(cir2, opUnion(cir3, opUnion(cir4, cir5))));
         d = softMin(d, box1, 25.);
         d = softMin(box2, d, 25.);
+        d = softMin(box3, d, 25.);
 
         
         color = mix(vec3(1.), color, smoothstep(0.0, 0.005, d));
