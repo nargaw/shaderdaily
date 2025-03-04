@@ -129,16 +129,16 @@ const fragmentShader = glsl`
         vec2 cCoords = coords - 0.5;
         
         
-        float cir1 = sdfCircle(circleCoords, 0.05);
-        float cir2 = sdfCircle(circleCoords2, 0.03);
+        float cir1 = sdfCircle(circleCoords,  0.02);
+        float cir2 = sdfCircle(circleCoords2, 0.02);
         float cir3 = sdfCircle(circleCoords3, 0.02);
-        float cir4 = sdfCircle(circleCoords4, 0.04);
-        float cir5 = sdfCircle(circleCoords5, 0.06);
-        float cir6 = sdfCircle(circleCoords6, 0.1);
-        float cir7 = sdfCircle(circleCoords7, 0.08);
-        float cir8 = sdfCircle(circleCoords8, 0.06);
-        float cir9 = sdfCircle(circleCoords9, 0.04);
-        float cir10 = sdfCircle(circleCoords10, 0.06);
+        float cir4 = sdfCircle(circleCoords4, 0.02);
+        float cir5 = sdfCircle(circleCoords5, 0.02);
+        float cir6 = sdfCircle(circleCoords6, 0.02);
+        float cir7 = sdfCircle(circleCoords7, 0.02);
+        float cir8 = sdfCircle(circleCoords8, 0.02);
+        float cir9 = sdfCircle(circleCoords9, 0.02);
+        float cir10 = sdfCircle(circleCoords10, 0.02);
 
 
         // float d = opUnion(cir1, opUnion(cir2, opUnion(cir3, opUnion(cir4, cir5))));
@@ -150,9 +150,9 @@ const fragmentShader = glsl`
         d = softMin(box3, d, 25.);
         d = softMin(box4, d, 25.);
 
-        color = mix(vec3(0., 1., 1.), color, smoothstep(0.0, 0.04, d));
-        color = mix(vec3(1., 0., 1.), color, smoothstep(0.0, 0.01, d));
-        color = mix(vec3(0., 1., 1.), color, smoothstep(0.0, 0.005, d));
+        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.1, d));
+        color = mix(vec3(1., 1., 0.), color, smoothstep(0.0, 0.05, d));
+        color = mix(vec3(0., 1., 0.), color, smoothstep(0.0, 0.005, d));
         
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
