@@ -58,7 +58,7 @@ const fragmentShader = glsl`
     float angle = atan(p.x, p.y) + PI;
     float radius = TWO_PI/float(sides);
     float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
-    return d;
+    return smoothstep(0.0, 0.2, d);
     // return 1. - smoothstep(scale, scale + 0.001, d); 
 }
     
@@ -71,12 +71,23 @@ const fragmentShader = glsl`
         vec2 m1 = u_mouse;
         
         vec2 polyCoords = coords;
-        float p1 = sdPoly(polyCoords, 3, 0.5);
+        vec2 polyCoords2 = coords;
+        polyCoords2 = Rot(polyCoords2, PI * 0.25);
+        float p1 = sdPoly(polyCoords, 6, 0.5);
+        float p2 = sdPoly(vec2(polyCoords.x, polyCoords.y + 0.20 * (sin(u_time * 0.5) * 1.1)), 6, 0.45);
+        float p3 = sdPoly(vec2(polyCoords2.x+ 0.20 * (cos(u_time * 0.5) * 1.1), polyCoords2.y + 0.20 * (sin(u_time * 0.5) * 1.1) ), 6, 0.45);
+        float p4 = sdPoly(vec2(polyCoords.x + 0.20 * (sin(u_time * 0.5) * 1.1), polyCoords.y + 0.20 * (cos(-u_time * 0.5) * 1.1)), 6, 0.45);
+        float p5 = sdPoly(vec2(polyCoords2.x+ 0.20 * (cos(-u_time * 0.5) * 1.1), polyCoords2.y ), 6, 0.45);
 
-        float c =
+        float d = softMin(p1, p2, 2.);
+        d = softMin(d, p3, 2.);
+        d = softMin(d, p4, 2.);
+        d = softMin(d, p5, 2.);
 
-        color = mix(vec3(1.), color, smoothstep(0., 0.1, p1));
-
+        color = mix(vec3(1.), color, smoothstep(0., 0.2, d));
+        // color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.1, d));
+        color = mix(vec3(0., 0., 1.), color, smoothstep(0.0, 0.05, d));
+        color = mix(vec3(0., 0., 0.), color, smoothstep(0.0, 0.005, d));
 
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
