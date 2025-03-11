@@ -69,25 +69,6 @@ const fragmentShader = glsl`
 
         vec2 m1 = u_mouse;
 
-        vec2 shapeCoords = coords - 0.5;
-        vec2 shape2Coords = coords;
-        shape2Coords = Rot(shape2Coords, PI * 0.5);
-        shape2Coords -= 0.5;
-
-
-        float shape = sdVesica(vec2(shapeCoords.x, shapeCoords.y + (sin(u_time)/10.)), 0.1, 0.025);
-        float shape2 = sdVesica(vec2(shape2Coords.x - (sin(u_time)/10.), shape2Coords.y ), 0.1, 0.025);
-        // color += shape;
-        float d;
-
-        d = softMin(shape2, shape, 25.);
-        // color += cirOut1;
-        // float d = softMin(cirOut1, softMin(cirOut2, cirOut3, 25.), 25.);
-
-        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.06, d));
-        color = mix(vec3(0., 0., 0.), color, smoothstep(0.0, 0.02, d));
-        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.009, d));
-
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
 
