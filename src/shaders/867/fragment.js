@@ -69,6 +69,27 @@ const fragmentShader = glsl`
 
         vec2 m1 = u_mouse;
 
+        vec2 coords1 = vUv - 0.5;
+        coords1.x -= 0.35;
+        vec2 coords2 = vUv - 0.5;
+        coords2.x += 0.35;
+        vec2 coords3 = vUv - 0.5;
+        coords3.x += sin(u_time * 0.5)/4.;
+        vec2 coords4 = vUv;
+        coords4 = Rot(coords4, u_time);
+        coords4 -= 0.5;
+        
+
+        float c1 = sdfCircle(coords1, 0.125);
+        float c2 = sdfCircle(coords2, 0.125);
+
+        float r1 = sdfBox(coords3, vec2(0.125, 0.05));
+        float r2 = sdfBox(coords4, vec2(0.125, 0.05));
+
+        float d = softMin(c1, softMin(c2, softMin(r1, r2, 25.), 25.), 25.);
+
+        color = mix(vec3(1.), color, smoothstep(0.0, 0.005, d));
+
         vec2 numCoords = coords;
         float numLabel = label(numCoords);
 
