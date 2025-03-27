@@ -86,7 +86,7 @@ const fragmentShader = glsl`
         vec3 color;
         vec2 numCoords = coords; 
 
-        coords = Rot(coords, u_time * 0.1);
+        // coords = Rot(coords, u_time * 0.1);
         // vec2 coords1, coords2, coords3, coord4, coords5 = coords;
         vec2 coords1 = coords;
         vec2 coords2 = coords;
@@ -107,38 +107,40 @@ const fragmentShader = glsl`
         coords3 -= 0.5;
         // coords1.x -= 0.1;
         // coords2.x += 0.1;
-        coords6.x += sin(u_time)/3.;
-        coords6.y += cos(u_time)/3.;
+        coords6.x += sin(u_time)/2.5;
+        coords6.y += cos(u_time)/2.5;
 
-        coords7.x -= sin(u_time * 1.)/3.;
-        coords7.y -= cos(u_time * 1.)/3.;
+        coords7.x -= sin(u_time * 1.5)/2.5;
+        coords7.y -= cos(u_time * 1.5)/2.5;
 
         coords6 -= 0.5;
         coords7 -= 0.5;
 
-        float p1 = lineSegment(coords1, vec2(-0.75, -0.4), vec2(0.75, -0.4));
-        float p2 = lineSegment(coords2, vec2(-0.75, -0.2), vec2(0.75, -0.2));
-        float p3 = lineSegment(coords3, vec2(-0.75, 0.),   vec2(0.75, 0.));
-        float p4 = lineSegment(coords4, vec2(-0.75, 0.2),  vec2(0.75, 0.2));
-        float p5 = lineSegment(coords5, vec2(-0.75, 0.4),  vec2(0.75, 0.4));
+        float p1 = lineSegment(coords1, vec2( -0.3, -0.75), vec2(-0.3, 0.75));
+        float p2 = lineSegment(coords2, vec2( -0.1, -0.75), vec2(-0.1, 0.75));
+        float p3 = lineSegment(coords3, vec2( 0.  , -0.75), vec2( 0.0, 0.75));
+        float p4 = lineSegment(coords4, vec2( 0.1 , -0.75), vec2( 0.1, 0.75));
+        float p5 = lineSegment(coords5, vec2( 0.3 , -0.75), vec2( 0.3, 0.75));
+        float p11 = lineSegment(coords1, vec2(0.5, -0.75), vec2(0.5, 0.75));
 
         float p6 = lineSegment(coords1, vec2(-0.4, -0.75), vec2(-0.4, 0.75));
         float p7 = lineSegment(coords2, vec2(-0.2, -0.75), vec2(-0.2, 0.75));
-        float p8 = lineSegment(coords3, vec2(-0.0, -0.75), vec2(0.0, 0.75));
+        float p8 = lineSegment(coords3, vec2(-0.5, -0.75), vec2(-0.5, 0.75));
         float p9 = lineSegment(coords4, vec2(0.2 ,  -0.75),vec2(0.2, 0.75));
         float p10 = lineSegment(coords5,vec2(0.4 , -0.75), vec2(0.4, 0.75));
 
-        float c1 = sdfBox(coords6, vec2(0.05));
-        float c2 = sdfBox(coords7, vec2(0.05));
 
-        float d = softMin(p1, softMin(p2, softMin(p3, softMin(p4, softMin(p5, softMin(c1, c2, 50.), 20.), 20.), 20.), 20.), 20.);
-        float d2 = softMin(p6, softMin(p7, softMin(p8, softMin(p9, p10, 20.), 20.), 20.), 20.);
+        float c1 = sdfCircle(coords6, 0.1);
+        float c2 = sdfCircle(coords7, 0.1);
 
-        float d3 = softMin(d, d2, 20.);
+        float d = softMin(c1, c2, 20.);
+        float d2 = softMin(p1, softMin(p2, softMin(p3, softMin(p4, softMin(p5, softMin(p6, softMin(p7, softMin(p8, softMin(p9, softMin(p10, p11, 20.), 20.), 20.), 20.), 20.), 20.), 20.), 20.), 20.), 20.);
+
+        float d3 = softMin(d, d2, 50.);
 
         color = mix(vec3(1.), color, smoothstep(0.0, 0.01, d3));
         color = mix(vec3(0., 0., 0.), color, smoothstep(0.0, 0.005, d3));
-        // color = mix(vec3(1.), color, smoothstep(0.0, 0.005, d3));
+        // color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.00, d3));
 
 
         
