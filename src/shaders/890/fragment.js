@@ -120,7 +120,7 @@ const fragmentShader = glsl`
         float texVal = 50.5;
         float d = softMin(tex1, softMin(tex2, tex3, texVal), texVal);
 
-        float dTot = softMin(d, c1, 4.);
+        float dTot = softMin(1. - d, c1, 3.);
 
         color = mix(texture.xyy, color, smoothstep(0., 0.05, dTot));
 
@@ -169,7 +169,7 @@ export default function Shader890()
 
     const textureCube = new THREE.CubeTextureLoader().load(urls)
     const loader = new THREE.TextureLoader()
-    const night = loader.load('./Models/Textures/photos/monalisa.jpg')
+    const night = loader.load('./Models/Textures/photos/frog.jpg')
     night.wrapS = THREE.MirroredRepeatWrapping
     night.wrapT = THREE.MirroredRepeatWrapping
 
