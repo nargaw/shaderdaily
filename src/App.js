@@ -1794,7 +1794,8 @@ export default function App()
         <Shader890 />,
         <Shader891 />,
         <Shader892 />,
-        <Shader893 />
+        <Shader893 />,
+        <Shader894 />
     ]
 
     return (
