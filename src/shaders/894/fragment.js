@@ -96,7 +96,7 @@ const fragmentShader = glsl`
         vec2 coords2 = coords- 0.5;
         vec2 coords3 = coords- 0.5;
         vec2 coords4 = coords- 0.5;
-        vec2 coords5 = coords-m;
+        vec2 coords5 = coords;
         vec2 coords6 = coords- 0.5;
 
         coords2 -= 0.2;
@@ -108,6 +108,17 @@ const fragmentShader = glsl`
         coords1.x += 0.2;
         coords1.y -= 0.2;
 
+        // coords1.x += fract(u_time * 2.) < 0.5 ? u_time * 0.25 : u_time * -0.25;
+
+        // coords5 -= 0.5;
+        // coords5 = Rot(coords5 + 0.5, u_time);
+        coords5 = Rot(coords5, u_time * 2.);
+        coords5 -= 0.5;
+        // coords5 -= m - 0.5;
+        
+        
+        // coords5 += 0.5;
+
         vec2 size = vec2(0.05);
         float sizef = 0.1;
         
@@ -117,13 +128,13 @@ const fragmentShader = glsl`
         float r4 = sdfBox(coords4, size);
         float r5 = sdfBox(coords6, vec2(0.2));
 
-        float c1 = sdfCircle(coords5, sizef);
+        float c1 = lineSegment(coords5, vec2(-0.35, 0.), vec2(0.35, 0.));
 
         float d = softMin(r1, softMin(r2, softMin(r3, softMin(r4, c1, 25.) , 25.), 25.), 25.);
 
-        float d2 = softMin(softMax(d, r5, 5.), d, 40.);
+        float d2 = softMin(softMax(d, r5, 5.), d, 20.);
 
-        float dTot = softMin(d, d2, 10.);
+        float dTot = softMin(d, d2, 20.);
 
         color = mix(vec3(1.), color, smoothstep(0., 0.005, dTot));
         color = mix(vec3(0., 0., 0.), color, smoothstep(0., 0.005, d2));
