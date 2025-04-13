@@ -1,4 +1,4 @@
-const glsl = require('glslify')
+import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = glsl`
     // https://www.shadertoy.com/view/4dSfDK
@@ -99,7 +99,7 @@ const fragmentShader = glsl`
         vec2 coords5 = coords;
         vec2 coords6 = coords- 0.5;
 
-        coords2 -= 0.2;
+        // coords2 -= 0.2;
         coords3 += 0.2;
 
         coords4.x -= 0.2;
@@ -113,32 +113,44 @@ const fragmentShader = glsl`
         float c = 0.75 ;
         float d = 1.00 ;
 
-        float speedVal = 0.125;
+        float speedVal = 1.;
 
         if(fract(u_time * speedVal) < a){
-            coords1.y = mod((u_time) + coords1.y, 1.5);
+            coords1.y = mod((u_time) + coords1.y, 1.);
             coords1.x += 0.2;
             coords1.y -= 0.2;
+            coords2.x = mod((u_time) + coords.x, 1.);
+            coords2.x -= 0.2;
+            coords2.y -= 0.2;
         } 
         if (fract(u_time * speedVal) >= a){
             if (fract(u_time * speedVal) < b){
-                coords1.x = mod((-u_time) + coords1.x, -1.5);
+                coords1.x = mod((-u_time) + coords1.x, -1.);
                 coords1.y += 0.2;
                 coords1.x += 0.2;
+                coords2.y = mod((-u_time) + coords2.y, -1.);
+                coords2.y += 0.2;
+                coords2.x -= 0.2;
             }
         }
         if (fract(u_time * speedVal) >= b){
             if (fract(u_time * speedVal) < c){
-                coords1.y = mod((-u_time) + coords1.y, -1.5);
+                coords1.y = mod((-u_time) + coords1.y, -1.);
                 coords1.y += 0.2;
                 coords1.x -= 0.2;
+                coords2.x = mod((-u_time) + coords2.x, -1.);
+                coords2.y -= 0.2;
+                coords2.x -= 0.2;
             }
         }
         if (fract(u_time * speedVal) >= c){
             if (fract(u_time * speedVal) < d){
-                coords1.x = mod((u_time) + coords1.x, 1.5);
+                coords1.x = mod((u_time) + coords1.x, 1.);
                 coords1.y -= 0.2;
                 coords1.x -= 0.2;
+                coords2.y = mod((-u_time) + coords2.y, -1.);
+                coords2.y -= 0.2;
+                coords2.x += 0.2;
             }
         }  
         
@@ -205,7 +217,7 @@ import { lerp } from 'three/src/math/MathUtils.js'
 import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
-export default function Shader895()
+export default function Shader896()
 {
     const r = './Models/EnvMaps/0/';
     const urls = [ 
