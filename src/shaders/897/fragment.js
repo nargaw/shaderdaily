@@ -99,7 +99,7 @@ const fragmentShader = glsl`
         vec2 coords5 = coords;
         vec2 coords6 = coords- 0.5;
 
-        // coords2 -= 0.2;
+        coords2 -= 0.2;
         coords3 += 0.2;
 
         coords4.x -= 0.2;
@@ -113,68 +113,75 @@ const fragmentShader = glsl`
         float c = 0.75 ;
         float d = 1.00 ;
 
-        float speedVal = 0.05;
+        float speedVal = 0.5 * 0.25;
 
         if(fract(u_time * speedVal) < a){
-            coords1.y = mod((u_time) + coords1.y, 1.);
-            coords1.x += 0.2;
-            coords1.y -= 0.2;
-            coords2.x = mod((u_time) + coords.x, 1.);
-            coords2.x -= 0.2;
-            coords2.y -= 0.2;
-            coords3.x = mod((-u_time) + coords3.y, -1.);
-            coords3.y += 0.2;
-            coords3.x -= 0.2;
-            coords4.y = mod((-u_time) + coords4.y, -1.);
-            coords4.y += 0.2;
-            coords4.x += 0.2;
+            coords1.y = mod((u_time * 0.25) + coords1.y, 1.);
+            coords1.x += 0.21;
+            coords1.y -= 0.21;
+
+            // coords2.x = mod((-u_time) + coords2.x + 0.5, -1.);
+            // coords2.x += 0.2;
+            // coords2.y += 0.2;
+
+            // coords3.x = mod((-u_time) + coords3.y, -1.);
+            // coords3.y += 0.2;
+            // coords3.x -= 0.2;
+            // coords4.y = mod((-u_time) + coords4.y, -1.);
+            // coords4.y += 0.2;
+            // coords4.x += 0.2;
         } 
         if (fract(u_time * speedVal) >= a){
             if (fract(u_time * speedVal) < b){
-                coords1.x = mod((-u_time) + coords1.x, -1.);
-                coords1.y += 0.2;
-                coords1.x += 0.2;
-                coords2.y = mod((-u_time) + coords2.y, -1.);
-                coords2.y += 0.2;
-                coords2.x -= 0.2;
-                coords3.x = mod((-u_time) + coords3.x, -1.);
-                coords3.y -= 0.2;
-                coords3.x -= 0.2;
-                coords4.y = mod((-u_time) + coords4.y, -1.);
-                coords4.y -= 0.2;
-                coords4.x += 0.2;
+                coords1.x = mod((-u_time * 0.25) + coords1.x + 0.5, -1.);
+                coords1.y += 0.21;
+                coords1.x += 0.21;
+
+                // coords2.y = mod((-u_time) + coords2.y, -1.);
+                // coords2.y += 0.2;
+                // coords2.x -= 0.2;
+
+                // coords3.x = mod((-u_time) + coords3.x, -1.);
+                // coords3.y -= 0.2;
+                // coords3.x -= 0.2;
+                // coords4.y = mod((-u_time) + coords4.y, -1.);
+                // coords4.y -= 0.2;
+                // coords4.x += 0.2;
             }
         }
         if (fract(u_time * speedVal) >= b){
             if (fract(u_time * speedVal) < c){
-                coords1.y = mod((-u_time) + coords1.y, -1.);
-                coords1.y += 0.2;
-                coords1.x -= 0.2;
-                coords2.x = mod((-u_time) + coords2.x, -1.);
-                coords2.y -= 0.2;
-                coords2.x -= 0.2;
-                coords3.y = mod((-u_time) + coords3.y, -1.);
-                coords3.y -= 0.2;
-                coords3.x += 0.2;
-                coords4.x = mod((-u_time) + coords4.x, -1.);
-                coords4.y += 0.2;
-                coords4.x += 0.2;
+                coords1.y = mod((-u_time * 0.25) + coords1.y, -1.);
+                coords1.y += 0.21;
+                coords1.x -= 0.21;
+
+                // coords2.y = mod((u_time) + coords2.y, 1.);
+                // coords2.x += 0.2;
+                // coords2.y -= 0.2;
+                // coords3.y = mod((-u_time) + coords3.y, -1.);
+                // coords3.y -= 0.2;
+                // coords3.x += 0.2;
+                // coords4.x = mod((-u_time) + coords4.x, -1.);
+                // coords4.y += 0.2;
+                // coords4.x += 0.2;
             }
         }
         if (fract(u_time * speedVal) >= c){
             if (fract(u_time * speedVal) < d){
-                coords1.x = mod((u_time) + coords1.x, 1.);
-                coords1.y -= 0.2;
-                coords1.x -= 0.2;
-                coords2.y = mod((-u_time) + coords2.y, -1.);
-                coords2.y -= 0.2;
-                coords2.x += 0.2;
-                coords3.x = mod((-u_time) + coords3.x, -1.);
-                coords3.y += 0.2;
-                coords3.x += 0.2;
-                coords4.y = mod((-u_time) + coords4.y, -1.);
-                coords4.y += 0.2;
-                coords4.x -= 0.2;
+                coords1.x = mod((u_time * 0.25) + coords1.x - 0.5, 1.);
+                coords1.y -= 0.21;
+                coords1.x -= 0.21;
+
+                // coords2.y = mod((-u_time) + coords2.y, -1.);
+                // coords2.y -= 0.2;
+                // coords2.x += 0.2;
+
+                // coords3.x = mod((-u_time) + coords3.x, -1.);
+                // coords3.y += 0.2;
+                // coords3.x += 0.2;
+                // coords4.y = mod((-u_time) + coords4.y, -1.);
+                // coords4.y += 0.2;
+                // coords4.x -= 0.2;
             }
         }  
         
@@ -182,7 +189,7 @@ const fragmentShader = glsl`
 
         // coords5 -= 0.5;
         // coords5 = Rot(coords5 + 0.5, u_time);
-        coords5 = Rot(coords5, u_time * 2.);
+        coords5 = Rot(coords5, u_time * 1.);
         coords5 -= 0.5;
         // coords5 -= m - 0.5;
         
@@ -198,7 +205,7 @@ const fragmentShader = glsl`
         float r4 = sdfBox(coords4, size);
         float r5 = sdfBox(coords6, vec2(0.2));
 
-        float c1 = lineSegment(coords5, vec2(-0.35, 0.), vec2(0.35, 0.));
+        float c1 = lineSegment(coords5, vec2(-0.45, 0.), vec2(0.45, 0.));
 
         float d3 = softMin(r1, softMin(r2, softMin(r3, softMin(r4, c1, 25.) , 25.), 25.), 25.);
 
@@ -206,7 +213,7 @@ const fragmentShader = glsl`
 
         float dTot = softMin(r1, d3, 20.);
 
-        color = mix(vec3(1.), color, smoothstep(0., 0.05, dTot));
+        color = mix(vec3(1.), color, smoothstep(0., 0.01, dTot));
         color = mix(vec3(0., 0., 0.), color, smoothstep(0., 0.005, dTot));
 
         float numLabel = label(numCoords);
@@ -274,7 +281,7 @@ export default function Shader897() {
         },
     })
 
-    const meshSize = 2
+    const meshSize = 4
 
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     const meshRef = useRef()
