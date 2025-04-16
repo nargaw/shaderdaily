@@ -92,7 +92,24 @@ export default function Interface()
 
     return(
         <>
+            <div className="nav">
+                {!informationStatus && <button className="back" onClick={goBack}>back</button>}
+                {!informationStatus && <button className="next" onClick={goNext}>next</button>}
+                <h1 className="current">{currentShader}</h1>
+            </div>
             
+            <form id='myForm' className="form" onSubmit={handleSubmit}>
+                {!informationStatus && <input type="number" name="shader" placeholder="Enter Shader Number" className="input" />}
+                {!informationStatus && <input type="submit"  value="Submit" className="submit"/>}
+            </form>
+
+            <div className="icon" onClick={toggleInfo}>
+                <i className="fa-solid fa-info"></i>
+            </div>
+
+            <div className="random" onClick={random}>
+                {!informationStatus && <i className="fa-solid fa-shuffle"></i>}
+            </div>
             {currentShader === 646 && <MusicInterface646 />}
             {currentShader === 647 && <MusicInterface647 />}
             {currentShader === 648 && <MusicInterface648 />}
