@@ -32,7 +32,7 @@ const fragmentShader = glsl`
         return length(max(d, 0.)) + min(max(d.x, d.y), 0.);
     }
 
-     float sdfCircle(vec2 p, float r){
+    float sdfCircle(vec2 p, float r){
         return length(p) - r;
     }
 
@@ -92,23 +92,35 @@ const fragmentShader = glsl`
 
         vec2 m = u_mouse;
 
-        vec2 coords1 = coords- 0.5;
+        vec2 coords1 = coords;
         vec2 coords2 = coords;
         vec2 coords3 = coords;
+        vec2 coords4 = coords;
+        vec2 coords5 = coords - m;
 
-        coords2 = Rot(coords2, u_time * 0.25);
+        coords1 = Rot(coords1, u_time * 0.45);
+        coords1 -= 0.5;
+
+        coords2 = Rot(coords2, -u_time * 0.45);
         coords2 -= 0.5;
 
-        coords3 = Rot(coords3, -u_time * 0.25);
+        coords3 = Rot(coords3, sin(-u_time * 0.75));
         coords3 -= 0.5;
 
-        float r1 = sdfBox(coords1, vec2(0.25));
+        coords4 = Rot(coords4, sin(u_time * 0.75));
+        coords4 -= 0.5;
+
+        float r1 = lineSegment(coords1, vec2(-0.35, 0.), vec2(0.35, 0.));
 
         float r2 = lineSegment(coords2, vec2(-0.35, 0.), vec2(0.35, 0.));
 
         float r3 = lineSegment(coords3, vec2(-0.35, 0.), vec2(0.35, 0.));
 
-        float d = softMin(r1, softMin(r2, r3, 20.), 20.);
+        float r4 = lineSegment(coords4, vec2(-0.35, 0.), vec2(0.35, 0.));
+
+        float r5 = sdfCircle(coords5, 0.05);
+
+        float d = softMin(r1, softMin(r2, softMin(r3, softMin(r4, r5, 20.), 20.), 20.), 20.);
 
         color = mix(vec3(1.), color, smoothstep(0., 0.01, d));
         color = mix(vec3(0., 0., 0.), color, smoothstep(0., 0.005, d));
@@ -178,7 +190,7 @@ export default function Shader900() {
         },
     })
 
-    const meshSize = 4
+    const meshSize = 2
 
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     const meshRef = useRef()
