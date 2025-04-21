@@ -96,12 +96,12 @@ const fragmentShader = glsl`
         vec2 coords2 = coords;
         vec2 coords3 = coords;
         vec2 coords4 = coords;
-        vec2 coords5 = coords - m;
+        vec2 coords5 = coords;
 
-        coords1 = Rot(coords1, u_time * 0.45);
+        coords1 = Rot(coords1, cos(u_time * 0.45));
         coords1 -= 0.5;
 
-        coords2 = Rot(coords2, -u_time * 0.45);
+        coords2 = Rot(coords2, cos(-u_time * 0.45));
         coords2 -= 0.5;
 
         coords3 = Rot(coords3, sin(-u_time * 0.75));
@@ -109,6 +109,9 @@ const fragmentShader = glsl`
 
         coords4 = Rot(coords4, sin(u_time * 0.75));
         coords4 -= 0.5;
+
+        coords5 = Rot(coords5, u_time);
+        coords5 -= m;
 
         float r1 = lineSegment(coords1, vec2(-0.35, 0.), vec2(0.35, 0.));
 
@@ -118,7 +121,7 @@ const fragmentShader = glsl`
 
         float r4 = lineSegment(coords4, vec2(-0.35, 0.), vec2(0.35, 0.));
 
-        float r5 = sdfCircle(coords5, 0.05);
+        float r5 = sdfBox(coords5, vec2(0.1));
 
         float d = softMin(r1, softMin(r2, softMin(r3, softMin(r4, r5, 20.), 20.), 20.), 20.);
 
@@ -190,7 +193,7 @@ export default function Shader901() {
         },
     })
 
-    const meshSize = 2
+    const meshSize = 4
 
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
     const meshRef = useRef()
