@@ -91,8 +91,6 @@ const fragmentShader = glsl`
         vec2 numCoords = coords; 
 
         vec2 m = u_mouse;
-
-        vec2 coords1 = coords;
         
         float numLabel = label(numCoords);
 
