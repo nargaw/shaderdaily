@@ -91,6 +91,22 @@ const fragmentShader = glsl`
         vec2 numCoords = coords; 
 
         vec2 m = u_mouse;
+        vec2 coords1 = coords;
+        vec2 coords2 = coords;
+
+        coords1 -= 0.5;
+        coords2 = Rot(coords2, PI * 0.25 * (u_time));
+        coords2 -= 0.5;
+
+        float b1 = sdfBox(coords1, vec2(0.25));
+        b1 = opOnion(coords1, 0.005, b1);
+
+        float b2 = sdfBox(coords2, vec2(0.25));
+        b2 = opOnion(coords2, 0.005, b2);
+
+        float d = softMin(b1, b2, 25.);
+
+        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.0075, d));
         
         float numLabel = label(numCoords);
 
