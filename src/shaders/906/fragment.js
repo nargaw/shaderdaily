@@ -105,7 +105,7 @@ const fragmentShader = glsl`
         // coords3 = Rot(coords3, PI * 0.5 * (u_time * 0.5));
         // coords3 -= 0.5;
 
-        float blendValue = 2.0;
+        float blendValue = 0.95;
         float outlineValue = 0.05;
         float size = 0.25;
         // size = mod(size * u_time * 0.5, 1.);
@@ -126,7 +126,7 @@ const fragmentShader = glsl`
         // coordsV += 0.175;
         float shapes;
         float s;
-        vec2 coordsV = coords * 12. - 11.5;
+        vec2 coordsV = coords * 20. - 15.;
 
         for (int i = 1; i<=4; i++){
             for (int j = 1; j<=4; j++){
@@ -138,7 +138,7 @@ const fragmentShader = glsl`
                 // coordsv1 = Rot(coordsv1, u_time);
                 vec2 newUv = coordsV;
                 newUv = Rot(vec2(newUv.x + float(i) * 2.5, newUv.y + float(j) * 2.5), ((u_time * 0.45) + 0.25 * float(j * i)/4.)*2.);
-                s = sdfBox(vec2(newUv.x , newUv.y ), vec2(1.25 + sin(u_time * 0.05)/5.));
+                s = sdfBox(vec2(newUv.x + sin(u_time + float(j * i)), newUv.y + sin(u_time + float(j * i))), vec2(1.25 + sin(u_time * 0.05)/5.));
                 s = opOnion(newUv, outlineValue, s);
                 // coordsV -= 0.5;
                 // coordsV = Rot(coordsV, u_time * float(i * j)/10. * 0.1);
@@ -151,10 +151,10 @@ const fragmentShader = glsl`
                 //     coordsV.y + sin(u_time + float(j + i) * 2.85 )/ 5.
                 // ), outlineValue, s);
                 
-                shapes = softMin(s, shapes == 0. ? 0. : shapes , blendValue );
+                shapes = softMin(s, shapes , blendValue );
                 shapes += s;
                
-                color = mix(vec3(0., 1., 0.), color, smoothstep(0., 0.05, shapes));
+                color = mix(vec3(0., 1., 0.), color, smoothstep(0., 0.5, shapes));
                     
             }
             
