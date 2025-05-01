@@ -93,21 +93,33 @@ const fragmentShader = glsl`
         vec2 m = u_mouse;
         vec2 coords1 = coords;
         vec2 coords2 = coords;
+        vec2 coords3 = coords;
 
         coords1 -= 0.5;
         coords2 = Rot(coords2, PI * 0.25 * (u_time));
         coords2 -= 0.5;
 
-        float b1 = sdfBox(coords1, vec2(0.25));
-        b1 = opOnion(coords1, 0.005, b1);
+        coords3 = Rot(coords3, PI * 0.25 * (-u_time - 2.5));
+        coords3 -= 0.5;
 
-        float b2 = sdfBox(coords2, vec2(0.25));
-        b2 = opOnion(coords2, 0.005, b2);
+        float blendValue = 60.;
+        float thicknessValue = 0.005;
+        vec2 size = vec2(0.25);
+        float b1 = sdfBox(coords1, size);
+        b1 = opOnion(coords1, thicknessValue, b1);
 
-        float d = softMin(b1, b2, 25.);
+        float b2 = sdfBox(coords2, size + sin(u_time * 0.25)/10.);
+        b2 = opOnion(coords2, thicknessValue, b2);
 
-        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.0075, d));
-        
+        float b3 = sdfBox(coords3, size + cos(-u_time * 0.25)/10.);
+        b3 = opOnion(coords3, thicknessValue, b3);
+
+        float d = softMin(b1, softMin(b2, b3, blendValue), blendValue);
+
+        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.0125, d));
+        color = mix(vec3(0.), color, smoothstep(0.0, 0.015, d));
+        color *= 5.;
+
         float numLabel = label(numCoords);
 
         color = mix(color, vec3(1.), numLabel) ;
