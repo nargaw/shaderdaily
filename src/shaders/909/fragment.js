@@ -108,7 +108,7 @@ const fragmentShader = glsl`
         float b1 = sdfBox(coords1, size);
         b1 = opOnion(coords1, thicknessValue, b1);
 
-        float b2 = sdfBox(coords2, size + sin(u_time * 0.25)/10.);
+        float b2 = sdfBox(coords2, size + cos(u_time * 0.45)/10.);
         b2 = opOnion(coords2, thicknessValue, b2);
 
         float b3 = sdfBox(coords3, size + cos(-u_time * 0.25)/10.);
@@ -116,7 +116,7 @@ const fragmentShader = glsl`
 
         float d = softMin(b1, softMin(b2, b3, blendValue), blendValue);
 
-        color = mix(vec3(1., 0., 0.), color, smoothstep(0.0, 0.0125, d));
+        color = mix(vec3(1., 1., 0.), color, smoothstep(0.0, 0.0125, d));
         color = mix(vec3(0.), color, smoothstep(0.0, 0.015, d));
         color *= 5.;
 
