@@ -109,16 +109,16 @@ const fragmentShader = glsl`
         coords1 = Rot(coords1, PI * 0.5 * (u_time));
         coords1 -= 0.5;
 
-        coords2 = Rot(coords2, PI * 0.25 * (u_time));
+        coords2 = Rot(coords2, PI * 0.45 * (u_time));
         coords2 -= 0.5;
 
-        coords3 = Rot(coords3, PI * 0.25 * (-u_time - 2.5));
+        coords3 = Rot(coords3, PI * 0.35 * (u_time));
         coords3 -= 0.5;
 
-        coords4 = Rot(coords4, PI * 0.125 * (u_time));
+        coords4 = Rot(coords4, PI * 0.25 * (u_time));
         coords4 -= 0.5;
 
-        coords5 = Rot(coords5, PI * 0.05 * (-u_time - 2.5));
+        coords5 = Rot(coords5, PI * 0.15 * (u_time));
         coords5 -= 0.5;
 
 
@@ -126,16 +126,16 @@ const fragmentShader = glsl`
         float blendValue = 60.;
         float thicknessValue = 0.005;
         vec2 size = vec2(0.25);
-        vec2 testSize = vec2(mod(0.25 + u_time * 0.125, 0.25));
-        vec2 testSize2 = vec2(mod(0.20 + u_time * 0.125, 0.35));
-        vec2 testSize3 = vec2(mod(0.15 + u_time * 0.125, 0.35));
-        vec2 testSize4 = vec2(mod(0.1 + u_time * 0.125, 0.35));
-        vec2 testSize5 = vec2(mod(u_time * 0.125, 0.35));
+        vec2 testSize =  vec2(mod(0.25 + u_time * 0.15, 0.5));
+        vec2 testSize2 = vec2(mod(0.20 + u_time * 0.14, 0.5));
+        vec2 testSize3 = vec2(mod(0.15 + u_time * 0.13, 0.5));
+        vec2 testSize4 = vec2(mod(0.10 + u_time * 0.12, 0.5));
+        vec2 testSize5 = vec2(mod(0.05 + u_time * 0.11, 0.5));
 
-        float b1 = sdPoly1(coords * 0.5 - 0.25, 3);
+        float b1 = sdfBox(coords1, testSize);
         b1 = opOnion(coords1, thicknessValue, b1);
 
-        float b2 = sdPoly1(coords2 * 0.075, 5);
+        float b2 = sdfBox(coords2, testSize2);
         b2 = opOnion(coords2, thicknessValue, b2);
 
         float b3 = sdfBox(coords3, testSize3);
@@ -151,8 +151,8 @@ const fragmentShader = glsl`
         // float d = softMin(b1, b2, 25.);
         // d = b2;
         color = mix(vec3(0., 0., 1.), color, smoothstep(0.0, 0.0125, d));
-        color = mix(vec3(0.), color, smoothstep(0.0, 0.015, d));
-        color *= 10.;
+        color *= mix(vec3(0.), color, smoothstep(0.0, 0.0125, d));
+        color *= 15.;
 
         float numLabel = label(numCoords);
 
