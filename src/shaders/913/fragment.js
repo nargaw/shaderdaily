@@ -126,31 +126,31 @@ const fragmentShader = glsl`
         float blendValue = 60.;
         float thicknessValue = 0.005;
         vec2 size = vec2(0.25);
-        vec2 testSize =  vec2(mod(0.25 + u_time * 0.15, 0.5));
-        vec2 testSize2 = vec2(mod(0.20 + u_time * 0.14, 0.5));
-        vec2 testSize3 = vec2(mod(0.15 + u_time * 0.13, 0.5));
-        vec2 testSize4 = vec2(mod(0.10 + u_time * 0.12, 0.5));
-        vec2 testSize5 = vec2(mod(0.05 + u_time * 0.11, 0.5));
+        vec2 testSize =  vec2(mod(0.25 + u_time * 0.15, 0.75));
+        vec2 testSize2 = vec2(mod(0.20 + u_time * 0.14, 0.75));
+        vec2 testSize3 = vec2(mod(0.15 + u_time * 0.13, 0.75));
+        vec2 testSize4 = vec2(mod(0.10 + u_time * 0.12, 0.75));
+        vec2 testSize5 = vec2(mod(0.05 + u_time * 0.11, 0.75));
 
-        float b1 = sdfVesica(coords1, testSize.x, testSize.y);
+        float b1 = sdfVesica(coords1, testSize.x, testSize.y * 0.5);
         b1 = opOnion(coords1, thicknessValue, b1);
 
-        float b2 = sdfBox(coords2, testSize2);
+        float b2 = sdfVesica(coords2, testSize2.x, testSize2.y * 0.5);
         b2 = opOnion(coords2, thicknessValue, b2);
 
-        float b3 = sdfBox(coords3, testSize3);
+        float b3 = sdfVesica(coords3, testSize3.x, testSize3.y * 0.5);
         b3 = opOnion(coords3, thicknessValue, b3);
 
-        float b4 = sdfBox(coords4, testSize4);
+        float b4 = sdfVesica(coords4, testSize4.x, testSize4.y * 0.5);
         b4 = opOnion(coords3, thicknessValue, b4);
 
-        float b5 = sdfBox(coords5, testSize5);
+        float b5 = sdfVesica(coords5, testSize5.x, testSize5.y * 0.5);
         b5 = opOnion(coords3, thicknessValue, b5);
 
         float d = softMin(b1, softMin(b2, softMin(b3, softMin(b4, b5, blendValue), blendValue), blendValue), blendValue);
         // float d = softMin(b1, b2, 25.);
         // d = b2;
-        color = mix(vec3(0., 0., 1.), color, smoothstep(0.0, 0.0125, d));
+        color = mix(vec3(1., 0., 1.), color, smoothstep(0.0, 0.00725, d));
         color *= mix(vec3(0.), color, smoothstep(0.0, 0.0125, d));
         color *= 15.;
 
