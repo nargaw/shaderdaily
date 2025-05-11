@@ -17,7 +17,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numNine(vec2(p.x + 0.35, p.y));
         float center = numOne(vec2(p.x -0.03, p.y));
-        float right = numFive(vec2(p.x - 0.42, p.y));
+        float right = numSeven(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -105,17 +105,67 @@ const fragmentShader = glsl`
         // float a = -atan(newUv.x, newUv.y) * 0.425;
         // newUv = vec2(0.5/r1 + .95 + u_time * 0.25 + r1, a );
 
-        coords -= 0.5;
-        float a = atan(coords.x, coords.y) * 0.035;
-        a = abs(a) * 4.;
-        float r = length(coords);
-        coords = vec2(r + u_time * 0.125, a);
+        // coords -= 0.5;
+        // float a = atan(coords.x, coords.y) * 0.035;
+        // a = abs(a);
+        // float r = length(coords);
+        // coords = vec2(r * 0.25, a);
 
-        vec3 texture = texture2D(u_texture, coords * 2.).xyz;
+        vec2 coords1 = coords;
+        coords1 = Rot(coords1, PI * 0.125 * (u_time));
+        coords1 -= 0.5;
+
+        vec2 coords2 = coords;
+        coords2 = Rot(coords2, PI * 0.125 * (u_time));
+        coords2 -= 0.5;
+
+        vec2 coords3 = coords;
+        coords3 = Rot(coords3, PI * 0.125 * (u_time));
+        coords3 -= 0.5;
+
+        vec2 coords4 = coords;
+        coords4 = Rot(coords4, PI * 0.125 * (u_time));
+        coords4 -= 0.5;
+
+        vec2 coords5 = coords;
+        coords5 = Rot(coords5, PI * 0.125 * (u_time));
+        coords5 -= 0.5;
+
+        float outlineValue = 0.0025;
+        float smoothstepValue = 0.05;
+
+        vec2 testSize =  vec2(mod(0.2 + u_time * 0.25, 1.0));
+        vec2 testSize2 = vec2(mod(0.8 + u_time * 0.125, 1.0));
+        vec2 testSize3 = vec2(mod(0.6 + u_time * 0.25, 1.0));
+        vec2 testSize4 = vec2(mod(0.4 + u_time * 0.125, 1.0));
+        vec2 testSize5 = vec2(mod(0.0 + u_time * 0.25, 1.0));
+
+        vec3 texture = texture2D(u_texture, coords * 0.0015 + (u_time * 0.02)).xyz;
+
+        float shape = sdfBox(coords1, testSize * texture.x);
+        shape = opOnion(coords1, outlineValue, shape);
+
+        float shape2 = sdfCircle(coords2, testSize2.x * texture.y);
+        shape2 = opOnion(coords2, outlineValue, shape2);
+
+        float shape3 = sdfBox(coords3, testSize3 * texture.z);
+        shape3 = opOnion(coords3, outlineValue, shape3);
+
+        float shape4 = sdfCircle(coords4, testSize4.x * texture.x);
+        shape4 = opOnion(coords4, outlineValue, shape4);
+
+        float shape5 = sdfBox(coords5, testSize5 * texture.y);
+        shape5 = opOnion(coords5, outlineValue, shape5);
+
+        float d = softMin(shape, softMin(shape2, softMin(shape3, softMin(shape4, shape5, 35.), 35.), 35.), 35.);
+
+        color = mix(vec3(1., 0., 0.), color, smoothstep(0., 0.0125, d));
+        color = mix(vec3(0.), color, smoothstep(0., 0.01, d));
+        color *= 3.;
 
         vec2 m = u_mouse;
         
-        color = texture;
+        // color = texture;
         float numLabel = label(numCoords);
 
         color = mix(color, vec3(1.), numLabel) ;
@@ -148,7 +198,7 @@ import { lerp } from 'three/src/math/MathUtils.js'
 import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
-export default function Shader915() {
+export default function Shader917() {
     const r = './Models/EnvMaps/0/';
     const urls = [
         r + 'px.jpg',
