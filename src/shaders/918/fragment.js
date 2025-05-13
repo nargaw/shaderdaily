@@ -101,8 +101,6 @@ float starShape(vec2 p, int spikes, float rotation) {
     float swirl = atan(pos.y, pos.x) + 0.5 * sin(t + radius * 12.0);
     vec2 swirlUV = vec2(cos(swirl), sin(swirl)) * radius;
 
-    
-
     float star = starShape(swirlUV, 5, t * 2.0);
 
     // === Composite final color ===
