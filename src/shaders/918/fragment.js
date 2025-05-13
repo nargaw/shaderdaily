@@ -21,156 +21,101 @@ const fragmentShader = glsl`
         return left + center + right ;
     }
     
-    mat2 Rot(float a){
-        float s = sin(a);
-        float c = cos(a);
-        return mat2(c, -s, s, c);
-    }
 
-    float sdfBox(vec2 p, vec2 b){
-        vec2 d = abs(p) -b;
-        return length(max(d, 0.)) + min(max(d.x, d.y), 0.);
-    }
-
-    float sdfCircle(vec2 p, float r){
-        return length(p) - r;
-    }
-
-    float softMax(float a, float b, float k)
-    {
-        return log(exp(k * a) + exp(k * b)) / k;
-    }
-    
-    float softMin(float a, float b, float k)
-    {
-        return -softMax(-a, -b, k);
-    }
-
-    float opUnion(float d1, float d2)
-    {
-        return min(d1, d2);
-    }
-
-    float sdfVesica(vec2 p, float w, float h)
-    {
-        float d = 0.5*(w*w-h*h)/h;
-        p = abs(p);
-        vec3 c = (w*p.y < d*(p.x-w)) ? vec3(0.0,w,0.0) : vec3(-d,0.0,d+h);
-        float s = length(p-c.yx) - c.z;
-        return s;
-        // return smoothstep(s, s+0.01, 0.01);
-    }
-
-    float plotLine(vec2 p, float line, float thickness)
-    {
-        return line - p.y;
-    }
-
-    float lineSegment(vec2 p, vec2 a, vec2 b) {
-        float thickness = 0.1/100.0;
-
-        vec2 pa = p - a;
-        vec2 ba = b - a;
-
-        float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
-        // ????????
-        float idk = length(pa - ba*h);
-
-        return idk;
-    }
-    
-    float opOnion( in vec2 p, in float r, float sdf )
-    {
-    return abs(sdf) - r;
-    }
-
-    float sdPoly1(vec2 p, int sides)
-    {
-        // p = p * 2. - 1.;
-        float angle = atan(p.x, p.y) + PI;
-        float radius = TWO_PI/float(sides);
-        float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
-        return d;
-    }
+// === Spinning star shape ===
+float starShape(vec2 p, int spikes, float rotation) {
+    float a = atan(p.y, p.x) + rotation;
+    float r = length(p);
+    float rays = mod(a * float(spikes) / PI, 2.0);
+    float s = mix(0.35, 0.15, step(1.0, rays));
+    float shape = smoothstep(s, s - 0.01, r);
+    float starGlow = 0.015 / (r + 0.01);
+    return shape + starGlow;
+}
 
     void main()
     {
         vec2 coords = vUv;
-        vec3 color;
         vec2 numCoords = coords; 
 
-        // float an = -u_time * 0.5;
-        // float r1 = length(newUv) ;
-        // // r1 = abs(r1 );
-        // float a = -atan(newUv.x, newUv.y) * 0.425;
-        // newUv = vec2(0.5/r1 + .95 + u_time * 0.25 + r1, a );
+        // Shader: All Star Tribute
+        // Inspired by Smash Mouth's "All Star"
 
-        // coords -= 0.5;
-        // float a = atan(coords.x, coords.y) * 0.035;
-        // a = abs(a);
-        // float r = length(coords);
-        // coords = vec2(r * 0.25, a);
+    vec2 uv = coords;
 
-        vec2 coords1 = coords;
-        coords1 = Rot(coords1, PI * 0.125 * (u_time));
-        coords1 -= 0.5;
+    vec2 pos = uv * 2.0 - 1.0;
+    // pos.x *= iResolution.x / iResolution.y;
 
-        vec2 coords2 = coords;
-        coords2 = Rot(coords2, PI * 0.125 * (u_time));
-        coords2 -= 0.5;
+    float t = u_time;
 
-        vec2 coords3 = coords;
-        coords3 = Rot(coords3, PI * 0.125 * (u_time));
-        coords3 -= 0.5;
+    // Somebody once told me
+    float somebody = sin(t * 0.5);
+    
+    // The world is gonna roll me
+    float roll = cos(length(pos) * 8.0 - t * 3.0);
 
-        vec2 coords4 = coords;
-        coords4 = Rot(coords4, PI * 0.125 * (u_time));
-        coords4 -= 0.5;
+    // I ain't the sharpest tool in the shed
+    float sharpness = 0.25;
 
-        vec2 coords5 = coords;
-        coords5 = Rot(coords5, PI * 0.125 * (u_time));
-        coords5 -= 0.5;
+    // She was looking kind of dumb
+    vec3 herLook = vec3(1.0, 0.85, 0.1);
 
-        float outlineValue = 0.0025;
-        float smoothstepValue = 0.05;
+    // With her finger and her thumb
+    float fingerThumb = pow(fract(t), 2.0);
 
-        vec2 testSize =  vec2(mod(0.2 + u_time * 0.25, 1.0));
-        vec2 testSize2 = vec2(mod(0.8 + u_time * 0.125, 1.0));
-        vec2 testSize3 = vec2(mod(0.6 + u_time * 0.25, 1.0));
-        vec2 testSize4 = vec2(mod(0.4 + u_time * 0.125, 1.0));
-        vec2 testSize5 = vec2(mod(0.0 + u_time * 0.25, 1.0));
+    // In the shape of an "L" on her forehead
+    float L_shape = step(0.5, uv.x) * step(uv.y, 0.6);
 
-        vec3 texture = texture2D(u_texture, coords * 0.0015 + (u_time * 0.02)).xyz;
+    // Well, the years start coming
+    float years = mod(t * 0.5, 100.0);
 
-        float shape = sdfBox(coords1, testSize * texture.x);
-        shape = opOnion(coords1, outlineValue, shape);
+    // And they don't stop coming
+    float nonstop = exp(-length(pos) * 5.0);
 
-        float shape2 = sdfCircle(coords2, testSize2.x * texture.y);
-        shape2 = opOnion(coords2, outlineValue, shape2);
+    // Fed to the rules and I hit the ground running
+    float running = smoothstep(0.0, 1.0, t * 0.1);
 
-        float shape3 = sdfBox(coords3, testSize3 * texture.z);
-        shape3 = opOnion(coords3, outlineValue, shape3);
+    // Didn't make sense not to live for fun
+    float fun = sin(t * 2.0);
 
-        float shape4 = sdfCircle(coords4, testSize4.x * texture.x);
-        shape4 = opOnion(coords4, outlineValue, shape4);
+    // Your brain gets smart
+    float brain = pow(length(pos), 0.5);
 
-        float shape5 = sdfBox(coords5, testSize5 * texture.y);
-        shape5 = opOnion(coords5, outlineValue, shape5);
+    // But your head gets dumb
+    float head = 1.0 - brain;
 
-        float d = softMin(shape, softMin(shape2, softMin(shape3, softMin(shape4, shape5, 35.), 35.), 35.), 35.);
+    // So much to do, so much to see
+    float chaos = sin(dot(pos, vec2(12.9898, 78.233)) * 43758.5453);
 
-        color = mix(vec3(1., 0., 0.), color, smoothstep(0., 0.0125, d));
-        color = mix(vec3(0.), color, smoothstep(0., 0.01, d));
-        color *= 3.;
+    // So what's wrong with taking the back streets?
+    float backstreets = step(0.4, length(uv - 0.5));
 
-        vec2 m = u_mouse;
-        
-        // color = texture;
-        float numLabel = label(numCoords);
+    // You'll never know if you don't go
+    float go = step(0.5, sin(t + uv.x * 10.0));
 
-        color = mix(color, vec3(1.), numLabel) ;
-        
-        gl_FragColor = vec4(color, 1.);
+    // You'll never shine if you don't glow
+    float glow = exp(-10.0 * length(pos)) * abs(sin(t));
+
+    // === Tunnel effect ===
+    float radius = length(pos);
+    float swirl = atan(pos.y, pos.x) + 0.5 * sin(t + radius * 12.0);
+    vec2 swirlUV = vec2(cos(swirl), sin(swirl)) * radius;
+
+    
+
+    float star = starShape(swirlUV, 5, t * 2.0);
+
+    // === Composite final color ===
+    vec3 starColor = vec3(1.0, 1.0, 0.4) * glow;
+    vec3 tunnelColor = mix(vec3(0.05, 0.1, 0.15), vec3(0.0, 0.4, 0.6), roll * 0.5 + 0.5);
+    vec3 finalColor = tunnelColor + star * starColor;
+
+    float numLabel = label(numCoords);
+
+    finalColor = mix(finalColor, vec3(1.), numLabel) ;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+
     }
 `
 
