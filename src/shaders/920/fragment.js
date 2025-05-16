@@ -121,25 +121,36 @@ const fragmentShader = glsl`
         vec3 color;
         vec2 numCoords = coords;
         vec2 m = u_mouse;
+
+        vec4 textureColor = texture2D(u_texture, coords);
         
+        //face
         vec2 c1Coords = coords;
         c1Coords -= 0.5;
+        c1Coords.x -= 0.03;
+        c1Coords.y -= 0.06;
+        float d = sdfCircle(c1Coords, 0.18);
+
+        // if(d < 0.) color = vec3(1.);
+        if(d < 0.) color = vec3(1., 0., 0.);
 
         vec2 c2Coords = coords;
-        c2Coords -= m;
+        c2Coords = Rot(c2Coords, PI * 0.08);
+        c2Coords -= 0.5;
+        c2Coords.y += 0.02;
+        c2Coords.x -= 0.03;
+        c2Coords.x *= 0.5;
+        c2Coords.y *= 0.9;
+        float mouth = sdfCircle(c2Coords, 0.1);
 
-        float d = sdfCircle(c1Coords, 0.125);
-        d = softMin(d, sdfCircle(c2Coords, 0.125 * 0.5), 25.);
+        if(mouth < -0.01) color = vec3(0., 0., 1.);
 
-        if(d < 0.) color = vec3(1.);
-        if(d < -0.01) color = vec3(1., 0., 0.);
-
-        // color = texture;
+        color = mix(color, textureColor.xyz, textureColor.a * 0.5);
         float numLabel = label(numCoords);
 
         color = mix(color, vec3(1.), numLabel) ;
         
-        gl_FragColor = vec4(color, 1.);
+        gl_FragColor = vec4(color, 1.0);
     }
 `
 
@@ -179,9 +190,9 @@ export default function Shader920() {
 
     const textureCube = new THREE.CubeTextureLoader().load(urls)
     const loader = new THREE.TextureLoader()
-    const noiseTexture = loader.load('./Models/Textures/Colors/noiseTexture.png')
-    noiseTexture.wrapS = THREE.MirroredRepeatWrapping
-    noiseTexture.wrapT = THREE.MirroredRepeatWrapping
+    const mickey = loader.load('./Models/Textures/photos/mickey.jpg')
+    mickey.wrapS = THREE.MirroredRepeatWrapping
+    mickey.wrapT = THREE.MirroredRepeatWrapping
 
     const DPR = Math.min(window.devicePixelRatio, 1.);
 
@@ -196,7 +207,7 @@ export default function Shader920() {
             u_mouse2: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_mouse3: { value: new THREE.Uniform(new THREE.Vector2()) },
 
-            u_texture: { value: noiseTexture },
+            u_texture: { value: mickey },
         },
     })
 
