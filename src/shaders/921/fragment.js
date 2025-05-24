@@ -93,27 +93,28 @@ const fragmentShader = glsl`
         return d;
     }
 
-    float bezier(vec2 p, vec2 v0, vec2 v1, vec2 v2) { // fold
-        vec2 i = v0 - v2;
-        vec2 j = v2 - v1;
-        vec2 k = v1 - v0;
-        vec2 w = j-k;
+    float sdBezier(vec2 p, vec2 A, vec2 B, vec2 C) {
+        vec2 a = B - A;
+        vec2 b = A - 2.0*B + C;
+        vec2 c = a * 2.0;
+        vec2 d = A - p;
     
-        v0-= p; v1-= p; v2-= p;
-        
-        float x = v0.x*v2.y-v0.y*v2.x;
-        float y = v1.x*v0.y-v1.y*v0.x;
-        float z = v2.x*v1.y-v2.y*v1.x;
+        float kk = 1.0 / dot(b,b);
+        float kx = kk * dot(a,b);
+        float ky = kk * (dot(d,b) + dot(a,a));
+        float kz = kk * dot(d,a);
     
-        vec2 s = 2.0*(y*j+z*k)-x*i;
+        float res = 0.0;
+        float t = clamp((kx*kz - ky) / (kx*kx - ky), 0.0, 1.0);
+        vec2 q = mix(mix(A, B, t), mix(B, C, t), t);
+        res = length(q - p);
     
-        float r =  (y*z-x*x*0.25)/dot(s,s);
-        float t = clamp( (0.5*x+y+r*dot(s,w))/(x+y+z),0.0,1.0);
-        
-        vec2 d = v0+t*(k+k+t*w);
-        vec2 outQ = d + p;
-        return length(d);
+        return res;
     }
+
+    float sdOval(vec2 p, vec2 r) {
+        return (length(p / r) - 1.0) * min(r.x, r.y);
+      }
 
     void main()
     {
@@ -142,13 +143,27 @@ const fragmentShader = glsl`
         c2Coords.y *= 0.9;
         float mouth = sdfCircle(c2Coords, 0.1);
 
+        vec2 noseCoords = coords;
+        noseCoords = Rot(noseCoords, PI * 0.085);
+        noseCoords -= 0.5;
+        noseCoords.x -= 0.035;
+        noseCoords.y -= 0.01;
+
+
+
         // if(mouth < -0.01) color = vec3(0., 0., 1.);
         d = opUnion(d, mouth);
 
         d = opUnion(d, sdfCircle(vec2(coords.x - 0.55, coords.y-0.41), 0.05));
 
+        float d2 = sdOval(noseCoords, vec2(0.053, 0.035));
+
+        float d3 = sdBezier(coords - 0.5, vec2(0.2, 0.0), vec2(0.1, -0.1), vec2(-0.2, 0.0));
+
         if(d < 0.01) color = vec3(1.);
         if(d < 0.) color = vec3(1., 0., 0.);
+        if(d2 < 0.) color = vec3(0., 1., 0.);
+        if(d3 < 0.1) color = vec3(0., 0., 1.);
 
         color = mix(color, textureColor.xyz, textureColor.a * 0.5);
         float numLabel = label(numCoords);
