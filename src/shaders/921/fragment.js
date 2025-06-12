@@ -149,6 +149,9 @@ const fragmentShader = glsl`
         noseCoords.x -= 0.035;
         noseCoords.y -= 0.01;
 
+        vec2 mouthCoords = coords;
+        mouthCoords -= 0.5;
+
 
 
         // if(mouth < -0.01) color = vec3(0., 0., 1.);
@@ -158,7 +161,7 @@ const fragmentShader = glsl`
 
         float d2 = sdOval(noseCoords, vec2(0.053, 0.035));
 
-        float d3 = sdBezier(coords - 0.5, vec2(0.2, 0.0), vec2(0.1, -0.1), vec2(-0.2, 0.0));
+        float d3 = sdBezier(mouthCoords, vec2(0.0, 0.0), vec2(0.1, 0.0), vec2(0.0, 0.1));
 
         if(d < 0.01) color = vec3(1.);
         if(d < 0.) color = vec3(1., 0., 0.);
