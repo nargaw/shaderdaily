@@ -93,23 +93,26 @@ const fragmentShader = glsl`
         return d;
     }
 
-    float sdBezier(vec2 p, vec2 A, vec2 B, vec2 C) {
-        vec2 a = B - A;
-        vec2 b = A - 2.0*B + C;
-        vec2 c = a * 2.0;
-        vec2 d = A - p;
-    
-        float kk = 1.0 / dot(b,b);
-        float kx = kk * dot(a,b);
-        float ky = kk * (dot(d,b) + dot(a,a));
-        float kz = kk * dot(d,a);
-    
-        float res = 0.0;
-        float t = clamp((kx*kz - ky) / (kx*kx - ky), 0.0, 1.0);
-        vec2 q = mix(mix(A, B, t), mix(B, C, t), t);
-        res = length(q - p);
-    
-        return res;
+    float bezier(vec2 p, vec2 v0, vec2 v1, vec2 v2) { // fold
+        vec2 i = v0 - v2;
+        vec2 j = v2 - v1;
+        vec2 k = v1 - v0;
+        vec2 w = j-k;
+
+        v0-= p; v1-= p; v2-= p;
+        
+        float x = v0.x*v2.y-v0.y*v2.x;
+        float y = v1.x*v0.y-v1.y*v0.x;
+        float z = v2.x*v1.y-v2.y*v1.x;
+
+        vec2 s = 2.0*(y*j+z*k)-x*i;
+
+        float r =  (y*z-x*x*0.25)/dot(s,s);
+        float t = clamp( (0.5*x+y+r*dot(s,w))/(x+y+z),0.0,1.0);
+        
+        vec2 d = v0+t*(k+k+t*w);
+        vec2 outQ = d + p;
+        return length(d);
     }
 
     float sdOval(vec2 p, vec2 r) {
@@ -161,12 +164,15 @@ const fragmentShader = glsl`
 
         float d2 = sdOval(noseCoords, vec2(0.053, 0.035));
 
-        float d3 = sdBezier(mouthCoords, vec2(0.0, 0.0), vec2(0.1, 0.0), vec2(0.0, 0.1));
-
+        float d3 = bezier(mouthCoords,  
+                 vec2(-.085, -.042), 
+                 vec2(0.07, -.15), 
+                 vec2(.15, .019)) - 0.0426;
+        //if (d3 < 0.0) color = vec3(.71, .839, .922)*step(d3, -.013);
         if(d < 0.01) color = vec3(1.);
         if(d < 0.) color = vec3(1., 0., 0.);
         if(d2 < 0.) color = vec3(0., 1., 0.);
-        if(d3 < 0.1) color = vec3(0., 0., 1.);
+        if(d3 < 0.02) color = vec3(0., 0., 1.);
 
         color = mix(color, textureColor.xyz, textureColor.a * 0.5);
         float numLabel = label(numCoords);
