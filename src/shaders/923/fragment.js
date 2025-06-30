@@ -172,8 +172,7 @@ const fragmentShader = glsl`
         vec2 earRCoords = coords;
         earRCoords -= 0.5;
         earRCoords.y -= 0.29;
-        earRCoords.x -= 0.15;
-
+        earRCoords.x -= 0.165;
 
         // if(mouth < -0.01) color = vec3(0., 0., 1.);
         d = opUnion(d, mouth);
