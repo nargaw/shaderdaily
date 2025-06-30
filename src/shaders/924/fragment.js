@@ -135,9 +135,8 @@ const fragmentShader = glsl`
         if(d < -0.02) color = mix(vec3(0., 1., 0.), color, smoothstep(0., 0.05, d));
         if(d < -0.03) color = mix(vec3(0., 0., 1.), color, smoothstep(0., 0.05, d));
         if(d < -0.04) color = mix(vec3(0., 0., 0.), color, smoothstep(0., 0.05, d));
-        
-        // color = mix(vec3(1.), color, smoothstep(0., 0.005, d));
 
+        // color = mix(vec3(1.), color, smoothstep(0., 0.005, d));
         // color = texture;
         float numLabel = label(numCoords);
 
