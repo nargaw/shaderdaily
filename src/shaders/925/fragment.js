@@ -96,8 +96,7 @@ const fragmentShader = glsl`
         vec2 coords2 = coords- 0.5;
         vec2 coords3 = coords- 0.5;
         vec2 coords4 = coords- 0.5;
-        vec2 coords5 = coords;
-        vec2 coords6 = coords- 0.5;
+        vec2 coords5 = coords- 0.5;
 
         coords2 -= 0.2;
         coords3 += 0.2;
@@ -105,8 +104,9 @@ const fragmentShader = glsl`
         coords4.x -= 0.2;
         coords4.y += 0.2;
 
-        // coords1.x += 0.2;
-        // coords1.y -= 0.2;
+        coords5.x += 0.2;
+        coords5.y -= 0.2;
+
 
         float a = 0.25 ;
         float b = 0.50 ;
@@ -115,103 +115,46 @@ const fragmentShader = glsl`
 
         float speedVal = 0.5 * 0.25;
 
-        if(fract(u_time * speedVal) < a){
+        if(fract(u_time * speedVal) <= a){
             coords1.y = mod((u_time * 0.25) + coords1.y, 1.);
-            coords1.x += 0.21;
-            coords1.y -= 0.21;
-
-            // coords2.x = mod((-u_time) + coords2.x + 0.5, -1.);
-            // coords2.x += 0.2;
-            // coords2.y += 0.2;
-
-            // coords3.x = mod((-u_time) + coords3.y, -1.);
-            // coords3.y += 0.2;
-            // coords3.x -= 0.2;
-            // coords4.y = mod((-u_time) + coords4.y, -1.);
-            // coords4.y += 0.2;
-            // coords4.x += 0.2;
+            coords1.x += 0.2;
+            coords1.y -= 0.2;
         } 
-        if (fract(u_time * speedVal) >= a){
+        if (fract(u_time * speedVal) > a){
             if (fract(u_time * speedVal) < b){
                 coords1.x = mod((-u_time * 0.25) + coords1.x + 0.5, -1.);
-                coords1.y += 0.21;
-                coords1.x += 0.21;
-
-                // coords2.y = mod((-u_time) + coords2.y, -1.);
-                // coords2.y += 0.2;
-                // coords2.x -= 0.2;
-
-                // coords3.x = mod((-u_time) + coords3.x, -1.);
-                // coords3.y -= 0.2;
-                // coords3.x -= 0.2;
-                // coords4.y = mod((-u_time) + coords4.y, -1.);
-                // coords4.y -= 0.2;
-                // coords4.x += 0.2;
+                coords1.y += 0.2;
+                coords1.x += 0.175;
             }
         }
-        if (fract(u_time * speedVal) >= b){
+        if (fract(u_time * speedVal) > b){
             if (fract(u_time * speedVal) < c){
                 coords1.y = mod((-u_time * 0.25) + coords1.y, -1.);
-                coords1.y += 0.21;
-                coords1.x -= 0.21;
-
-                // coords2.y = mod((u_time) + coords2.y, 1.);
-                // coords2.x += 0.2;
-                // coords2.y -= 0.2;
-                // coords3.y = mod((-u_time) + coords3.y, -1.);
-                // coords3.y -= 0.2;
-                // coords3.x += 0.2;
-                // coords4.x = mod((-u_time) + coords4.x, -1.);
-                // coords4.y += 0.2;
-                // coords4.x += 0.2;
+                coords1.y += 0.175;
+                coords1.x -= 0.2;
             }
         }
-        if (fract(u_time * speedVal) >= c){
+        if (fract(u_time * speedVal) > c){
             if (fract(u_time * speedVal) < d){
                 coords1.x = mod((u_time * 0.25) + coords1.x - 0.5, 1.);
-                coords1.y -= 0.21;
-                coords1.x -= 0.21;
-
-                // coords2.y = mod((-u_time) + coords2.y, -1.);
-                // coords2.y -= 0.2;
-                // coords2.x += 0.2;
-
-                // coords3.x = mod((-u_time) + coords3.x, -1.);
-                // coords3.y += 0.2;
-                // coords3.x += 0.2;
-                // coords4.y = mod((-u_time) + coords4.y, -1.);
-                // coords4.y += 0.2;
-                // coords4.x -= 0.2;
+                coords1.y -= 0.2;
+                coords1.x -= 0.275;
             }
         }  
         
-        // coords1.x += fract(u_time * 2.) < 0.5 ? u_time * 0.25 : u_time * -0.25;
-
-        // coords5 -= 0.5;
-        // coords5 = Rot(coords5 + 0.5, u_time);
-        coords5 = Rot(coords5, u_time * 1.);
-        coords5 -= 0.5;
-        // coords5 -= m - 0.5;
-        
-        
-        // coords5 += 0.5;
-
-        vec2 size = vec2(0.05);
+        vec2 size = vec2(0.025);
+        vec2 size2 = vec2(0.025);
         float sizef = 0.1;
         
         float r1 = sdfBox(coords1, size);
-        float r2 = sdfBox(coords2, size);
-        float r3 = sdfBox(coords3, size);
-        float r4 = sdfBox(coords4, size);
-        float r5 = sdfBox(coords6, vec2(0.2));
+        float r2 = sdfBox(coords2, size2);
+        float r3 = sdfBox(coords3, size2);
+        float r4 = sdfBox(coords4, size2);
+        float r5 = sdfBox(coords5, size2);
 
         float c1 = lineSegment(coords5, vec2(-0.45, 0.), vec2(0.45, 0.));
 
-        float d3 = softMin(r1, softMin(r2, softMin(r3, r4, 20.), 20.), 20.);
-
-        float d2 = softMin(softMax(d, r5, 5.), d, 20.);
-
-        float dTot = softMin(r1, d3, 20.);
+        float dTot = softMin(r1, softMin(r2, softMin(r3, softMin(r4, r5, 25.), 25.), 25.), 25.);
 
         color = mix(vec3(1.), color, smoothstep(0., 0.01, dTot));
         color = mix(vec3(0., 0., 0.), color, smoothstep(0., 0.005, dTot));
