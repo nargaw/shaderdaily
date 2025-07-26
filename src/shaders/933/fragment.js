@@ -84,6 +84,13 @@ const fragmentShader = glsl`
     return abs(sdf) - r;
     }
 
+    vec2 toPolarCoords(vec2 coords, float time) {
+        float radius = length(coords); //get euclidean distance
+        float angle = atan(coords.y, coords.x); //get angle in radians
+        vec2 polarCoords = vec2(0.25 / radius + time * 0.25, angle / PI); //polar coordinate as (radius, angle)
+        return polarCoords;
+    }
+
     void main()
     {
         vec2 coords = vUv;
@@ -96,25 +103,32 @@ const fragmentShader = glsl`
         
         vec2 cCoords = coords;
 
+        cCoords = toPolarCoords(cCoords - 0.5, u_time);
+
         cCoords = cCoords * 3.;
         cCoords = fract(cCoords);
         cCoords -= 0.5;
 
-        float c1 = length(vec2(cCoords.x, cCoords.y)) - 0.15;
-        float c2 = length(vec2(cCoords.x + sin(u_time * 0.5)/2., cCoords.y)) - 0.15;
-        float c3 = length(vec2(cCoords.x - sin(u_time * 0.5)/2., cCoords.y)) - 0.15;
-        float c4 = length(vec2(cCoords.x , cCoords.y+ sin(u_time * 0.5)/2.)) - 0.15;
-        float c5 = length(vec2(cCoords.x , cCoords.y- sin(u_time * 0.5)/2.)) - 0.15;
+        float c1 = length(vec2(cCoords.x, cCoords.y)) - 0.25;
+        float c2 = length(vec2(cCoords.x + sin(u_time * 0.5)/2., cCoords.y)) - 0.25;
+        float c3 = length(vec2(cCoords.x - sin(u_time * 0.5)/2., cCoords.y)) - 0.25;
+        float c4 = length(vec2(cCoords.x , cCoords.y+ sin(u_time * 0.5)/2.)) - 0.25;
+        float c5 = length(vec2(cCoords.x , cCoords.y- sin(u_time * 0.5)/2.)) - 0.25;
 
-        c1 = opOnion(c1, 0.002);
-        c2 = opOnion(c2, 0.002);
-        c3 = opOnion(c3, 0.002);
-        c4 = opOnion(c4, 0.002);
-        c5 = opOnion(c5, 0.002);
+        c1 = opOnion(c1, 0.02);
+        c2 = opOnion(c2, 0.02);
+        c3 = opOnion(c3, 0.02);
+        c4 = opOnion(c4, 0.02);
+        c5 = opOnion(c5, 0.02);
 
         float c = softMin(c1, softMin(c2, softMin(c3, softMin(c4, c5, 50.),50.), 50.), 50.);
 
-        color = mix(vec3(0.0, 0.0, 1.), color, smoothstep(0., 0.01,c));
+        color = mix(vec3(0.0, 1.0 * sin(u_time), 1.0 ), color, smoothstep(0., 0.05,c));
+        color = mix(vec3(0.), color, smoothstep(0., 0.025,c)) * 2.;
+
+        float mask = length(coords - 0.5);
+
+        color = mix(vec3(0.), color, smoothstep(0.0, 0.8, mask));
 
         float numLabel = label(numCoords);
 
