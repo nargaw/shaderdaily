@@ -103,6 +103,7 @@ const fragmentShader = glsl`
         
         vec2 cCoords = coords;
 
+        cCoords = Rot(cCoords, u_time * 0.25);
         cCoords = toPolarCoords(cCoords - 0.5, u_time);
 
         cCoords = cCoords * 3.;
@@ -115,21 +116,21 @@ const fragmentShader = glsl`
         float c4 = length(vec2(cCoords.x , cCoords.y+ sin(u_time * 0.5)/2.)) - 0.25;
         float c5 = length(vec2(cCoords.x , cCoords.y- sin(u_time * 0.5)/2.)) - 0.25;
 
-        float s1 = sdHexagram(cCoords, 0.2 + abs(sin(u_time * 0.2)/2.));
+        float s1 = sdHexagram(vec2(cCoords.x * sin(u_time)/2., cCoords.y), 0.2 + abs(sin(u_time * 0.2)/2.));
 
-        c1 = opOnion(c1, 0.02);
-        c2 = opOnion(c2, 0.02);
-        c3 = opOnion(c3, 0.02);
-        c4 = opOnion(c4, 0.02);
-        c5 = opOnion(c5, 0.02);
-        s1 = opOnion(s1, 0.02);
+        c1 = opOnion(c1, 0.05);
+        c2 = opOnion(c2, 0.05);
+        c3 = opOnion(c3, 0.05);
+        c4 = opOnion(c4, 0.05);
+        c5 = opOnion(c5, 0.05);
+        s1 = opOnion(s1, 0.05);
 
         float c = softMin(c1, softMin(c2, softMin(c3, softMin(c4, c5, 50.),50.), 50.), 50.);
 
-        c = softMin(c, s1, 25.);
+        // c = softMin(c, s1, 25.);
 
-        color = mix(vec3(1.0, sin(u_time), 0.0 ), color, smoothstep(0., 0.05,c));
-        color = mix(vec3(0.), color, smoothstep(0., 0.025,c)) * 2.;
+        color = mix(vec3(1.0, 0.5, 0.0 ), color, smoothstep(0., 0.1,c));
+        color = mix(vec3(0.), color, smoothstep(0., 0.05,c)) * 2.;
 
         float mask = length(coords - 0.5);
 
