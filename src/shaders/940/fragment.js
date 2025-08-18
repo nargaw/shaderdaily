@@ -1,8 +1,7 @@
 import glsl from 'babel-plugin-glsl/macro'
 
 const fragmentShader = glsl`
-    // https://www.shadertoy.com/view/4dSfDK
-    #define S(a, b, t) smoothstep(a, b, t)
+    
     #define time u_time
 
     uniform sampler2D u_texture;
@@ -16,8 +15,8 @@ const fragmentShader = glsl`
         p.x -= 0.25;
         // p = p +  vec2(7., 3.5);
         float left = numNine(vec2(p.x + 0.35, p.y));
-        float center = numThree(vec2(p.x -0.03, p.y));
-        float right = numNine(vec2(p.x - 0.42, p.y));
+        float center = numFour(vec2(p.x -0.03, p.y));
+        float right = numZero(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -105,13 +104,13 @@ const fragmentShader = glsl`
     }
 
     float sdPoly(vec2 p, int sides, float scale)
-{
-    p = p * 2. - 1.;
-    float angle = atan(p.x, p.y) + PI;
-    float radius = TWO_PI/float(sides);
-    float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
-    return d;
-}
+    {
+        p = p * 2. - 1.;
+        float angle = atan(p.x, p.y) + PI;
+        float radius = TWO_PI/float(sides);
+        float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
+        return d;
+    }
 
 
     void main()
@@ -121,31 +120,23 @@ const fragmentShader = glsl`
         vec2 numCoords = coords; 
 
         vec2 m = u_mouse;
+
+        vec2 cCoords1 = coords - 0.5;
+        vec2 cCoords2 = coords - 0.5;
+
+        cCoords1.x += (sin(u_time - 0.5)/2.5);
+        cCoords2.y += (cos(u_time - 0.125)/2.5)  ;
+ 
+        float c1 = length(cCoords1) - 0.05;
+        float c2 = length(cCoords2) - 0.1;
+
+        c1 = opOnion(c1, 0.0001);
+        c2 = opOnion(c2, 0.0001);
+
+        float cTot = softMin(c1, c2, 9.0);
+
+        color = mix(vec3(1.), color, smoothstep(0., 0.01, cTot));
         
-        vec2 cCoords = coords;
-        cCoords = toPolarCoords(cCoords - m, u_time);
-
-        cCoords = cCoords * 5.;
-        cCoords -= 1.5;
-        // cCoords = Rot(cCoords, u_time * 0.25);
-        
-        // vec2 tile = toPolarCoords(cCoords - 0.5, u_time * 2.);
-        vec2 ipos = floor(cCoords);
-        vec2 fpos = fract(cCoords);
-        vec2 tile = tPattern(fpos, rand(ipos ));
-
-        tile = Rot(tile, u_time * 0.25 + tile.x);
-
-        float x = sdPoly(tile, 4, 0.25);
-        float y = sdPoly(tile, 5, 0.4);
-        // x = opOnion(x, 0.00001);
-        float z = softMin(x, y, 25.);
-        z = opOnion(z, 0.01);
-        color = mix(color, vec3(0.5, 0.9, 0.), smoothstep(0.9, 0.3, z));
-        
-        float mask = length(coords-m);
-
-        color = mix(vec3(0.), color, smoothstep(0.0, 1.0, mask));
 
         float numLabel = label(numCoords);
 
