@@ -112,7 +112,6 @@ const fragmentShader = glsl`
         return d;
     }
 
-
     void main()
     {
         vec2 coords = vUv;
@@ -136,7 +135,6 @@ const fragmentShader = glsl`
         float cTot = softMin(c1, c2, 9.0);
 
         color = mix(vec3(1.), color, smoothstep(0., 0.01, cTot));
-        
 
         float numLabel = label(numCoords);
 
