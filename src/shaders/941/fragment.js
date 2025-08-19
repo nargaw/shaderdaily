@@ -122,17 +122,33 @@ const fragmentShader = glsl`
 
         vec2 cCoords1 = coords - 0.5;
         vec2 cCoords2 = coords - 0.5;
+        vec2 cCoords3 = coords - 0.5;
+        vec2 cCoords4 = coords - 0.5;
 
-        cCoords1.x += (sin(u_time - 0.5)/2.5);
-        cCoords2.y += (cos(u_time - 0.125)/2.5)  ;
- 
+        cCoords1.x += cos(u_time - 0.25)/2.5;
+        cCoords2.x += sin(u_time - 0.15)/2.5;
+        cCoords3.x += cos(u_time - 0.35)/2.5;
+        cCoords4.x += sin(u_time - 0.45)/2.5;
+
+        cCoords1.y -= 0.4;
+        cCoords2.y -= 0.2;
+        cCoords3.y += 0.2;
+        cCoords4.y += 0.4;
+
         float c1 = length(cCoords1) - 0.05;
-        float c2 = length(cCoords2) - 0.1;
+        float c2 = length(cCoords2) - 0.05;
+        float c3 = length(cCoords3) - 0.05;
+        float c4 = length(cCoords4) - 0.05;
+
 
         c1 = opOnion(c1, 0.0001);
         c2 = opOnion(c2, 0.0001);
+        c3 = opOnion(c3, 0.0001);
+        c4 = opOnion(c4, 0.0001);
 
         float cTot = softMin(c1, c2, 9.0);
+        cTot = softMin(c3, cTot, 9.0);
+        cTot = softMin(c4, cTot, 9.0);
 
         color = mix(vec3(1.), color, smoothstep(0., 0.01, cTot));
 
