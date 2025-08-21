@@ -124,33 +124,68 @@ const fragmentShader = glsl`
         vec2 cCoords2 = coords - 0.5;
         vec2 cCoords3 = coords - 0.5;
         vec2 cCoords4 = coords - 0.5;
+        vec2 cCoords5 = coords - 0.5;
+        vec2 cCoords6 = coords - 0.5;
+        vec2 cCoords7 = coords - 0.5;
+        vec2 cCoords8 = coords - 0.5;
+        vec2 cCoords9 = coords - 0.5;
+        vec2 cCoords10 = coords - 0.5;
 
-        cCoords1.x += cos(u_time - 0.25)/2.5;
-        cCoords2.x += sin(u_time - 0.15)/2.5;
-        cCoords3.x += cos(u_time - 0.35)/2.5;
-        cCoords4.x += sin(u_time - 0.45)/2.5;
+        cCoords1.x += cos(u_time * 1.05)/4.5;
+        cCoords2.x += cos(u_time * 1.15)/4.5;
+        cCoords3.x += cos(u_time * 1.25)/4.5;
+        cCoords4.x += cos(u_time * 1.35)/4.5;
+        cCoords5.x += cos(u_time * 1.45)/4.5;
+        cCoords6.x += cos(u_time * 1.55)/4.5;
+        cCoords7.x += cos(u_time * 1.65)/4.5;
+        cCoords8.x += cos(u_time * 1.75)/4.5;
+        cCoords9.x += cos(u_time * 1.85)/4.5;
+        cCoords10.x+= cos(u_time * 1.95)/4.5;
 
-        cCoords1.y -= 0.4;
-        cCoords2.y -= 0.2;
-        cCoords3.y += 0.2;
-        cCoords4.y += 0.4;
+        cCoords1.y -= 0.5 * 0.75;
+        cCoords2.y -= 0.4 * 0.75;
+        cCoords3.y -= 0.3 * 0.75;
+        cCoords4.y -= 0.2 * 0.75;
+        cCoords5.y -= 0.1 * 0.75;
+        cCoords6.y += 0.1 * 0.75;
+        cCoords7.y += 0.2 * 0.75;
+        cCoords8.y += 0.3 * 0.75;
+        cCoords9.y += 0.4 * 0.75;
+        cCoords10.y+= 0.5 * 0.75;
 
-        float c1 = length(cCoords1) - 0.05;
-        float c2 = length(cCoords2) - 0.05;
-        float c3 = length(cCoords3) - 0.05;
-        float c4 = length(cCoords4) - 0.05;
-
+        float c1 = length(cCoords1)  - 0.035;
+        float c2 = length(cCoords2)  - 0.035;
+        float c3 = length(cCoords3)  - 0.035;
+        float c4 = length(cCoords4)  - 0.035;
+        float c5 = length(cCoords5)  - 0.035;
+        float c6 = length(cCoords6)  - 0.035;
+        float c7 = length(cCoords7)  - 0.035;
+        float c8 = length(cCoords8)  - 0.035;
+        float c9 = length(cCoords9)  - 0.035;
+        float c10 = length(cCoords10)- 0.035;
 
         c1 = opOnion(c1, 0.0001);
         c2 = opOnion(c2, 0.0001);
         c3 = opOnion(c3, 0.0001);
         c4 = opOnion(c4, 0.0001);
+        c5 = opOnion(c5, 0.0001);
+        c6 = opOnion(c6, 0.0001);
+        c7 = opOnion(c7, 0.0001);
+        c8 = opOnion(c8, 0.0001);
+        c9 = opOnion(c9, 0.0001);
+        c10 = opOnion(c10, 0.0001);
 
-        float cTot = softMin(c1, c2, 9.0);
-        cTot = softMin(c3, cTot, 9.0);
-        cTot = softMin(c4, cTot, 9.0);
+        float cTot = softMin(c1, c2,   20.0);
+              cTot = softMin(c3, cTot, 20.0);
+              cTot = softMin(c4, cTot, 20.0);
+              cTot = softMin(c5, cTot, 20.0);
+              cTot = softMin(c6, cTot, 20.0);
+              cTot = softMin(c7, cTot, 20.0);
+              cTot = softMin(c8, cTot, 20.0);
+              cTot = softMin(c9, cTot, 20.0);
+              cTot = softMin(c10, cTot, 20.0);
 
-        color = mix(vec3(1.), color, smoothstep(0., 0.01, cTot));
+        color = mix(vec3(1.), color, smoothstep(0., 0.0045, cTot));
 
         float numLabel = label(numCoords);
 
