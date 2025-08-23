@@ -120,6 +120,15 @@ const fragmentShader = glsl`
 
         vec2 m = u_mouse;
 
+        float c = length(coords - 0.5) - 0.15;
+
+        float c2 = opOnion(c, 0.001);
+
+        color = mix(vec3(1.), color, smoothstep(0., 0.005, c));
+
+        float i = pow(c2, 0.5);
+
+        color = mix(vec3(1., 0., 0.), color, smoothstep(0., 0.004, c2 * i));
 
         float numLabel = label(numCoords);
 
