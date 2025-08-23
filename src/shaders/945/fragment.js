@@ -105,7 +105,6 @@ const fragmentShader = glsl`
 
     float sdPoly(vec2 p, int sides, float scale)
     {
-        p = p * 2. - 1.;
         float angle = atan(p.x, p.y) + PI;
         float radius = TWO_PI/float(sides);
         float d = cos(floor(.5 + angle/ radius) * radius - angle) * length(p);
@@ -120,15 +119,22 @@ const fragmentShader = glsl`
 
         vec2 m = u_mouse;
 
-        float c = length(coords - 0.5) - 0.15;
+        vec2 cCoords = coords - 0.5;
+        vec2 rCoords = (coords - 0.5) * 0.25;
+        rCoords.x += sin(u_time * 0.5)/15.;
 
-        float c2 = opOnion(c, 0.001);
+        float c = length(cCoords) - 0.15;
 
-        color = mix(vec3(1.), color, smoothstep(0., 0.005, c));
+        float c2 = sdPoly(rCoords, 4, 0.25);
+        c2 = smoothstep(0., 0.3, c2);
 
-        float i = pow(c2, 0.5);
+        float cTot = softMin(c, c2, 25.);
 
-        color = mix(vec3(1., 0., 0.), color, smoothstep(0., 0.004, c2 * i));
+        //color = mix(vec3(1.), color, smoothstep(0., 0.005, c));
+
+        float glowAmount = smoothstep(0., 0.5, abs(cTot));
+        glowAmount = 1. - pow(glowAmount, 0.125 * 2.);
+        color += glowAmount * vec3(1., 0.2, 0.05) ;
 
         float numLabel = label(numCoords);
 
