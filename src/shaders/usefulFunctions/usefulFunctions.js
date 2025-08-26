@@ -34,7 +34,6 @@ float sdRoundedBoxOutline(vec2 p, vec2 b, vec4 r, float x)
     float a = sdRoundedBox(vec2(p), vec2(b), vec4(r));
     float c = sdRoundedBox(vec2(p), vec2(b.x + x, b.y + x), vec4(r));
     return (c - a);
-    
 }
 
 float sdBoxOutline(vec2 p, vec2 b)

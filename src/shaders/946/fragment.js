@@ -120,21 +120,47 @@ const fragmentShader = glsl`
         vec2 m = u_mouse;
 
         vec2 cCoords = coords - 0.5;
-        vec2 rCoords = (coords - 0.5) * 0.25;
-        rCoords.x += sin(u_time * 0.5)/15.;
+        vec2 rCoords = coords;
+        rCoords = Rot(rCoords, sin(u_time)/4. + 1.65);
+        rCoords -= 0.5;
+        // rCoords.x += sin(u_time * 0.5)/15.;
 
-        float c = length(cCoords) - 0.15;
+        float c = length(cCoords) - 0.2;
+        c = smoothstep(0., 0.3, c);
+        c = opOnion(c, 0.2);
 
-        float c2 = sdPoly(rCoords, 4, 0.25);
+        float c2 = sdfBox(rCoords, vec2(0.025, 0.3));
         c2 = smoothstep(0., 0.3, c2);
+        c2 = opOnion(c2, 0.2);
+
+        float c3 = length(vec2(rCoords.x - 0.0, rCoords.y - 0.125)) - 0.0015;
+        c3 = smoothstep(0., 0.3, c3);
+        c3 = opOnion(c3, 0.2);
+
+        float c4 = length(vec2(rCoords.x - 0.0, rCoords.y + 0.125)) - 0.0015;
+        c4 = smoothstep(0., 0.3, c4);
+        c4 = opOnion(c4, 0.2);
+
+        float c5 = sdArc(vec2(rCoords.x -0.12, rCoords.y), vec2(0.025, 0.025), 0.0, 0.25);
 
         float cTot = softMin(c, c2, 25.);
 
         //color = mix(vec3(1.), color, smoothstep(0., 0.005, c));
 
-        float glowAmount = smoothstep(0., 0.5, abs(cTot));
+        float glowAmount = smoothstep(0., 0.25, abs(cTot));
         glowAmount = 1. - pow(glowAmount, 0.125 * 2.);
         color += glowAmount * vec3(1., 0.2, 0.05) ;
+
+        float cTot2 = softMin(c3, c4, 25.);
+        cTot2 = max(c5, cTot2);
+
+        float glowAmount2 = smoothstep(0., 0.25, abs(cTot2));
+        glowAmount2 = 1. - pow(glowAmount2, 0.125 * 2.);
+        color += glowAmount2 * vec3(1., 0.2, 0.05) ;
+        
+        // float glowAmount3 = smoothstep(0., 0.25, abs(c5));
+        // glowAmount3 = 1. - pow(glowAmount3, 0.125 * 2.);
+        // color += glowAmount3 * vec3(1., 0.2, 0.05) ;
 
         float numLabel = label(numCoords);
 
