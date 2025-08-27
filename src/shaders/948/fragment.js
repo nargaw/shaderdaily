@@ -152,8 +152,13 @@ const fragmentShader = glsl`
         float t1 = sdPoly(vec2(trCoords), 3, 0.25);
         t1 = smoothstep(0., 0.5, t1);
 
+        float c6 = length(vec2(rCoords.x + 0.2, rCoords.y)) - 0.1;
+        c6 = smoothstep(0., 0.3, c6);
+        c6 = opOnion(c6, 0.2);
+
         float cTot = softMin(c, softMin(c2, c5, 25.), 25.);
         cTot = softMin(t1, cTot, 10.);
+        cTot = softMin(c6, cTot, 10.);
         
 
         //color = mix(vec3(1.), color, smoothstep(0., 0.005, c));
