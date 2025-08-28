@@ -121,6 +121,7 @@ const fragmentShader = glsl`
 
         vec2 cCoords = coords - 0.5;
         vec2 rCoords = coords;
+        vec2 lCoords = coords;
         rCoords = Rot(rCoords, sin(u_time)/4. + 1.65);
 
         vec2 trCoords = rCoords;
@@ -173,10 +174,12 @@ const fragmentShader = glsl`
         float glowAmount2 = smoothstep(0., 0.25, abs(cTot2));
         glowAmount2 = 1. - pow(glowAmount2, 0.125 * 2.);
         color += glowAmount2 * vec3(1., 0.2, 0.05) ;
-        
-        // float glowAmount3 = smoothstep(0., 0.25, abs(c5));
-        // glowAmount3 = 1. - pow(glowAmount3, 0.125 * 2.);
-        // color += glowAmount3 * vec3(1., 0.2, 0.05) ;
+
+        float l1 = lineSegment(rCoords, vec2(-0.25, 0.1), vec2(-0.25, -0.1));
+
+        float glowAmount3 = smoothstep(0., 0.25, abs(l1));
+        glowAmount3 = 1. - pow(glowAmount3, 0.125);
+        color += glowAmount3 * vec3(1., 0.2, 0.05) ;
 
         float numLabel = label(numCoords);
 
