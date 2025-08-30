@@ -120,66 +120,32 @@ const fragmentShader = glsl`
         vec2 m = u_mouse;
 
         vec2 cCoords = coords - 0.5;
-        vec2 rCoords = coords;
-        vec2 lCoords = coords;
-        rCoords = Rot(rCoords, sin(u_time)/4. + 1.65);
+        cCoords.y -= 0.25;
+        cCoords.x += 0.25;
 
-        vec2 trCoords = rCoords;
-        rCoords -= 0.5;
-        // rCoords.x += sin(u_time * 0.5)/15.;
+        vec2 tCoords = coords;
+        tCoords *= 1.7;
+        tCoords.x -= 0.7;
+        tCoords.y += 0.2;
 
-        float c = length(cCoords) - 0.2;
-        c = smoothstep(0., 0.3, c);
-        c = opOnion(c, 0.2);
-
-        float c2 = sdfBox(rCoords, vec2(0.025, 0.3));
-        c2 = smoothstep(0., 0.3, c2);
-        c2 = opOnion(c2, 0.2);
-
-        float c3 = length(vec2(rCoords.x - 0.0, rCoords.y - 0.125)) - 0.0015;
-        c3 = smoothstep(0., 0.3, c3);
-        c3 = opOnion(c3, 0.2);
-
-        float c4 = length(vec2(rCoords.x - 0.0, rCoords.y + 0.125)) - 0.0015;
-        c4 = smoothstep(0., 0.3, c4);
-        c4 = opOnion(c4, 0.2);
-
-        float c5 = sdArc(vec2(rCoords.x -0.1, rCoords.y), vec2(0.025, 0.025), 0.0, 0.3);
+        vec4 t = texture2D(u_texture, tCoords);
         
-        trCoords = Rot(trCoords, -PI * 0.15);
-        trCoords.x -= 0.2;
-        trCoords.y -= 0.35;
+        float c1 = length(cCoords) - 0.25;
+        float b1 = sdfBox(vec2(coords.x - 0.8, coords.y-0.774), vec2(0.1, 0.3));
 
-        float t1 = sdPoly(vec2(trCoords), 3, 0.25);
-        t1 = smoothstep(0., 0.5, t1);
+        color = mix(vec3(1.), color, smoothstep(0., 0.005, c1));
 
-        float c6 = length(vec2(rCoords.x + 0.2, rCoords.y)) - 0.1;
-        c6 = smoothstep(0., 0.3, c6);
-        c6 = opOnion(c6, 0.2);
+        float glowAmount = smoothstep(0., 0.15, abs(c1));
+        glowAmount = 1. - pow(glowAmount, 0.12 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
+        color += glowAmount * vec3(0.6, 0.4, 0.05) ;
 
-        float cTot = softMin(c, softMin(c2, c5, 25.), 25.);
-        cTot = softMin(t1, cTot, 10.);
-        cTot = softMin(c6, cTot, 10.);
-        
+        float glowAmount2 = smoothstep(0., 0.15, abs(t.x));
+        // glowAmount2 = 1. - pow(glowAmount, 0.12 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
+        color += glowAmount2 * vec3(1.0) ;
 
-        //color = mix(vec3(1.), color, smoothstep(0., 0.005, c));
+        color = mix(vec3(0.), color, smoothstep(0.0, 0.001, b1));
 
-        float glowAmount = smoothstep(0., 0.25, abs(cTot));
-        glowAmount = 1. - pow(glowAmount, 0.125 * 2.);
-        color += glowAmount * vec3(1., 0.2, 0.05) ;
-
-        float cTot2 = softMin(c3, c4, 25.);
-        
-
-        float glowAmount2 = smoothstep(0., 0.25, abs(cTot2));
-        glowAmount2 = 1. - pow(glowAmount2, 0.125 * 2.);
-        color += glowAmount2 * vec3(1., 0.2, 0.05) ;
-
-        float l1 = lineSegment(rCoords, vec2(-0.25, 0.1), vec2(-0.25, -0.1));
-
-        float glowAmount3 = smoothstep(0., 0.25, abs(l1));
-        glowAmount3 = 1. - pow(glowAmount3, 0.125);
-        color += glowAmount3 * vec3(1., 0.2, 0.05) ;
+        // color = mix(t.r * vec3(1.) * 10., color, 0.);
 
         float numLabel = label(numCoords);
 
@@ -225,9 +191,9 @@ export default function Shader949() {
 
     const textureCube = new THREE.CubeTextureLoader().load(urls)
     const loader = new THREE.TextureLoader()
-    const night = loader.load('./Models/Textures/photos/forest.jpg')
-    night.wrapS = THREE.MirroredRepeatWrapping
-    night.wrapT = THREE.MirroredRepeatWrapping
+    const sys = loader.load('./Models/Textures/photos/sys.jpg')
+    // sys.wrapS = THREE.MirroredRepeatWrapping
+    // sys.wrapT = THREE.MirroredRepeatWrapping
 
     const DPR = Math.min(window.devicePixelRatio, 1.);
 
@@ -242,7 +208,7 @@ export default function Shader949() {
             u_mouse2: { value: new THREE.Uniform(new THREE.Vector2()) },
             u_mouse3: { value: new THREE.Uniform(new THREE.Vector2()) },
 
-            u_texture: { value: night },
+            u_texture: { value: sys },
         },
     })
 
