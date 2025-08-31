@@ -121,12 +121,11 @@ const fragmentShader = glsl`
 
         vec2 cCoords = coords - 0.5;
         cCoords.y -= sin(u_time)/5.;
-        cCoords.x += 0.45;
+        cCoords.x += 0.3;
 
         vec2 cCoords2 = coords - 0.5;
         cCoords2.y -= cos(u_time)/5.;
-        cCoords2.x -= 0.45;
-
+        cCoords2.x -= 0.3;
 
         vec2 tCoords = coords;
         tCoords = Rot(tCoords, u_time);
@@ -135,9 +134,12 @@ const fragmentShader = glsl`
         // vec4 t = texture2D(u_texture, tCoords);
         
         float c1 = length(cCoords) - 0.125;
+        c1 = opOnion(c1, 0.001);
         float c2 = length(cCoords2) - 0.125;
-        
+        c2 = opOnion(c2, 0.001);
+
         float b1 = sdfBox(vec2(tCoords - 0.5), vec2(0.1, 0.3));
+        b1 = opOnion(b1, 0.001);
 
         float to = softMin(c1, softMin(c2, b1, 25.), 25.);
 
