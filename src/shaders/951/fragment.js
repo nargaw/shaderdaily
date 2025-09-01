@@ -120,15 +120,17 @@ const fragmentShader = glsl`
         vec2 m = u_mouse;
 
         vec2 cCoords = coords - 0.5;
+        cCoords.y -= 0.1;
         cCoords.y -= sin(u_time)/5.;
-        cCoords.x += 0.3;
+        cCoords.x -= cos(u_time)/5.;
 
         vec2 cCoords2 = coords - 0.5;
+        cCoords2.y += 0.1;
         cCoords2.y -= cos(u_time)/5.;
-        cCoords2.x -= 0.3;
+        cCoords2.x -= sin(u_time)/5.;
 
         vec2 tCoords = coords;
-        tCoords = Rot(tCoords, u_time);
+        // tCoords = Rot(tCoords, u_time);
         // tCoords.y += 0.5;
 
         // vec4 t = texture2D(u_texture, tCoords);
@@ -143,15 +145,15 @@ const fragmentShader = glsl`
 
         float to = softMin(c1, softMin(c2, b1, 25.), 25.);
 
-        color = mix(vec3(1.), color, smoothstep(0., 0.005, to));
+        // color = mix(vec3(1.), color, smoothstep(0., 0.005, to));
 
         float glowAmount = smoothstep(0., 0.15, abs(to));
-        glowAmount = 1. - pow(glowAmount, 0.12 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
+        glowAmount = 1. - pow(glowAmount, 0.05 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
         color += glowAmount * vec3(0.6, 0.4, 0.05) ;
 
         float glowAmount2 = smoothstep(0., 0.15, abs(to));
-        glowAmount2 = 1. - pow(glowAmount2, 0.12 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
-        color += glowAmount2 * vec3(0.6, 0.4, 0.05) ;
+        glowAmount2 = 1. - pow(glowAmount2, 0.05 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
+        color += glowAmount2 * vec3(0.9, 0.4, 0.05) ;
 
     
 
