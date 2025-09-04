@@ -1914,7 +1914,8 @@ export default function App()
         <Shader950 />,
         <Shader951 />,
         <Shader952 />,
-        <Shader953 />
+        <Shader953 />,
+        <Shader954 />
     ]
 
     return (
