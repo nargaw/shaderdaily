@@ -86,8 +86,8 @@ const fragmentShader = glsl`
     vec2 toPolarCoords(vec2 coords, float time) {
         float radius = length(coords); //get euclidean distance
         float angle = atan(coords.y, coords.x); //get angle in radians
-        angle = abs(angle * 4.4);
-        vec2 polarCoords = vec2(0.15 / radius + time * 0.095, angle / PI /16. ); //polar coordinate as (radius, angle)
+        angle = abs(angle) * 1.13;
+        vec2 polarCoords = vec2(0.15 / radius + time * 0.095, angle / PI  ); //polar coordinate as (radius, angle)
         return polarCoords;
     }
 
@@ -127,49 +127,18 @@ const fragmentShader = glsl`
 
         vec2 m = u_mouse;
         
-        vec2 nCoords = coords;
-        nCoords *= 10. - 5.;
-        nCoords.y -= 2.;
-        nCoords.x += u_time;
+        vec2 rCoords = coords-0.5;
+        rCoords = toPolarCoords(rCoords, u_time);
+        // rCoords = tPattern(rCoords * 5., u_time);
+        rCoords = rCoords * 15.;
+        rCoords = fract(rCoords);
+        float r = sdfBox(rCoords-0.5, vec2(0.25));
+        r = 1. - smoothstep(0., 0.075, r);
+        color += r;
 
-        float i = floor(nCoords.x * 1.);
-        float f = fract(nCoords.x * 1.);
-    
-        float i2 = floor(nCoords.x * 1.5);
-        float f2 = fract(nCoords.x * 1.5);
-    
-        float i3 = floor(nCoords.x * 2.);
-        float f3 = fract(nCoords.x * 2.);
-    
-        float y = rand(i);
-        float y2 = rand(i2);
-        float y3 = rand(i3);
-        
-        //y = mix(rand(i), rand(i + 1.0), f);
-        y = mix(rand(i), rand(i + 1.0), smoothstep(0., 1., f));
-        y2 = mix(rand(i2), rand(i2 + 1.0), smoothstep(0., 1., f2));
-        y3 = mix(rand(i3), rand(i3 + 1.0), smoothstep(0., 1., f3));
-       
-        float pct = plot(nCoords, y);
-        float pct2 = plot(nCoords, y2);
-        float pct3 = plot(nCoords, y3);
-    
-        // color.r = pct;
-        // color.g = pct2;
-        // color.b = pct3;
+        float mask = length(coords - 0.5);
 
-        float to = softMin(pct, softMin(pct2, pct3, 25.), 25.);
-
-        // color = mix(vec3(1.), color, smoothstep(0., 0.005, to));
-
-        float glowAmount = smoothstep(0., 0.5, abs(to));
-        glowAmount = 1. - pow(glowAmount, 0.05 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
-        color = vec3(pct, pct2, pct3) * glowAmount ;
-
-        float glowAmount2 = smoothstep(0., 0.25, abs(to));
-        glowAmount2 = 1. - pow(glowAmount2, 0.05 * 2. * abs(sin(u_time * 0.95)/2. + 1.25));
-        color += glowAmount2 * vec3(0.9, 0.4, 0.05) ;
-
+        color = mix(vec3(0.), color, smoothstep(0., 0.95, mask));
     
 
         // color = mix(t.r * vec3(1.) * 10., color, 0.);
