@@ -87,7 +87,7 @@ const fragmentShader = glsl`
         float radius = length(coords); //get euclidean distance
         float angle = atan(coords.y, coords.x); //get angle in radians
         angle = abs(angle) * 0.3;
-        vec2 polarCoords = vec2(radius + time * 0.095, angle / PI  ); //polar coordinate as (radius, angle)
+        vec2 polarCoords = vec2(0.15/radius + time * 0.095, angle / PI  ); //polar coordinate as (radius, angle)
         return polarCoords;
     }
 
@@ -157,23 +157,31 @@ const fragmentShader = glsl`
         vec2 rCoords = coords;
         vec2 pCoords = coords;
 
-        // rCoords = toPolarCoords(rCoords - 0.5, u_time * 1.25);
-       rCoords *= 2.;
+        rCoords = toPolarCoords(rCoords - 0.5, 0.5);
+       rCoords *= 10.;
        rCoords = fract(rCoords);
 
-        float c = length(pCoords - mouse) - 0.1;
+       rCoords= Rot(rCoords, u_time);
+
+        float c = length(pCoords - mouse) - 0.035;
 
         float m = length(vec2(rCoords.x, rCoords.y - 0.25) - 0.5) - 0.1;
         float m2 = length(vec2(rCoords.x, rCoords.y + 0.25) - 0.5) - 0.1;
 
-        c = opOnion(c, 0.005);
-        m = opOnion(m, 0.005);
-        m2 = opOnion(m2, 0.005);
+        // c = opOnion(c, 0.005);
+        // m = opOnion(m, 0.005);
+        // m2 = opOnion(m2, 0.005);
        
 
         float m1 = softMin(c, softMin(m, m2, 20.), 20.);
 
-        color = mix(vec3(1., 1., 0.), color, smoothstep(0., 0.005, m1));
+        color = mix(vec3(1., 1., 0.), color, smoothstep(0., 0.015, m1));
+
+        float c2 = length(coords - 0.5);
+
+        color = mix(vec3(0.), color, smoothstep(0., 0.75, c2));
+
+        // color = mix(vec3(1., 1., 0.), color, smoothstep(0., 0.01, c / c2));
 
         float numLabel = label(numCoords);
 
