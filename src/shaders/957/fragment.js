@@ -158,7 +158,7 @@ const fragmentShader = glsl`
         vec2 pCoords = coords;
 
         // rCoords = toPolarCoords(rCoords - 0.5, u_time * 1.25);
-       rCoords *= 3.;
+       rCoords *= 2.;
        rCoords = fract(rCoords);
 
         float c = length(pCoords - mouse) - 0.1;
@@ -173,7 +173,7 @@ const fragmentShader = glsl`
 
         float m1 = softMin(c, softMin(m, m2, 20.), 20.);
 
-        color = mix(vec3(1.), color, smoothstep(0., 0.005, m1));
+        color = mix(vec3(1., 1., 0.), color, smoothstep(0., 0.005, m1));
 
         float numLabel = label(numCoords);
 
