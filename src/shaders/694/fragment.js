@@ -135,15 +135,15 @@ const fragmentShader = glsl`
         float d = opUnion(opUnion(d1, d2), d3);
         // d = opSubtraction(box, d);
         
-        //vec3 sdfColor = mix(R, B, smoothstep(0., 1., softMinValue(box, d, 0.005)));
+        vec3 sdfColor = mix(R, B, smoothstep(0., 1., softMinValue(box, d, 0.005)));
         
         d = softMin(box, d, 0.05);
 
-        color = mix(R, G, smoothstep(0., 1., d));
+        // color = mix(R, G, smoothstep(0., 1., d));
 
 
-        // color = mix(sdfColor * 0.5, color, smoothstep(-1.0, 1., d));
-        // color = mix(sdfColor, color, smoothstep(-5.0, 0., d));
+        color = mix(sdfColor * 0.5, color, smoothstep(-1.0, 1., d));
+        color = mix(sdfColor, color, smoothstep(-5.0, 0., d));
 
 
 
