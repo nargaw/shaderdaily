@@ -16,7 +16,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numNine(vec2(p.x + 0.35, p.y));
         float center = numSix(vec2(p.x -0.03, p.y));
-        float right = numThree(vec2(p.x - 0.42, p.y));
+        float right = numFour(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -161,65 +161,67 @@ const fragmentShader = glsl`
 
         vec2 mouse = u_mouse;
 
-        vec2 coords1 = coords - 0.5;
-
+        vec2 coords1 = coords;
+        coords1.x -= 0.7;
+        coords1.y -= 0.7 + sin(u_time * 0.5) * 0.25;
+        vec2 coords2 = coords;
+        coords2.x -= 0.3;
+        coords2.y -= 0.7 + sin(u_time * 0.5 + 2.) * 0.25;
+        vec2 coords3 = coords;
+        coords3.x -= 0.5 + sin(u_time * 0.5 + 4.) * 0.25;
+        coords3.y -= 0.25;
         vec2 coords4 = coords;
         coords4 = Rot(coords4, u_time * 1.5);
         coords4 -= 0.5;
         // coords4 -= mouse;
         
-        float c1 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.0, 1.), coords1.y)) - 0.1;
-        float c2 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.2, 1.), coords1.y)) - 0.1;
-        float c3 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.4, 1.), coords1.y)) - 0.1;
-        float c4 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.5, 1.), coords1.y)) - 0.1;
-        float c5 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.6, 1.), coords1.y)) - 0.1;
-        float c6 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.7, 1.), coords1.y)) - 0.1;
-        float c7 =  length(vec2(mod(coords1.x + u_time * 0.1 * 1.8, 1.), coords1.y)) - 0.1;
-        float c8 =  length(vec2(mod(coords1.x + u_time * 0.1 * 2.0, 1.), coords1.y)) - 0.1;  
-        float c9 =  length(vec2(mod(coords1.x + u_time * 0.1 * 2.2, 1.), coords1.y)) - 0.1;
-        float c10 = length(vec2(mod(coords1.x + u_time * 0.1 * 2.4, 1.), coords1.y)) - 0.1;
-        float c11 = length(vec2(mod(coords1.x + u_time * 0.1 * 2.6, 1.), coords1.y)) - 0.1;
-        float c12 = length(vec2(mod(coords1.x + u_time * 0.1 * 2.8, 1.), coords1.y)) - 0.1;
+        float c1 = length(coords1) - 0.1;
+
+        float c2 = length(coords2) - 0.1;
+
+        float c3 = length(coords3) - 0.1;
 
         float r1 = sdfBox(coords4, vec2(0.25, 0.025));
 
-        float crTot = softMin(c1, softMin(c2, softMin(c3, softMin(c4, softMin(c5, softMin(c6, softMin(c7, softMin(c8, softMin(c9, softMin(c10, softMin(c11, c12, 15.), 15.), 15.), 15.), 15.), 15.), 15.), 15.), 15.), 15.), 15.);
+        float crTot = softMin(softMin(c1, c2, 15.), c3, 15.);
         float rrTot = softMin(r1, crTot, 15.);
+        
+        float f = softMin(c1, r1, 15.);
+        float f2 = softMin(c2, r1, 15.);
+        float f3 = softMin(c3, r1, 15.);
 
         vec3 green = vec3(0., 1., 0.);
         vec3 red = vec3(1., 0., 0.);
         vec3 blue = vec3(0., 0., 1.);
         vec3 yellow = vec3(1., 1., 0.);
-        vec3 cyan = vec3(0., 1., 1.);
-        vec3 magenta = vec3(1., 0., 1.);
-        vec3 grey = vec3(0.5);
-        vec3 orange = vec3(1., 0.5, 0.);
-        vec3 purple = vec3(0.5, 0., 1.);
-        vec3 pink = vec3(1., 0., 0.5);
-        vec3 brown = vec3(0.5, 0.25, 0.);
-        vec3 lime = vec3(0.5, 1., 0.);
-        vec3 teal = vec3(0., 0.5, 0.5);
-        vec3 navy = vec3(0., 0., 0.5);
 
         // vec3 sdfColorTot = mix(green, red, smoothstep(0., 1., softMinValue(crTot, r1, 15.)));
         vec3 sdfColor1 = mix(green, red, smoothstep(0., 1., softMinValue(c1, r1, 15.)));
         vec3 sdfColor2 = mix(blue, red, smoothstep(0., 1., softMinValue(c2, r1, 15.)));
         vec3 sdfColor3 = mix(yellow, red, smoothstep(0., 1., softMinValue(c3, r1, 15.)));
-        vec3 sdfColor4 = mix(cyan, red, smoothstep(0., 1., softMinValue(c4, r1, 15.)));
-        vec3 sdfColor5 = mix(magenta, red, smoothstep(0., 1., softMinValue(c5, r1, 15.)));
-        vec3 sdfColor6 = mix(grey, red, smoothstep(0., 1., softMinValue(c6, r1, 15.)));
-        vec3 sdfColor7 = mix(orange, red, smoothstep(0., 1., softMinValue(c7, r1, 15.)));
-        vec3 sdfColor8 = mix(purple, red, smoothstep(0., 1., softMinValue(c8, r1, 15.)));
-        vec3 sdfColor9 = mix(pink, red, smoothstep(0., 1., softMinValue(c9, r1, 15.)));
-        vec3 sdfColor10 = mix(brown, red, smoothstep(0., 1., softMinValue(c10, r1, 15.)));
-        vec3 sdfColor11 = mix(lime, red, smoothstep(0., 1., softMinValue(c11, r1, 15.)));
-        vec3 sdfColor12 = mix(teal, red, smoothstep(0., 1., softMinValue(c12, r1, 15.)));
 
-        float glowAmountTot = smoothstep(0., 0.025, (rrTot));
+        // float glowAmountTot = smoothstep(0., 0.025, abs(crTot));
+        // glowAmountTot = 1. - pow(glowAmountTot, 0.075 * 2. * (sin(u_time * 0.95)/2. + 1.25));
+    // color = sdfColorTot * glowAmountTot * 0.5;
+
+        float glowAmountTot = smoothstep(0., 0.025, abs(rrTot));
         glowAmountTot = 1. - pow(glowAmountTot, 0.0125 * 2. * (sin(u_time * 0.95)/2. + 1.25));
-        // color = (sdfColor1 + sdfColor2 + sdfColor3 + sdf) * glowAmountTot * 0.5;
-        color = (sdfColor1 + sdfColor2 + sdfColor3 + sdfColor4 + sdfColor5 + sdfColor6 + sdfColor7 + sdfColor8 + sdfColor9 + sdfColor10 + sdfColor11 + sdfColor12) * glowAmountTot * 0.0833;
+        color = (sdfColor1 + sdfColor2 + sdfColor3) * glowAmountTot * 0.5;
+        // vec3 sdfColor = mix(green, red, smoothstep(0., 1., softMinValue(c1, r1, 15.)));
+        // vec3 sdfColor2 = mix(blue, red, smoothstep(0., 1., softMinValue(c2, r1, 15.)));
+        // vec3 sdfColor3 = mix(yellow, red, smoothstep(0., 1., softMinValue(c3, r1, 15.)));
+
+        // float glowAmount = smoothstep(0., 0.025, abs(f));
+        // glowAmount = 1. - pow(glowAmount, 0.075 * 2. * (sin(u_time * 0.95)/2. + 1.25));
+
+        // float glowAmount2 = smoothstep(0., 0.025, abs(f2));
+        // glowAmount2 = 1. - pow(glowAmount2, 0.075 * 2. * (sin(u_time * 0.95 + 2.)/2. + 1.25));
         
+        // float glowAmount3 = smoothstep(0., 0.025, abs(f3));
+        // glowAmount3 = 1. - pow(glowAmount3, 0.0175 * 2. * (sin(u_time * 0.95 + 4.)/2. + 1.25));
+        
+        // color = sdfColor * glowAmount * 0.5 + sdfColor2 * glowAmount2 * 0.5 + sdfColor3 * glowAmount3 * 0.5;
+
         color = pow(color, vec3(0.4545));
         
         float numLabel = label(numCoords);
@@ -252,7 +254,7 @@ import { lerp } from 'three/src/math/MathUtils.js'
 import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
-export default function Shader963() {
+export default function Shader964() {
     const r = './Models/EnvMaps/0/';
     const urls = [
         r + 'px.jpg',
