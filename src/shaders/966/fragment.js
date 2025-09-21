@@ -163,48 +163,32 @@ const fragmentShader = glsl`
         vec2 mouse2 = u_mouse2;
         vec2 mouse3 = u_mouse3;
 
-        vec2 coords1 = coords;
-        // coords1.x -= 0.7;
-        // coords1.y -= 0.7 + sin(u_time * 0.5) * 0.25;
+        vec2 coords1 = coords - 0.5;
+        coords1.x += 0.15;
         vec2 coords2 = coords;
-        // coords2.x -= 0.3;
-        // coords2.y -= 0.7 + sin(u_time * 0.5 + 2.) * 0.25;
-        vec2 coords3 = coords;
-        // coords3.x -= 0.5 + sin(u_time * 0.5 + 4.) * 0.25;
-        // coords3.y -= 0.25;
-        vec2 coords4 = coords;
-        coords4 = Rot(coords4, u_time * 1.5);
-        coords4 -= 0.5;
-        // coords4 -= mouse;
-        
-        float c1 = length(coords1 - mouse) - 0.1;
+        vec2 coords3 = coords - 0.5;
+        coords3.x -= 0.15;
+  
+        float c1 = length(coords1) - 0.1;
 
-        float c2 = length(coords2 - mouse2) - 0.05;
+        float c2 = length(coords2 - mouse) - 0.05;
 
-        float c3 = length(coords3 - mouse3) - 0.025;
+        float cTot = softMin(c1, c2, 25.);
 
-        float r1 = sdfBox(coords4, vec2(0.25, 0.025));
+        vec3 color1 = vec3(1., 0., 0.);
+        vec3 color2 = vec3(0., 0., 1.);
 
-        float crTot = softMin(softMin(c1, c2, 15.), c3, 15.);
-        float rrTot = softMin(r1, crTot, 15.);
-        
-        float f = softMin(c1, r1, 15.);
-        float f2 = softMin(c2, r1, 15.);
-        float f3 = softMin(c3, r1, 15.);
+        vec3 sdfColor = mix(color1, color2, softMinValue(c1, c2, 25.));
 
-        vec3 green = vec3(0., 1., 0.);
-        vec3 red = vec3(1., 0., 0.);
-        vec3 blue = vec3(0., 0., 1.);
-        vec3 yellow = vec3(1., 1., 0.);
+        color = mix(sdfColor, color, smoothstep(0., 0.1, cTot));
 
-        vec3 sdfColor1 = mix(green, red, smoothstep(0., 1., softMinValue(c1, r1, 15.)));
-        vec3 sdfColor2 = mix(blue, red, smoothstep(0., 1., softMinValue(c2, r1, 15.)));
-        vec3 sdfColor3 = mix(yellow, red, smoothstep(0., 1., softMinValue(c3, r1, 15.)));
+        float c3 = length(coords3) - 0.1;
+        cTot = softMin(c3, cTot, 25.);
+        vec3 c3Color = vec3(0., 1., 0.);
+        vec3 sdfColor2 = mix(c3Color, color, softMinValue(c3, cTot, 25.));
 
-        float glowAmountTot = smoothstep(0., 0.025, abs(rrTot));
-        glowAmountTot = 1. - pow(glowAmountTot, 0.0125 * 2. * (sin(u_time * 0.95)/2. + 1.25));
-        color = (sdfColor1 + sdfColor2 + sdfColor3) * glowAmountTot * 0.5;
-        
+        color = mix(sdfColor2, color, smoothstep(0., 0.1, cTot));
+
         color = pow(color, vec3(0.4545));
         
         float numLabel = label(numCoords);
