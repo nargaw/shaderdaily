@@ -104,7 +104,7 @@ export default function Interface()
             </form>
 
             <div className="icon" onClick={toggleInfo}>
-                <i className="fa-solid fa-info"></i>
+                {!informationStatus && <i className="fa-solid fa-info"></i>}
             </div>
 
             <div className="random" onClick={random}>
@@ -127,21 +127,12 @@ export default function Interface()
                             <a href="mailto: nateargaw@gmail.com"></a>
                             <i className="fa-solid fa-envelope"></i>
                         </div>
-                        <div className="twitter">
-                            <a href="https://twitter.com/nate_dev_">
-                                <i className="fa-brands fa-x-twitter"></i> 
+                        <div className="website">
+                            <a href="https://nateargaw.io">
+                                <i class="fa-solid fa-user"></i>
                             </a>
                         </div>
-                        <div className="linkedin">
-                            <a href="https://www.linkedin.com/in/nateargaw/">
-                                <i className="fa-brands fa-linkedin-in"></i>
-                            </a>
-                        </div>
-                        <div className="instagram">
-                            <a href="https://www.instagram.com/shaderdaily/">
-                                <i className="fa-brands fa-instagram"></i>
-                            </a>
-                        </div>
+                        
                         <div className="github">
                             <a href="https://github.com/nargaw/shaderdaily">
                                 <i class="fa-brands fa-github"></i>

@@ -5,7 +5,7 @@ export default create((set, get) =>
     return {
         currentShader: Math.floor(Math.random() * 600) + 1,
 
-        information: false,
+        information: true,
 
         total: 0,
 
