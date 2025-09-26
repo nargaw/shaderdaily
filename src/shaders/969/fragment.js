@@ -197,14 +197,20 @@ const fragmentShader = glsl`
         vec3 sdfColor4 = mix(c4Color, sdfColor2, softMinValue(c4, cTot, 15.));
         cTot = softMin(c4, cTot, 25.);
         color = mix(sdfColor4, color, smoothstep(0.0, 0.01, cTot));
-
-
-        color = pow(color, vec3(0.4545));
         
-        float numLabel = label(numCoords);
-        color = mix(color, vec3(1.), numLabel) ;
+`
+
+const aoc1 = glsl`
+        //hello
+`
+
+const fragFinal = glsl`
+    color = pow(color, vec3(0.4545));
         
-        gl_FragColor = vec4(color, 1.);
+    float numLabel = label(numCoords);
+    color = mix(color, vec3(1.), numLabel) ;
+    
+    gl_FragColor = vec4(color, 1.);
     }
 `
 const vertexShader = glsl`
@@ -251,7 +257,7 @@ export default function Shader969() {
 
     const material = new THREE.ShaderMaterial({
         vertexShader: vertexShader,
-        fragmentShader: preload + usefulFunctions + numbers + fragmentShader,
+        fragmentShader: preload + usefulFunctions + numbers + fragmentShader + fragFinal,
         uniforms: {
             u_cameraPosition: { value: new THREE.Vector3() },
             u_time: { type: "f", value: 1.0 },
@@ -263,6 +269,28 @@ export default function Shader969() {
             u_texture: { value: eth },
         },
     })
+
+    const [drawing, setDrawing] = useState(false)
+
+    const arrFrags = [aoc1]
+
+    function draw(){
+        console.log('drawing now')
+        material.fragmentShader = preload + usefulFunctions + numbers + fragmentShader + glsl`
+            vec2 coords5 = coords-0.5;
+            coords5.y -= 0.25;
+            // coords5.x += 0.1;
+            vec3 c5Color = vec3(1., 0., 1.);
+            float c5 = length(coords5) - 0.05;
+            vec3 sdfColor5 = mix(c5Color, sdfColor4, softMinValue(c5, cTot, 15.));
+            cTot = softMin(c5, cTot, 25.);
+            color = mix(sdfColor5, color, smoothstep(0.0, 0.01, cTot));
+        
+        ` + fragFinal
+        console.log(material.fragmentShader)
+    }
+    
+    if(drawing) draw()
 
     const meshSize = 2
 
@@ -313,6 +341,8 @@ export default function Shader969() {
         topPixel: 0,
         bottomPixel: 0
     }
+
+    
 
     useEffect(() => {
         if (meshRef.current) {
@@ -396,6 +426,7 @@ export default function Shader969() {
         mouseX3 = lerp(mouseX3, tempValX, 0.0025 * 4)
         mouseY3 = lerp(mouseY3, tempValY, 0.0025 * 4)
 
+        
     })
 
     const remap = (value, low1, high1, low2, high2) => {
@@ -428,7 +459,9 @@ export default function Shader969() {
                 ref={meshRef}
                 geometry={geometry}
                 material={material}
-            />
+                onClick={() => setDrawing(true )}
+            >
+            </mesh>
         </>
     )
 }

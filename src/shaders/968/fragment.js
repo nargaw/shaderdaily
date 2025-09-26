@@ -264,6 +264,8 @@ export default function Shader968() {
         },
     })
 
+    // console.log(material.fragmentShader)
+
     const meshSize = 2
 
     const geometry = new THREE.PlaneGeometry(meshSize, meshSize, 256, 256)
