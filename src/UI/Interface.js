@@ -14,7 +14,7 @@ export default function Interface()
     const infoActive = useShader(state => state.activateInformation)
     const infoDeactivate = useShader(state => state.deactivateInformation)
 
-    const total = 969
+    const total = 970
     // console.log(total)
     
     const goNext = () => {
@@ -135,7 +135,7 @@ export default function Interface()
                         
                         <div className="github">
                             <a href="https://github.com/nargaw/shaderdaily">
-                                <i class="fa-brands fa-github"></i>
+                                <i className="fa-brands fa-github"></i>
                             </a>
                         </div>
                     </div>
