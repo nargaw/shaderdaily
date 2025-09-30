@@ -16,7 +16,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numNine(vec2(p.x + 0.35, p.y));
         float center = numSeven(vec2(p.x -0.03, p.y));
-        float right = numTwo(vec2(p.x - 0.42, p.y));
+        float right = numThree(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -250,7 +250,7 @@ import { lerp } from 'three/src/math/MathUtils.js'
 import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
-export default function Shader972() {
+export default function Shader973() {
     const r = './Models/EnvMaps/0/';
     const urls = [
         r + 'px.jpg',
