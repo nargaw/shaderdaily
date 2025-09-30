@@ -210,13 +210,13 @@ const fragmentShader = glsl`
         coords6 -= 0.5;
         // coords6.y -= sin(u_time * 0.25)/ 5.; 
         
-        coords6 = coords6 * 0.1;
+        coords6 = coords6;
         
         vec3 c6Color = vec3(0., 1., 0.);
-        float c6 = Line(coords6, vec2(-0.02), vec2(0.02));
+        float c6 = DistLine(coords6, vec2(-0.1), vec2(0.1));
         vec3 sdfColor6 = mix(c6Color, sdfColor5, softMinValue(c6, cTot, 15.));
         cTot = softMin(c6, cTot, 25.);
-        color = mix(sdfColor6, color, smoothstep(0.0, 0.005, cTot));
+        color = mix(sdfColor6, color, smoothstep(0.0, 0.01, cTot));
 
         color = pow(color, vec3(0.4545));
         
