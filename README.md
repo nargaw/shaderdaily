@@ -12,4 +12,3 @@ For commercial use of the shaders, please contact me at nateargaw@gmail.com.
 
 Thank you and Enjoy!!
 
-**** I EXPLICITLY REFUSE THE RIGHT FOR ANYONE TO USE THIS CODE REPO FOR ANY MACHINE LEARNING, DEEP LEARNING OR AI RESEARCH OR PROJECT WITHOUT MY CONSENT **** 
