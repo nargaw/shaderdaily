@@ -164,11 +164,11 @@ const fragmentShader = glsl`
         vec2 mouse3 = u_mouse3;
 
         vec2 coords1 = coords - 0.5;
-        coords1.x += 0.2;
-        coords1.y += sin(u_time * 0.5)/4.;
+        coords1.x += cos(u_time * 0.75)/4.;
+        coords1.y += sin(u_time * 0.75)/4.;
         vec2 coords2 = coords- 0.5;
-        coords2.x -= 0.2;
-        coords2.y += cos(u_time * 0.5)/4.;
+        coords2.x += sin(u_time * 0.75)/4.;
+        coords2.y += cos(u_time * 0.75)/4.;
         
   
         float c1 = length(coords1) - 0.1;
@@ -206,14 +206,14 @@ const fragmentShader = glsl`
         color = mix(sdfColor5, color, smoothstep(0.0, 0.01, cTot));
 
         vec2 coords6 = coords;
-        coords6 = Rot(coords6, u_time * 0.5);
+        coords6 = Rot(coords6, u_time * 1.5);
         coords6 -= 0.5;
         // coords6.y -= sin(u_time * 0.25)/ 5.; 
         
         coords6 = coords6;
         
         vec3 c6Color = vec3(0., 1., 0.);
-        float c6 = DistLine(coords6, vec2(-0.1), vec2(0.1));
+        float c6 = DistLine(coords6, vec2(-0.2), vec2(0.2));
         vec3 sdfColor6 = mix(c6Color, sdfColor5, softMinValue(c6, cTot, 15.));
         cTot = softMin(c6, cTot, 25.);
         color = mix(sdfColor6, color, smoothstep(0.0, 0.01, cTot));
