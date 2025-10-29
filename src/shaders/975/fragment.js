@@ -163,17 +163,15 @@ const fragmentShader = glsl`
         vec2 mouse2 = u_mouse2;
         vec2 mouse3 = u_mouse3;
 
-        vec2 coords1 = coords - 0.5;
-        coords1.x += cos(u_time * 0.75)/4.;
-        coords1.y += sin(u_time * 0.75)/4.;
-        vec2 coords2 = coords- 0.5;
-        coords2.x += sin(u_time * 0.75)/4.;
-        coords2.y += cos(u_time * 0.75)/4.;
+        vec2 coords1 = coords - mix(mouse2, mouse3, 0.5);
+        
+        vec2 coords2 = coords- mix(mouse, mouse2, 0.5);
+        
         
   
-        float c1 = length(coords1) - 0.1;
+        float c1 = length(coords1) - 0.01;
 
-        float c2 = length(coords2) - 0.1;
+        float c2 = length(coords2) - 0.01;
 
         float cTot = softMin(c1, c2, 25.);
 
