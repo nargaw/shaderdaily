@@ -167,37 +167,35 @@ const fragmentShader = glsl`
         
         vec2 coords2 = coords- mix(mouse, mouse2, 0.5);
         
-        
-  
         float c1 = length(coords1) - 0.01;
 
         float c2 = length(coords2) - 0.01;
 
         float cTot = softMin(c1, c2, 25.);
 
-        vec3 color1 = vec3(1., 0., 0.);
-        vec3 color2 = vec3(0., 0., 1.);
+        vec3 color1 = vec3(0. + coords1.x, 0. + coords1.y, 0.);
+        vec3 color2 = vec3(0. + coords2.x, 0. + coords2.y, 0.);
 
         vec3 sdfColor = mix(color1, color2, softMinValue(c1, c2, 25.));
 
         color = mix(sdfColor, color, smoothstep(0., 0.01, cTot));
 
         vec2 coords3 = coords - mouse3;
-        vec3 c3Color = vec3(0., 1., 0.);
+        vec3 c3Color = vec3(0. + coords3.x, 0. + coords3.y, 0.);
         float c3 = length(coords3) - 0.015;
         vec3 sdfColor2 = mix(c3Color, sdfColor, softMinValue(c3, cTot, 15.));
         cTot = softMin(c3, cTot, 25.);        
         color = mix(sdfColor2, color, smoothstep(0., 0.01, cTot));
 
         vec2 coords4 = coords - mouse2;
-        vec3 c4Color = vec3(1., 0., 0.);
+        vec3 c4Color = vec3(0. + coords4.x, 0. + coords4.y, 0.);
         float c4 = length(coords4) - 0.005;
         vec3 sdfColor4 = mix(c4Color, sdfColor2, softMinValue(c4, cTot, 15.));
         cTot = softMin(c4, cTot, 25.);
         color = mix(sdfColor4, color, smoothstep(0.0, 0.01, cTot));
 
         vec2 coords5 = coords - mouse;
-        vec3 c5Color = vec3(1., sin(u_time), 0.);
+        vec3 c5Color = vec3(0. + coords5.x, 0. + coords5.y, 0.);
         float c5 = length(coords5) - 0.025;
         vec3 sdfColor5 = mix(c5Color, sdfColor4, softMinValue(c5, cTot, 15.));
         cTot = softMin(c5, cTot, 25.);
@@ -206,10 +204,6 @@ const fragmentShader = glsl`
         vec2 coords6 = coords;
         coords6 = Rot(coords6, u_time * 1.5);
         coords6 -= 0.5;
-        // coords6.y -= sin(u_time * 0.25)/ 5.; 
-        
-        coords6 = coords6;
-        
         vec3 c6Color = vec3(0., 1., 0.);
         float c6 = DistLine(coords6, vec2(-0.2), vec2(0.2));
         vec3 sdfColor6 = mix(c6Color, sdfColor5, softMinValue(c6, cTot, 15.));
