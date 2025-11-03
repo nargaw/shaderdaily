@@ -16,7 +16,7 @@ const fragmentShader = glsl`
         // p = p +  vec2(7., 3.5);
         float left = numNine(vec2(p.x + 0.35, p.y));
         float center = numSeven(vec2(p.x -0.03, p.y));
-        float right = numSix(vec2(p.x - 0.42, p.y));
+        float right = numSeven(vec2(p.x - 0.42, p.y));
         return left + center + right ;
     }
     
@@ -166,8 +166,8 @@ const fragmentShader = glsl`
         float cTot = 1.;
         vec3 sdfColor =  vec3(1., 0., 0.);
 
-        vec2 coords3 = coords;
-        coords3 = Rot(coords3, u_time * 5. * 0.25 + (PI * -0.25));
+        vec2 coords3 = coords - 0.125;
+        coords3 = Rot(coords3, u_time * 5. * 0.35 + (PI * -0.25));
         coords3 -= 0.5;
         vec3 c3Color = vec3(1., 1., 0.);
         float c3 = DistLine(coords3, vec2(-0.2), vec2(0.2));
@@ -175,8 +175,8 @@ const fragmentShader = glsl`
         cTot = softMin(c3, cTot, 25.);        
         color = mix(sdfColor2, color, smoothstep(0., 0.01, cTot));
 
-        vec2 coords4 = coords;
-        coords4 = Rot(coords4, u_time * 4.* 0.25 + (PI * 0.25));
+        vec2 coords4 = vec2(coords.x+ 0.125, coords.y - 0.125);
+        coords4 = Rot(coords4, u_time * 4.* 0.35 + (PI * 0.25));
         coords4 -= 0.5;
         vec3 c4Color = vec3(1., 0., 0.);
         float c4 = DistLine(coords4, vec2(-0.2), vec2(0.2));
@@ -184,18 +184,17 @@ const fragmentShader = glsl`
         cTot = softMin(c4, cTot, 25.);
         color = mix(sdfColor4, color, smoothstep(0.0, 0.01, cTot));
 
-        vec2 coords5 = coords;
-        coords5 = Rot(coords5, u_time * 3.* 0.25 + (PI * 0.5));
+        vec2 coords5 = coords + 0.125;
+        coords5 = Rot(coords5, u_time * 3.* 0.35 + (PI * 0.5));
         coords5 -= 0.5;
-         
         vec3 c5Color = vec3(0., 0., 1.);
         float c5 = DistLine(coords5, vec2(-0.2), vec2(0.2));
         vec3 sdfColor5 = mix(c5Color, sdfColor4, softMinValue(c5, cTot, 15.));
         cTot = softMin(c5, cTot, 25.);
         color = mix(sdfColor5, color, smoothstep(0.0, 0.01, cTot));
 
-        vec2 coords6 = coords;
-        coords6 = Rot(coords6, u_time * 2. * 0.25);
+        vec2 coords6 = vec2(coords.x- 0.125, coords.y + 0.125);;
+        coords6 = Rot(coords6, u_time * 2. * 0.35);
         coords6 -= 0.5;
         vec3 c6Color = vec3(0., 1., 0.);
         float c6 = DistLine(coords6, vec2(-0.2), vec2(0.2));
@@ -235,7 +234,7 @@ import { lerp } from 'three/src/math/MathUtils.js'
 import { useControls } from 'leva'
 import { Text } from '@react-three/drei'
 
-export default function Shader976() {
+export default function Shader977() {
     const r = './Models/EnvMaps/0/';
     const urls = [
         r + 'px.jpg',
