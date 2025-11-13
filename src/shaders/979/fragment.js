@@ -203,10 +203,10 @@ const fragmentShader = glsl`
         color = mix(sdfColor4, color, smoothstep(0.0, 0.01, cTot));
 
         vec2 coords5 = coords;
-        coords5 = Rot(coords5, u_time * 3. + (PI * 0.5));
+        // coords5 = Rot(coords5, u_time * 3. + (PI * 0.5));
         coords5 -= 0.5;
         vec3 c5Color = vec3(0., 1., 1.);
-        float c5 = DistLine(coords5, vec2(-0.1), vec2(0.1));
+        float c5 = length(coords5) - 0.1;
         vec3 sdfColor5 = mix(c5Color, sdfColor4, softMinValue(c5, cTot, 15.));
         cTot = softMin(c5, cTot, 25.);
         color = mix(sdfColor5, color, smoothstep(0.0, 0.01, cTot));
