@@ -994,6 +994,7 @@ import Shader989 from './shaders/989/fragment.js'
 import Shader990 from './shaders/990/fragment.js'
 import Shader991 from './shaders/991/fragment.js'
 import Shader992 from './shaders/992/fragment.js'
+import Shader993 from './shaders/993/fragment.js'
 
 export default function App()
 {
@@ -1992,7 +1993,8 @@ export default function App()
         <Shader989 />,
         <Shader990 />,
         <Shader991 />,
-        <Shader992 />
+        <Shader992 />,
+        <Shader993 />
     ]
 
     return (
