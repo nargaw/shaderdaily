@@ -210,103 +210,124 @@ const fragmentShader = glsl`
         coords1 -= 0.5;
         // coords1 *= 0.025;
         vec3 c1Color = vec3(0., 0., 1.);
-        float c1 = sdfCircle(coords1, 0.25);
+        float c1 = sdfCircle(coords1, 0.5);
         vec3 sdfColor1 = mix(c1Color, vec3(0.), softMinValue(c1, cTot, 15.));
         cTot = softMin(c1, cTot, 25.);        
         color = mix(sdfColor1, color, smoothstep(0., 0.02, c1));
 
-        vec2 coords2 = vec2(coords.x, coords.y) * 2.0- 0.5;
-        // coords2 = Rot(coords2, u_time);
-        coords2 -= 0.5;
-        coords2.y -= 0.5;
-        coords2.x -= 0.5;
+        vec2 coords2 = vec2(coords.x, coords.y);
+        coords2 = Rot(coords2, PI * 0.25);
+
+        coords2 -= 0.15;
+        coords2.y -= 0.6;
+        coords2.x -= 0.35;
+        
         vec3 c2Color = vec3(1., 0., 0.);
-        float c2 = sdfCircle(coords2, 0.15);
-        vec3 sdfColor2 = mix(c2Color, sdfColor1, softMinValue(c2, cTot, 15.));
-        cTot = softMin(c2, cTot, 25.);        
+        float c2 = sdEqTriangle(coords2, 0.1);
+        vec3 sdfColor2 = mix(c2Color, sdfColor1, softMinValue(c2, cTot, 5.));
+        cTot = softMin(c2, cTot, 7.);        
         color = mix(sdfColor2, color, smoothstep(0., 0.02, cTot));
 
-        vec2 coords3 = vec2(coords.x, coords.y) * 2.0- 0.5;
-        coords3 -= 0.5;
-        coords3.y -= 0.5;
-        coords3.x += 0.5;
-        vec3 c3Color = vec3(1., 0., 0.);
-        float c3 = sdfCircle(coords3, 0.15);
-        vec3 sdfColor3 = mix(c3Color, sdfColor2, softMinValue(c3, cTot, 15.));
-        cTot = softMin(c3, cTot, 25.);        
+        vec2 coords3 = vec2(coords.x, coords.y);
+        
+        coords3 = Rot(coords3, -PI * 0.25);
+        
+        coords3 -= 0.15;
+        coords3.y -= 0.6;
+        coords3.x -= 0.35;
+        
+        vec3 c3Color = vec3(0., 1., 0.);
+        float c3 = sdEqTriangle(coords3, 0.1);
+        vec3 sdfColor3 = mix(c3Color, sdfColor2, softMinValue(c3, cTot, 5.));
+        cTot = softMin(c3, cTot, 7.);        
         color = mix(sdfColor3, color, smoothstep(0., 0.01, cTot));
 
-        vec2 coords4 = vec2(coords.x, coords.y) * 2.0- 0.5;
-        coords4 = Rot(coords4, PI * 0.25);
-        coords4 -= 0.5;
-        coords4.x -= 0.4;
-        vec3 c4Color = vec3(1., 1., 0.);
-        float c4 = sdfBox(coords4, vec2(0.25, 0.02));
-        vec3 sdfColor4 = mix(c4Color, sdfColor3, softMinValue(c4, cTot, 15.));
-        cTot = softMin(c4, cTot, 25.);        
-        color = mix(sdfColor4, color, smoothstep(0., 0.01, cTot));
+        // vec2 coords4 = vec2(coords.x, coords.y) * 2.0- 0.5;
+        // coords4 = Rot(coords4, PI * 0.25);
+        // coords4 -= 0.5;
+        // coords4.x -= 0.4;
+        // vec3 c4Color = vec3(1., 1., 0.);
+        // float c4 = sdfBox(coords4, vec2(0.25, 0.02));
+        // vec3 sdfColor4 = mix(c4Color, sdfColor3, softMinValue(c4, cTot, 15.));
+        // cTot = softMin(c4, cTot, 25.);        
+        // color = mix(sdfColor4, color, smoothstep(0., 0.01, cTot));
 
-        vec2 coords5 = vec2(coords.x, coords.y) * 2.0- 0.5;
-        coords5 = Rot(coords5, -PI * 0.25);
-        coords5 -= 0.5;
-        coords5.x += 0.4;
-        vec3 c5Color = vec3(1.0, 1.0, 0.0);
-        float c5 = sdfBox(coords5, vec2(0.25, 0.02));
-        vec3 sdfColor5 = mix(c5Color, sdfColor4, softMinValue(c5, cTot, 15.));
-        cTot = softMin(c5, cTot, 25.);        
-        color = mix(sdfColor5, color, smoothstep(0., 0.01, cTot));
+        // vec2 coords5 = vec2(coords.x, coords.y) * 2.0- 0.5;
+        // coords5 = Rot(coords5, -PI * 0.25);
+        // coords5 -= 0.5;
+        // coords5.x += 0.4;
+        // vec3 c5Color = vec3(1.0, 1.0, 0.0);
+        // float c5 = sdfBox(coords5, vec2(0.25, 0.02));
+        // vec3 sdfColor5 = mix(c5Color, sdfColor4, softMinValue(c5, cTot, 15.));
+        // cTot = softMin(c5, cTot, 25.);        
+        // color = mix(sdfColor5, color, smoothstep(0., 0.01, cTot));
 
-        vec2 coords6 = vec2(coords.x, coords.y) * 2.0- 0.5;
-        coords6 -= 0.5;
-        coords6.x -= 0.5;
-        coords6.y -= 0.5;
-        vec3 c6Color = vec3(1.);
-        float c6 = sdfCircle(coords6, 0.1);
-        vec3 sdfColor6 = mix(c6Color, sdfColor5, softMinValue(c6, cTot, 15.));
-        cTot = softMin(c6, cTot, 25.);        
-        color = mix(c6Color, color, smoothstep(0., 0.01, c6));
+        // vec2 coords6 = vec2(coords.x, coords.y) * 2.0- 0.5;
+        // coords6 -= 0.5;
+        // coords6.x -= 0.5;
+        // coords6.y -= 0.5;
+        // vec3 c6Color = vec3(1.);
+        // float c6 = sdfCircle(coords6, 0.1);
+        // vec3 sdfColor6 = mix(c6Color, sdfColor5, softMinValue(c6, cTot, 15.));
+        // cTot = softMin(c6, cTot, 25.);        
+        // color = mix(c6Color, color, smoothstep(0., 0.01, c6));
 
-        vec2 coords7 = vec2(coords.x, coords.y) * 2.0- 0.5;
-        coords7 -= 0.5;
-        coords7.x -= 0.5;
-        coords7.y -= 0.5;
-        vec3 c7Color = vec3(0.);
-        float c7 = sdfCircle(coords7, 0.05);
-        vec3 sdfColor7 = mix(c7Color, sdfColor6, softMinValue(c7, cTot, 15.));
-        cTot = softMin(c7, cTot, 25.);        
-        color = mix(c7Color, color, smoothstep(0., 0.01, c7));
+        // vec2 coords7 = vec2(coords.x, coords.y) * 2.0- 0.5;
+        // coords7 -= 0.5;
+        // coords7.x -= 0.5;
+        // coords7.y -= 0.5;
+        // vec3 c7Color = vec3(0.);
+        // float c7 = sdfCircle(coords7, 0.05);
+        // vec3 sdfColor7 = mix(c7Color, sdfColor6, softMinValue(c7, cTot, 15.));
+        // cTot = softMin(c7, cTot, 25.);        
+        // color = mix(c7Color, color, smoothstep(0., 0.01, c7));
 
         vec2 coords8 = vec2(coords.x, coords.y) * 2.0 - 1.0;
-        coords8.x += 0.5;
-        coords8.y -= 0.5;
+        coords8.x += 0.2;
+        coords8.y -= 0.1;
         vec3 c8Color = vec3(1.);
         float c8 = sdfCircle(coords8, 0.1);
         color = mix(c8Color, color, smoothstep(0., 0.01, c8));
 
         vec2 coords9 = vec2(coords.x, coords.y) * 2.0 - 1.0;
-        coords9.x += 0.5;
-        coords9.y -= 0.5;
+        coords9.x += 0.2;
+        coords9.y -= 0.1;
         vec3 c9Color = vec3(0.);
         float c9 = sdfCircle(coords9, 0.05);
         color = mix(c9Color, color, smoothstep(0., 0.01, c9));
 
         vec2 coords10 = vec2(coords.x, coords.y) * 2.0 - 1.0;
-        coords10.y -= 0.0;
+        coords10.y += 0.15;
         vec3 c10Color = vec3(0.);
         float c10 = sdfCircle(coords10, 0.02);
         color = mix(c10Color, color, smoothstep(0., 0.01, c10));
 
         vec2 coords11 = vec2(coords.x, coords.y) * 2.0 - 1.0;
-        coords11.y += 0.15;
+        coords11.y += 0.35;
         vec3 c11Color = vec3(1.);
         float c11 = sdfVesica(coords11, 0.1, 0.05);
         color = mix(c11Color, color, smoothstep(0., 0.01, c11));
 
         vec2 coords12 = vec2(coords.x, coords.y) * 2.0 - 1.0;
-        coords12.y += 0.15;
+        coords12.y += 0.35;
         vec3 c12Color = vec3(0.);
         float c12 = sdfVesica(coords12, 0.09, 0.04);
         color = mix(c12Color, color, smoothstep(0., 0.01, c12));
+
+        vec2 coords13 = vec2(coords.x, coords.y) * 2.0 - 1.0;
+        coords13.x -= 0.2;
+        coords13.y -= 0.1;
+        vec3 c13Color = vec3(1.);
+        float c13 = sdfCircle(coords13, 0.1);
+        color = mix(c13Color, color, smoothstep(0., 0.01, c13));
+
+        vec2 coords14 = vec2(coords.x, coords.y) * 2.0 - 1.0;
+        coords14.x -= 0.2;
+        coords14.y -= 0.1;
+        vec3 c14Color = vec3(0.);
+        float c14 = sdfCircle(coords14, 0.05);
+        color = mix(c14Color, color, smoothstep(0., 0.01, c14));
+
 
         color = pow(color, vec3(0.4545));
         
